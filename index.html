@@ -769,18 +769,41 @@ function xpTotal(){
 }
 
 /* ================= ALMACENAMIENTO Y SINCRONIZACIÓN =================
-   Sin configurar nada: guarda en este dispositivo.
-   Con Firebase configurado: sincroniza entre la compu y el teléfono.  */
+   PASO 1 — Pegá acá abajo el firebaseConfig de tu proyecto.
+   Lo sacás de: consola de Firebase > ⚙ Configuración del proyecto >
+   "Tus apps" > ícono Web </> > Configuración del SDK > Config.
+   Si todavía no registraste una app web, hacelo ahí mismo (es gratis
+   y no hace falta Hosting).
+
+   PASO 2 — Cambiá CLAVE_SYNC por una frase tuya. Ese es el nombre de
+   tu rama de datos. Tiene que ser la MISMA en la compu y en el teléfono.
+
+   Sin completar nada, la app igual funciona y guarda en el dispositivo. */
 const FIREBASE_CONFIG={
-  apiKey:"",            // pegá acá los datos de tu proyecto de Firebase
-  authDomain:"",        // Configuración del proyecto > Tus apps > Web
-  projectId:"",
-  appId:""
+  apiKey:"AIzaSyDbFIg11Z5YHdo8AIyj52wgBmIxKG1BcEk",
+  authDomain:"gym-lucho.firebaseapp.com",
+  databaseURL:"https://gym-lucho-default-rtdb.firebaseio.com",
+  projectId:"gym-lucho",
+  appId:"1:836067946488:web:73025af7d195c484b1f00d"
 };
-const CLAVE_SYNC="mi-guia-gestion";   // cambiala por una frase tuya, difícil de adivinar
+const CLAVE_SYNC="ezequiel-gestion-2026";
+const RAMA="gestionEmpresas";   // nodo propio: no toca el resto de la base
 
 const enClaude = typeof window!=="undefined" && window.storage && typeof window.storage.get==="function";
 let nube=null, sincronizando=false;
+
+/* Realtime Database convierte en array los objetos con claves 0,1,2...
+   Esto los devuelve a objeto para que no se rompa el estado. */
+function aObjeto(x){
+  if(!x) return {};
+  if(Array.isArray(x)){ const o={}; x.forEach((v,i)=>{ if(v!=null) o[i]=v }); return o }
+  return x;
+}
+function adoptar(p){
+  if(!p) return false;
+  estado={items:aObjeto(p.items),teo:aObjeto(p.teo),pra:aObjeto(p.pra),ts:p.ts||0};
+  return true;
+}
 
 const local={
   async leer(){
@@ -798,23 +821,23 @@ const local={
 };
 
 async function conectarNube(){
-  if(!FIREBASE_CONFIG.apiKey) return null;
+  if(!FIREBASE_CONFIG.apiKey || !FIREBASE_CONFIG.databaseURL){
+    pieEstado("Sin Firebase configurado. Guardando en este dispositivo.");
+    return null;
+  }
   try{
-    const [appMod,fsMod]=await Promise.all([
+    const [appMod,dbMod]=await Promise.all([
       import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
-      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
+      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js")
     ]);
     const app=appMod.initializeApp(FIREBASE_CONFIG);
-    const db=fsMod.getFirestore(app);
-    const ref=fsMod.doc(db,"progreso",CLAVE_SYNC);
-    return {ref,fs:fsMod};
-  }catch(e){ pieEstado("Sin conexión con la nube. Guardando en este dispositivo."); return null }
-}
-
-function adoptar(p){
-  if(!p) return false;
-  estado={items:p.items||{},teo:p.teo||{},pra:p.pra||{},ts:p.ts||0};
-  return true;
+    const db=dbMod.getDatabase(app);
+    const ref=dbMod.ref(db,RAMA+"/"+CLAVE_SYNC);
+    return {ref,db:dbMod};
+  }catch(e){
+    pieEstado("No se pudo conectar con Firebase. Guardando acá.");
+    return null;
+  }
 }
 
 async function cargar(){
@@ -822,25 +845,27 @@ async function cargar(){
   nube=await conectarNube();
   if(!nube) return;
   try{
-    const snap=await nube.fs.getDoc(nube.ref);
+    const snap=await nube.db.get(nube.ref);
     if(snap.exists()){
-      const d=snap.data();
+      const d=snap.val();
       if((d.ts||0)>(estado.ts||0)){ adoptar(d); await local.escribir(estado); }
-      else if((estado.ts||0)>(d.ts||0)){ await nube.fs.setDoc(nube.ref,estado); }
-    }else{
-      await nube.fs.setDoc(nube.ref,estado);
+      else if((estado.ts||0)>(d.ts||0)){ await nube.db.set(nube.ref,estado); }
+    }else if(estado.ts){
+      await nube.db.set(nube.ref,estado);
     }
-    nube.fs.onSnapshot(nube.ref,s=>{
+    nube.db.onValue(nube.ref,s=>{
       if(sincronizando) return;
-      const d=s.data();
+      const d=s.val();
       if(d&&(d.ts||0)>(estado.ts||0)){
         adoptar(d); local.escribir(estado);
         pintarCabecera(); pintarSeg(); pintarTeoria(); pintarPractica();
         pieEstado("Actualizado desde otro dispositivo.");
       }
     });
-    pieEstado("Sincronizado.");
-  }catch(e){ pieEstado("No se pudo sincronizar. Guardando en este dispositivo.") }
+    pieEstado("Sincronizado con Firebase.");
+  }catch(e){
+    pieEstado("Error al sincronizar. Revisá las reglas de la base.");
+  }
 }
 
 async function guardar(){
@@ -850,17 +875,19 @@ async function guardar(){
     sincronizando=true;
     await local.escribir(estado);
     if(nube){
-      try{ await nube.fs.setDoc(nube.ref,estado); pieEstado("Guardado y sincronizado.") }
-      catch(e){ pieEstado("Guardado acá. La nube no respondió.") }
+      try{ await nube.db.set(nube.ref,estado); pieEstado("Guardado y sincronizado.") }
+      catch(e){ pieEstado("Guardado acá. Firebase no respondió.") }
     }else pieEstado("Guardado.");
-    setTimeout(()=>{sincronizando=false},600);
+    setTimeout(()=>{sincronizando=false},700);
   },400);
 }
 function pieEstado(t){
   const el=document.getElementById("pie-estado"); if(!el) return;
   el.textContent=t;
   clearTimeout(pieEstado._t);
-  pieEstado._t=setTimeout(()=>{el.textContent=nube?"Sincronizado con tus otros dispositivos.":"Guardado en este dispositivo."},2600);
+  pieEstado._t=setTimeout(()=>{
+    el.textContent=nube?"Sincronizado · "+CLAVE_SYNC:"Guardado en este dispositivo.";
+  },2800);
 }
 const esc=s=>s.replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 
@@ -1150,7 +1177,7 @@ document.getElementById("reset").onclick=async()=>{
   if(!confirm("Se borra todo: estados, notas, teoría y práctica. ¿Seguro?"))return;
   estado={items:{},teo:{},pra:{},ts:Date.now()};
   await local.borrar();
-  if(nube){try{await nube.fs.setDoc(nube.ref,estado)}catch(e){}}
+  if(nube){try{await nube.db.set(nube.ref,estado)}catch(e){}}
   salirQuiz();pintarSeg();pintarCabecera();
 };
 
