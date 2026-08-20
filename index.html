@@ -1,1537 +1,1048 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Lucho Gym · Registro de Entrenamiento</title>
-<meta name="theme-color" content="#0d0f14">
-<meta name="mobile-web-app-capable" content="yes">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#15223A">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Lucho Gym">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Gestión">
+<title>Gestión de Empresas — tablero de estudio</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap');
 :root{
-  --bg:#0d0f14;
-  --panel:#151821;
-  --panel-2:#1c2029;
-  --line:#2a2f3b;
-  --text:#f2f4f8;
-  --muted:#8b93a3;
-  --accent:#ffc300;
-  --accent-dim:#4a3800;
-  --teal:#3fb8af;
-  --teal-dim:#14403c;
-  --danger:#ff4d4d;
-  --ok:#4ad187;
-  --amber:#ffb020;
-  --radius:14px;
+  --papel:#F3F5F8; --rejilla:#DDE5ED; --tinta:#15223A; --grafito:#66748C; --borde:#C8D3DF; --tarjeta:#FFF;
+  --hecho:#1B7F55; --hecho-suave:#DFF1E8; --curso:#C2700B; --curso-suave:#FBEBD5;
+  --repasar:#5D3FB5; --repasar-suave:#E9E3FA; --pendiente:#AEBBCA; --mal:#B03A3A; --mal-suave:#F8E3E3;
+  --display:"Space Grotesk","Trebuchet MS",sans-serif; --body:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
 }
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
-body{min-height:100vh;padding-bottom:78px;}
-h1,h2,h3,.display{font-family:'Bebas Neue',sans-serif;letter-spacing:.03em;}
-.mono{font-family:'Roboto Mono',monospace;}
-::-webkit-scrollbar{width:6px;height:6px;}
-::-webkit-scrollbar-thumb{background:var(--line);border-radius:10px;}
-a{color:inherit;}
-button{font-family:inherit;cursor:pointer;}
-input,select,textarea{font-family:inherit;}
-
-/* ---------- top bar ---------- */
-.topbar{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,#0d0f14 80%,rgba(13,15,20,0));backdrop-filter:blur(6px);padding:16px 18px 10px;display:flex;align-items:center;justify-content:space-between;}
-.brand{display:flex;align-items:center;gap:10px;}
-.brand .mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(145deg,var(--accent),#cc9100);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:15px;color:#231a00;flex-shrink:0;box-shadow:0 4px 12px rgba(255,195,0,.3);}
-.brand .title{font-size:22px;line-height:1;}
-.brand .sub{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-top:2px;}
-.top-actions{display:flex;gap:8px;align-items:center;}
-.pill{font-size:11px;padding:5px 10px;border-radius:20px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted);}
-.pill.role-admin{background:var(--accent-dim);color:#ffb28a;border-color:transparent;}
-.iconbtn{width:34px;height:34px;border-radius:10px;background:var(--panel-2);border:1px solid var(--line);color:var(--text);display:flex;align-items:center;justify-content:center;font-size:15px;}
-
-/* ---------- layout ---------- */
-.screen{display:none;padding:6px 18px 24px;max-width:640px;margin:0 auto;}
-.screen.active{display:block;animation:fadein .25s ease;}
-@keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
-.section-title{font-size:26px;margin:18px 0 12px;}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:12px;}
-.card-tight{padding:12px 14px;}
-.muted{color:var(--muted);}
-.small{font-size:12px;}
-.row{display:flex;gap:10px;align-items:center;}
-.row.between{justify-content:space-between;}
-.wrap{flex-wrap:wrap;}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-
-/* buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 16px;border-radius:12px;border:none;font-weight:700;font-size:14px;}
-.btn-accent{background:linear-gradient(145deg,var(--accent),#e6a400);color:#231a00;box-shadow:0 4px 14px rgba(255,195,0,.25);}
-.btn-teal{background:var(--teal);color:#062421;}
-.btn-ghost{background:var(--panel-2);color:var(--text);border:1px solid var(--line);}
-.btn-danger{background:rgba(255,77,77,.12);color:var(--danger);border:1px solid rgba(255,77,77,.35);}
-.btn-block{width:100%;}
-.btn-sm{padding:8px 12px;font-size:12.5px;border-radius:9px;}
-.btn:disabled{opacity:.4;}
-
-/* pastillas de series (kg / rep) estilo gym tracker */
-.pill-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
-.set-pill{border:1px solid var(--line);border-radius:9px;padding:4px 8px;font-family:'Roboto Mono';font-size:10px;color:var(--muted);background:var(--panel);display:flex;flex-direction:column;align-items:center;line-height:1.3;min-width:44px;}
-.set-pill b{color:var(--accent);font-size:12px;letter-spacing:.02em;}
-
-/* ranking mensual */
-.rank-item{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--line);}
-.rank-item:last-child{border-bottom:none;}
-.rank-item.me{background:rgba(255,195,0,.07);border-radius:10px;padding-left:8px;padding-right:8px;}
-.rank-pos{width:30px;text-align:center;font-family:'Bebas Neue';font-size:19px;color:var(--muted);flex-shrink:0;}
-.rank-days{font-family:'Roboto Mono';font-weight:700;color:var(--accent);font-size:14px;white-space:nowrap;}
-.rank-bar{height:5px;border-radius:4px;background:var(--panel-2);overflow:hidden;margin-top:5px;}
-.rank-bar > div{height:100%;background:linear-gradient(90deg,var(--accent),#ffe066);}
-
-input[type=text],input[type=email],input[type=password],input[type=number],input[type=date],select,textarea{
-  width:100%;padding:12px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel-2);color:var(--text);font-size:16px;outline:none;
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:var(--body);color:var(--tinta);background-color:var(--papel);
+  background-image:linear-gradient(var(--rejilla) 1px,transparent 1px),linear-gradient(90deg,var(--rejilla) 1px,transparent 1px);
+  background-size:26px 26px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:24px 16px 80px}
+.head{background:var(--tarjeta);border:1.5px solid var(--tinta);box-shadow:5px 5px 0 var(--borde);padding:20px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--grafito);margin:0 0 5px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(24px,5vw,36px);line-height:1.05;margin:0 0 14px;letter-spacing:-.02em}
+.metrics{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end}
+.metric .k{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--grafito)}
+.metric .v{font-family:var(--display);font-weight:700;font-size:22px;line-height:1.1}
+.metric .v small{font-family:var(--mono);font-weight:400;font-size:11.5px;color:var(--grafito)}
+.barra{margin-top:14px;height:11px;background:var(--papel);border:1.5px solid var(--tinta);overflow:hidden}
+.barra i{display:block;height:100%;background:var(--tinta);width:0;transition:width .5s ease}
+.barra-pie{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--grafito);margin-top:5px}
+/* tabs */
+.tabs{display:flex;gap:0;margin:20px 0 0;border-bottom:1.5px solid var(--tinta)}
+.tab{font-family:var(--display);font-weight:700;font-size:14px;background:var(--rejilla);border:1.5px solid var(--borde);border-bottom:0;
+  color:var(--grafito);padding:11px 18px;cursor:pointer;margin-right:4px;position:relative;top:1.5px}
+.tab[aria-selected="true"]{background:var(--tinta);border-color:var(--tinta);color:#fff}
+.tab:focus-visible{outline:2.5px solid var(--tinta);outline-offset:2px}
+.panel{display:none;padding-top:22px}
+.panel.on{display:block}
+h2{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.03em;margin:0 0 4px;text-transform:uppercase}
+.desc{font-size:13px;color:var(--grafito);margin:0 0 14px}
+.seccion{margin-top:30px}
+.aviso{font-family:var(--mono);font-size:11px;color:var(--grafito);padding:9px 12px;background:var(--tarjeta);border:1.5px dashed var(--borde);margin-bottom:14px}
+/* siguiente */
+.siguiente{margin-top:16px;background:var(--tinta);color:#fff;padding:16px 18px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.siguiente .lab{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.62}
+.siguiente .tit{font-family:var(--display);font-weight:700;font-size:18px;margin-top:3px}
+.siguiente .sub{font-size:13px;opacity:.72;margin-top:2px;max-width:52ch}
+.btn-ir{font-family:var(--display);font-weight:700;font-size:14px;background:#fff;color:var(--tinta);border:0;padding:11px 20px;cursor:pointer;white-space:nowrap}
+.btn-ir:hover{background:var(--rejilla)}
+/* matriz */
+.matriz{background:var(--tarjeta);border:1.5px solid var(--tinta);padding:13px}
+.mrow{display:flex;gap:12px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed var(--borde)}
+.mrow:last-child{border-bottom:0}
+.mlabel{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--grafito);width:150px;flex:none;padding-top:7px}
+.mcells{display:flex;flex-wrap:wrap;gap:6px}
+.cell{width:34px;height:34px;border:1.5px solid var(--borde);background:var(--papel);font-family:var(--mono);font-size:12px;font-weight:600;
+  color:var(--grafito);display:grid;place-items:center;cursor:pointer;padding:0;transition:transform .12s ease}
+.cell:hover{transform:translateY(-2px)}
+.cell:focus-visible{outline:2.5px solid var(--tinta);outline-offset:2px}
+.cell[data-e="hecho"]{background:var(--hecho);border-color:var(--hecho);color:#fff}
+.cell[data-e="curso"]{background:var(--curso-suave);border-color:var(--curso);color:var(--curso)}
+.cell[data-e="repasar"]{background:var(--repasar-suave);border-color:var(--repasar);color:var(--repasar)}
+/* chips */
+.filtros{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 14px}
+.chip{font-family:var(--mono);font-size:11.5px;background:var(--tarjeta);border:1.5px solid var(--borde);color:var(--grafito);padding:6px 12px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--tinta);border-color:var(--tinta);color:#fff}
+.chip:focus-visible{outline:2.5px solid var(--tinta);outline-offset:2px}
+/* lista ejercicios */
+.tema-tit{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--grafito);margin:20px 0 8px;display:flex;align-items:center;gap:10px}
+.tema-tit::after{content:"";flex:1;height:1px;background:var(--borde)}
+.ej{background:var(--tarjeta);border:1.5px solid var(--borde);margin-bottom:8px}
+.ej[data-e="hecho"]{border-left:5px solid var(--hecho)}
+.ej[data-e="curso"]{border-left:5px solid var(--curso)}
+.ej[data-e="repasar"]{border-left:5px solid var(--repasar)}
+.ej[data-e="pendiente"]{border-left:5px solid var(--pendiente)}
+.ej.destacado{border-color:var(--tinta);box-shadow:4px 4px 0 var(--rejilla)}
+.ej-head{display:flex;gap:12px;align-items:flex-start;width:100%;background:none;border:0;padding:13px 14px;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.ej-head:focus-visible{outline:2.5px solid var(--tinta);outline-offset:-3px}
+.num{font-family:var(--mono);font-size:13px;font-weight:600;min-width:34px;height:26px;display:grid;place-items:center;border:1.5px solid var(--borde);color:var(--grafito);flex:none}
+.ej[data-e="hecho"] .num{background:var(--hecho);border-color:var(--hecho);color:#fff}
+.ej-txt{flex:1;min-width:0}
+.ej-txt .t{font-weight:600;font-size:14.5px}
+.ej-txt .d{font-size:13px;color:var(--grafito);margin-top:2px}
+.estado-chip{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:4px 8px;flex:none;align-self:center;white-space:nowrap}
+.estado-chip[data-e="pendiente"]{background:var(--papel);color:var(--grafito)}
+.estado-chip[data-e="hecho"]{background:var(--hecho-suave);color:var(--hecho)}
+.estado-chip[data-e="curso"]{background:var(--curso-suave);color:var(--curso)}
+.estado-chip[data-e="repasar"]{background:var(--repasar-suave);color:var(--repasar)}
+.ej-body{display:none;padding:0 14px 14px 60px;border-top:1px dashed var(--borde)}
+.ej.abierto .ej-body{display:block}
+.ej-body .lab{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--grafito);margin:13px 0 7px}
+.acciones{display:flex;flex-wrap:wrap;gap:6px}
+.acc{font-family:var(--body);font-size:13px;font-weight:500;background:var(--papel);border:1.5px solid var(--borde);padding:7px 13px;cursor:pointer;color:var(--grafito)}
+.acc:hover{border-color:var(--tinta);color:var(--tinta)}
+.acc[aria-pressed="true"]{background:var(--tinta);border-color:var(--tinta);color:#fff}
+.acc:focus-visible{outline:2.5px solid var(--tinta);outline-offset:2px}
+textarea{width:100%;min-height:70px;font-family:var(--body);font-size:13.5px;color:var(--tinta);border:1.5px solid var(--borde);background:var(--papel);padding:10px;resize:vertical}
+textarea:focus{outline:2.5px solid var(--tinta);outline-offset:-1px;background:#fff}
+.sello{font-family:var(--mono);font-size:10.5px;color:var(--grafito);margin-top:7px}
+/* unidades */
+.parcial-tit{font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta);
+  margin:26px 0 10px;padding:7px 11px;background:var(--rejilla);border-left:5px solid var(--tinta)}
+.uni-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:9px}
+.uni{background:var(--tarjeta);border:1.5px solid var(--borde);padding:14px;text-align:left;cursor:pointer;font:inherit;color:inherit;display:block;width:100%}
+.uni:hover{border-color:var(--tinta);box-shadow:4px 4px 0 var(--rejilla)}
+.uni:focus-visible{outline:2.5px solid var(--tinta);outline-offset:2px}
+.uni .n{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--grafito)}
+.uni .t{font-family:var(--display);font-weight:700;font-size:16px;margin:3px 0 7px;line-height:1.2}
+.uni .m{font-family:var(--mono);font-size:11px;color:var(--grafito)}
+.uni .mini{height:7px;background:var(--papel);border:1.5px solid var(--borde);margin-top:8px;overflow:hidden}
+.uni .mini i{display:block;height:100%;background:var(--hecho);width:0}
+/* quiz */
+.quiz{background:var(--tarjeta);border:1.5px solid var(--tinta);box-shadow:5px 5px 0 var(--borde);padding:20px}
+.quiz-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px dashed var(--borde)}
+.quiz-top .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--grafito)}
+.quiz-top .t{font-family:var(--display);font-weight:700;font-size:17px;margin-top:2px}
+.volver{font-family:var(--mono);font-size:11px;background:none;border:1.5px solid var(--borde);color:var(--grafito);padding:7px 12px;cursor:pointer}
+.volver:hover{border-color:var(--tinta);color:var(--tinta)}
+.punto-lab{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--grafito);margin-bottom:8px}
+.preg{font-family:var(--display);font-weight:700;font-size:18px;line-height:1.3;margin:0 0 14px}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{text-align:left;font:inherit;font-size:14px;background:var(--papel);border:1.5px solid var(--borde);padding:12px 14px;cursor:pointer;display:flex;gap:11px;align-items:flex-start;color:var(--tinta)}
+.opt:hover:not(:disabled){border-color:var(--tinta)}
+.opt:disabled{cursor:default}
+.opt:focus-visible{outline:2.5px solid var(--tinta);outline-offset:2px}
+.opt .k{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--grafito);flex:none;padding-top:1px}
+.opt.ok{background:var(--hecho-suave);border-color:var(--hecho)}
+.opt.ok .k{color:var(--hecho)}
+.opt.no{background:var(--mal-suave);border-color:var(--mal)}
+.opt.no .k{color:var(--mal)}
+.fb{margin-top:14px;padding:13px 15px;border-left:5px solid var(--tinta);background:var(--papel);font-size:13.5px}
+.fb b{font-family:var(--display)}
+.fb.ok{border-left-color:var(--hecho)}
+.fb.no{border-left-color:var(--mal)}
+.quiz-nav{margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.prog-pasos{display:flex;gap:4px;flex-wrap:wrap}
+.pp{width:22px;height:5px;background:var(--borde)}
+.pp.ok{background:var(--hecho)}
+.pp.no{background:var(--mal)}
+.pp.now{background:var(--tinta)}
+.btn{font-family:var(--display);font-weight:700;font-size:14px;background:var(--tinta);color:#fff;border:0;padding:11px 20px;cursor:pointer}
+.btn:hover{background:#25355a}
+.btn.sec{background:var(--tarjeta);color:var(--tinta);border:1.5px solid var(--tinta)}
+.datos{background:var(--papel);border:1.5px solid var(--borde);padding:14px;margin-bottom:16px;font-size:13.5px}
+.datos p{margin:0 0 8px}
+.datos p:last-child{margin-bottom:0}
+table.m{border-collapse:collapse;font-family:var(--mono);font-size:13px;margin:10px 0 4px}
+table.m th,table.m td{border:1px solid var(--borde);padding:6px 11px;text-align:center}
+table.m th{background:var(--tinta);color:#fff;font-weight:600}
+table.m td:first-child{background:var(--rejilla);font-weight:600}
+.res{text-align:center;padding:14px 0}
+.res .big{font-family:var(--display);font-weight:700;font-size:46px;line-height:1}
+.res .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--grafito);margin-top:5px}
+.res .msg{font-size:14px;margin-top:12px}
+/* logros + pie */
+.logros{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:8px}
+.logro{background:var(--tarjeta);border:1.5px solid var(--borde);padding:12px 13px;opacity:.5}
+.logro.ok{opacity:1;border-color:var(--tinta);box-shadow:3px 3px 0 var(--rejilla)}
+.logro .n{font-family:var(--display);font-weight:700;font-size:13.5px}
+.logro .c{font-size:11.5px;color:var(--grafito);margin-top:2px}
+.pie{margin-top:34px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--grafito)}
+.reset{font-family:var(--mono);font-size:11px;background:none;border:1.5px solid var(--borde);color:var(--grafito);padding:7px 12px;cursor:pointer}
+.reset:hover{border-color:var(--mal);color:var(--mal)}
+@media (max-width:640px){
+  .mrow{flex-direction:column;gap:4px}.mlabel{width:auto;padding-top:0}.ej-body{padding-left:14px}
+  .siguiente{flex-direction:column;align-items:flex-start}
+  .tab{font-size:13px;padding:10px 13px}
+  .quiz{padding:16px}
 }
-input:focus,select:focus,textarea:focus{border-color:var(--accent);}
-label.field{display:block;margin-bottom:12px;}
-label.field span{display:block;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
-
-/* ---------- hero + estadísticas ---------- */
-.hero-card{background:linear-gradient(135deg,#1e232e,#14171f);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px;}
-.hero-card .saludo{font-family:'Bebas Neue';font-size:26px;line-height:1;}
-.hero-card .fecha{color:var(--muted);font-size:12px;margin-top:3px;text-transform:capitalize;}
-.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;}
-.stat{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:10px 4px;text-align:center;}
-.stat .val{font-family:'Bebas Neue';font-size:23px;color:var(--accent);line-height:1;}
-.stat .lbl{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:4px;}
-
-/* ---------- auth ---------- */
-#screen-auth{max-width:400px;padding-top:8vh;}
-.auth-hero{text-align:center;margin-bottom:28px;}
-.auth-hero .mark-big{width:64px;height:64px;border-radius:18px;background:linear-gradient(145deg,var(--accent),#cc9100);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:26px;color:#231a00;box-shadow:0 8px 24px rgba(255,195,0,.35);}
-.auth-hero h1{font-size:34px;margin:0;}
-.auth-hero p{color:var(--muted);font-size:13px;margin-top:4px;}
-.tabbar{display:flex;background:var(--panel-2);border-radius:12px;padding:4px;margin-bottom:18px;}
-.tabbar button{flex:1;background:none;border:none;color:var(--muted);padding:10px;border-radius:9px;font-weight:700;font-size:13.5px;}
-.tabbar button.active{background:var(--accent);color:#231a00;}
-.err-msg{background:rgba(255,77,77,.1);border:1px solid rgba(255,77,77,.3);color:#ffb0b0;padding:10px 12px;border-radius:10px;font-size:13px;margin-bottom:12px;display:none;}
-
-/* ---------- bottom nav ---------- */
-.bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:60;background:var(--panel);border-top:1px solid var(--line);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom));}
-.navbtn{flex:1;background:none;border:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;font-size:10px;font-weight:600;border-radius:10px;}
-.navbtn .ic{font-size:19px;}
-.navbtn.active{color:var(--accent);}
-
-/* ---------- disco / mancuerna picker (signature element) ---------- */
-.bar-visual{display:flex;align-items:center;justify-content:center;gap:2px;padding:14px 6px;background:radial-gradient(ellipse at center, #202b35 0%, #161f27 70%);border-radius:12px;margin-bottom:12px;min-height:90px;}
-.bar-shaft{height:8px;flex:1;max-width:40px;background:linear-gradient(180deg,#6b7680,#3d454d);border-radius:3px;}
-.plate{border-radius:6px;background:linear-gradient(180deg,var(--accent),#cc9100);display:flex;align-items:center;justify-content:center;color:#231a00;font-family:'Roboto Mono';font-weight:700;flex-shrink:0;}
-.plate.small{background:linear-gradient(180deg,var(--teal),#1f7a72);color:#062421;}
-.chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
-.chip{padding:8px 12px;border-radius:9px;background:var(--panel-2);border:1px solid var(--line);font-size:13px;font-weight:700;color:var(--text);font-family:'Roboto Mono';}
-.chip.active{background:var(--accent);color:#231a00;border-color:transparent;}
-.chip.teal.active{background:var(--teal);color:#062421;}
-
-/* ---------- misc components ---------- */
-.badge{padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:700;letter-spacing:.03em;}
-.badge.ok{background:rgba(74,209,135,.15);color:var(--ok);}
-.badge.pend{background:rgba(255,195,0,.15);color:#ffd766;}
-.badge.off{background:var(--panel-2);color:var(--muted);}
-.avatar{width:38px;height:38px;border-radius:10px;background:var(--teal-dim);color:var(--teal);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;}
-.list-item{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line);}
-.list-item:last-child{border-bottom:none;}
-.exercise-block{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--panel-2);}
-.set-row{display:grid;grid-template-columns:30px 1fr 1fr 30px;gap:8px;align-items:center;margin-bottom:6px;}
-.set-row .idx{width:26px;height:26px;border-radius:50%;background:var(--panel);border:1.5px solid var(--accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-family:'Roboto Mono';font-weight:700;margin:0 auto;}
-.set-row input{padding:9px 8px;text-align:center;}
-.remove-x{width:26px;height:26px;border-radius:7px;background:rgba(255,77,77,.12);color:var(--danger);border:none;font-size:13px;}
-.fab{position:fixed;bottom:86px;right:18px;z-index:55;width:56px;height:56px;border-radius:16px;background:linear-gradient(145deg,var(--accent),#e6a400);color:#231a00;border:none;font-size:26px;box-shadow:0 8px 20px rgba(255,195,0,.4);}
-.empty{text-align:center;padding:30px 10px;color:var(--muted);}
-.empty .ic{font-size:34px;margin-bottom:8px;}
-.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
-.cal-cell{aspect-ratio:1;border-radius:10px;background:var(--panel-2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:12px;font-family:'Roboto Mono';position:relative;border:1px solid transparent;}
-.cal-cell .dots{display:flex;gap:3px;height:5px;}
-.cal-cell .dots i{width:5px;height:5px;border-radius:50%;display:block;}
-.cal-cell .dots i.d-log{background:var(--ok);}
-.cal-cell .dots i.d-plan{background:#5aa9ff;}
-.cal-cell.has-log{background:rgba(74,209,135,.16);border-color:rgba(74,209,135,.5);color:var(--ok);font-weight:700;}
-.cal-cell.today{background:linear-gradient(145deg,var(--accent),#e6a400);color:#231a00;font-weight:700;box-shadow:0 4px 12px rgba(255,195,0,.35);}
-.cal-cell.today .dots i.d-log{background:#175c36;}
-.cal-cell.today .dots i.d-plan{background:#1d4e85;}
-.cal-cell.empty-cell{background:none;}
-.cal-dow{text-align:center;font-size:10px;color:var(--muted);text-transform:uppercase;}
-.progress-mini{height:6px;border-radius:4px;background:var(--panel-2);overflow:hidden;margin-top:6px;}
-.progress-mini > div{height:100%;background:var(--accent);}
-.modal-bg{position:fixed;inset:0;background:rgba(6,9,12,.7);z-index:80;display:none;align-items:flex-end;justify-content:center;}
-.modal-bg.active{display:flex;}
-.modal{background:var(--panel);width:100%;max-width:640px;max-height:88vh;overflow-y:auto;border-radius:20px 20px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom));animation:slideup .25s ease;}
-@keyframes slideup{from{transform:translateY(30px);opacity:0;}to{transform:none;opacity:1;}}
-.modal-handle{width:40px;height:4px;background:var(--line);border-radius:4px;margin:0 auto 14px;}
-.seg{display:flex;background:var(--panel-2);border-radius:10px;padding:3px;margin-bottom:14px;}
-.seg button{flex:1;background:none;border:none;color:var(--muted);padding:9px;border-radius:7px;font-size:12.5px;font-weight:700;}
-.seg button.active{background:var(--teal);color:#062421;}
-.hidden{display:none !important;}
-.pain-toggle{display:flex;align-items:center;gap:8px;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:4px;}
-.switch{width:38px;height:22px;border-radius:20px;background:var(--line);position:relative;flex-shrink:0;transition:.2s;}
-.switch.on{background:var(--danger);}
-.switch .dot{width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:.2s;}
-.switch.on .dot{left:18px;}
-.rec-card{display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:10px;background:var(--panel-2);margin-bottom:8px;}
-.rec-card .val{font-family:'Roboto Mono';font-weight:700;color:var(--accent);font-size:16px;}
-
-/* ---------- editor simple: buscador + rondas/reps/peso ---------- */
-.search-wrap{position:relative;margin-top:4px;}
-.search-results{margin-top:6px;border-radius:12px;overflow:hidden;border:1px solid var(--line);}
-.search-results:empty{border:none;}
-.search-item{padding:12px 14px;background:var(--panel-2);border-bottom:1px solid var(--line);cursor:pointer;font-size:14px;font-weight:600;}
-.search-item:last-child{border-bottom:none;}
-.search-item:active,.search-item:hover{background:var(--accent-dim);}
-.triple{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
-.triple label{display:block;}
-.triple label span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;text-align:center;}
-.triple input{text-align:center;padding:11px 6px;font-family:'Roboto Mono';font-weight:700;}
-.chip{cursor:pointer;}
-
-/* ---------- toast ---------- */
-.toast{position:fixed;left:50%;transform:translateX(-50%) translateY(16px);bottom:96px;z-index:120;background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:12px 18px;border-radius:12px;font-weight:700;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.5);opacity:0;transition:.25s;pointer-events:none;max-width:90vw;text-align:center;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.toast.record{background:linear-gradient(145deg,var(--accent),#e6a400);color:#231a00;border-color:transparent;}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
-</head>
-<body>
 
-<!-- ===================== AUTH ===================== -->
-<div id="screen-auth" class="screen active">
-  <div class="auth-hero">
-    <div class="mark-big">LG</div>
-    <h1>LUCHO GYM</h1>
-    <p>Entrenamiento con Lucho · registrá tu progreso</p>
-  </div>
-  <div class="err-msg" id="authErr"></div>
-  <div class="tabbar">
-    <button class="active" id="tabLogin" onclick="setAuthTab('login')">Iniciar sesión</button>
-    <button id="tabRegister" onclick="setAuthTab('register')">Crear cuenta</button>
-    <button id="tabAdmin" onclick="setAuthTab('admin')">Administrador</button>
-  </div>
+<div class="wrap">
+  <header class="head">
+    <p class="eyebrow">Gestión de Empresas · 2026</p>
+    <h1>Tablero de estudio</h1>
+    <div class="metrics">
+      <div class="metric"><div class="k">Nivel</div><div class="v" id="m-nivel">—</div></div>
+      <div class="metric"><div class="k">Prácticos</div><div class="v" id="m-hechos">0</div></div>
+      <div class="metric"><div class="k">Teoría</div><div class="v" id="m-teoria">0</div></div>
+      <div class="metric"><div class="k">Pasos</div><div class="v" id="m-pasos">0</div></div>
+    </div>
+    <div class="barra"><i id="m-barra"></i></div>
+    <div class="barra-pie"><span id="m-xp">0 XP</span><span id="m-prox">—</span></div>
+  </header>
 
-  <div id="loginForm">
-    <label class="field"><span>Email</span><input type="email" id="loginEmail" placeholder="tu@email.com"></label>
-    <label class="field"><span>Contraseña</span><input type="password" id="loginPass" placeholder="••••••••"></label>
-    <button class="btn btn-accent btn-block" onclick="doLogin()">Ingresar</button>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-t="seg" aria-selected="true">Seguimiento</button>
+    <button class="tab" role="tab" data-t="teo" aria-selected="false">Teoría</button>
+    <button class="tab" role="tab" data-t="pra" aria-selected="false">Práctica</button>
   </div>
 
-  <div id="registerForm" class="hidden">
-    <label class="field"><span>Seleccioná tu nombre en la lista de Luciano</span>
-      <select id="regRosterSelect"><option value="">Cargando alumnos…</option></select>
-    </label>
-    <label class="field"><span>Email</span><input type="email" id="regEmail" placeholder="tu@email.com"></label>
-    <label class="field"><span>Contraseña</span><input type="password" id="regPass" placeholder="Mínimo 6 caracteres"></label>
-    <button class="btn btn-accent btn-block" onclick="doRegister()">Crear cuenta</button>
-    <p class="small muted" style="text-align:center;margin-top:10px;">¿No aparece tu nombre? Pedile a Luciano que te agregue primero.</p>
+  <!-- ================= SEGUIMIENTO ================= -->
+  <div class="panel on" id="p-seg">
+    <div class="siguiente" id="siguiente">
+      <div><div class="lab">Seguí por acá</div><div class="tit" id="sig-tit">Cargando…</div><div class="sub" id="sig-sub"></div></div>
+      <button class="btn-ir" id="sig-btn">Abrir</button>
+    </div>
+    <section class="seccion">
+      <h2>La matriz</h2>
+      <p class="desc">Toda la guía práctica en una grilla. Tocá una celda para abrir el ejercicio.</p>
+      <div class="matriz" id="matriz"></div>
+    </section>
+    <section class="seccion">
+      <h2>Ejercicios</h2>
+      <p class="desc">Marcá el estado y anotá por dónde lo dejaste. Se guarda solo.</p>
+      <div class="aviso">Faltan diez enunciados que no pude leer del PDF. Pasámelos y te actualizo los títulos.</div>
+      <div class="filtros" id="filtros"></div>
+      <div id="lista"></div>
+    </section>
+    <section class="seccion">
+      <h2>Logros</h2>
+      <p class="desc">Se desbloquean solos a medida que avanzás.</p>
+      <div class="logros" id="logros"></div>
+    </section>
   </div>
 
-  <div id="adminLoginForm" class="hidden">
-    <label class="field"><span>Usuario administrador</span><input type="text" id="adminUser" placeholder="Usuario" autocapitalize="off"></label>
-    <label class="field"><span>Contraseña</span><input type="password" id="adminPass" placeholder="Contraseña"></label>
-    <button class="btn btn-accent btn-block" onclick="doAdminLogin()">Ingresar como administrador</button>
+  <!-- ================= TEORÍA ================= -->
+  <div class="panel" id="p-teo">
+    <div id="teo-menu">
+      <h2>Teoría por unidad</h2>
+      <p class="desc">Preguntas de opción múltiple agrupadas por punto del programa. Elegí una unidad.</p>
+      <div id="teo-lista"></div>
+    </div>
+    <div id="teo-quiz" style="display:none"></div>
+  </div>
+
+  <!-- ================= PRÁCTICA ================= -->
+  <div class="panel" id="p-pra">
+    <div id="pra-menu">
+      <h2>Práctica paso a paso</h2>
+      <p class="desc">Te muestro los datos del ejercicio y vamos resolviendo un paso por vez.</p>
+      <div id="pra-lista"></div>
+    </div>
+    <div id="pra-quiz" style="display:none"></div>
+  </div>
+
+  <div class="pie">
+    <span id="pie-estado">Guardado en este dispositivo.</span>
+    <button class="reset" id="reset">Borrar todo el progreso</button>
   </div>
 </div>
-
-<!-- ===================== APP SHELL ===================== -->
-<div id="appShell" class="hidden">
-  <div class="topbar">
-    <div class="brand">
-      <div class="mark">LG</div>
-      <div>
-        <div class="title">Lucho Gym</div>
-        <div class="sub" id="userSubtitle">—</div>
-      </div>
-    </div>
-    <div class="top-actions">
-      <span class="pill" id="rolePill">alumno</span>
-      <button class="iconbtn" onclick="manualRefresh()" title="Actualizar">⟳</button>
-      <button class="iconbtn" onclick="doLogout()" title="Salir">⎋</button>
-    </div>
-  </div>
-
-  <!-- ---------- ALUMNO: INICIO ---------- -->
-  <div id="screen-alumno-home" class="screen">
-    <div class="hero-card" id="alumnoHero" style="margin-top:14px;"></div>
-    <div class="section-title">Hoy</div>
-    <div class="card" id="alumnoTodayCard"></div>
-    <div class="section-title">Próximas actividades</div>
-    <div id="alumnoUpcoming"></div>
-    <div class="section-title">🏆 Top del mes</div>
-    <div class="card" id="alumnoRankingMes"></div>
-    <div class="section-title">Récords rápidos</div>
-    <div id="alumnoRecordsMini"></div>
-  </div>
-
-  <!-- ---------- ALUMNO: HISTORIAL ---------- -->
-  <div id="screen-alumno-historial" class="screen">
-    <div class="section-title">Historial</div>
-    <div class="seg">
-      <button class="active" onclick="setHistView('calendario',this)">Calendario</button>
-      <button onclick="setHistView('resumen',this)">Resumen</button>
-    </div>
-    <div id="histCalendarWrap">
-      <div class="card">
-        <div class="row between" style="margin-bottom:10px;">
-          <button class="iconbtn" onclick="calShift(-1)">‹</button>
-          <div class="display" id="calLabel" style="font-size:20px;"></div>
-          <button class="iconbtn" onclick="calShift(1)">›</button>
-        </div>
-        <div class="calendar-grid" id="calDowRow"></div>
-        <div class="calendar-grid" id="calGrid" style="margin-top:4px;"></div>
-      </div>
-      <div class="card" id="calDayDetail"></div>
-    </div>
-    <div id="histResumenWrap" class="hidden"></div>
-  </div>
-
-  <!-- ---------- ALUMNO: RÉCORDS ---------- -->
-  <div id="screen-alumno-records" class="screen">
-    <div class="section-title">Máximos personales</div>
-    <div id="recordsList"></div>
-  </div>
-
-  <!-- ---------- ADMIN: INICIO ---------- -->
-  <div id="screen-admin-home" class="screen">
-    <div class="hero-card" id="adminHero" style="margin-top:14px;"></div>
-    <div class="section-title">Resumen de hoy</div>
-    <div id="adminTodaySummary"></div>
-    <div class="section-title">🏆 Top del mes</div>
-    <div class="card" id="adminRankingMes"></div>
-  </div>
-
-  <!-- ---------- ADMIN: ALUMNOS ---------- -->
-  <div id="screen-admin-alumnos" class="screen">
-    <div class="row between" style="margin:18px 0 12px;">
-      <div class="section-title" style="margin:0;">Alumnos</div>
-      <button class="btn btn-accent btn-sm" onclick="openAddAlumno()">+ Agregar</button>
-    </div>
-    <div id="adminAlumnosList"></div>
-  </div>
-
-  <!-- ---------- ADMIN: DETALLE POR ALUMNO ---------- -->
-  <div id="screen-admin-detalle" class="screen">
-    <button class="btn btn-ghost btn-sm" onclick="showScreen(state.role==='admin'?'admin-alumnos':'alumno-home')" style="margin:16px 0 4px;">‹ Volver</button>
-    <div class="section-title" id="detalleNombre">Alumno</div>
-    <div class="hero-card" id="detStats" style="padding:12px;"></div>
-    <div class="seg">
-      <button class="active" onclick="setDetView('calendario',this)">Calendario</button>
-      <button onclick="setDetView('records',this)">Récords</button>
-    </div>
-    <div id="detCalendarWrap">
-      <div class="card">
-        <div class="row between" style="margin-bottom:10px;">
-          <button class="iconbtn" onclick="detCalShift(-1)">‹</button>
-          <div class="display" id="detCalLabel" style="font-size:20px;"></div>
-          <button class="iconbtn" onclick="detCalShift(1)">›</button>
-        </div>
-        <div class="calendar-grid" id="detCalDowRow"></div>
-        <div class="calendar-grid" id="detCalGrid" style="margin-top:4px;"></div>
-      </div>
-      <div class="card" id="detDayDetail"></div>
-    </div>
-    <div id="detRecordsWrap" class="hidden"></div>
-  </div>
-
-  <!-- ---------- ADMIN: PLANIFICACIÓN ---------- -->
-  <div id="screen-admin-plan" class="screen">
-    <div class="section-title">Planificación</div>
-    <div class="card card-tight">
-      <label class="field" style="margin-bottom:8px;"><span>Fecha</span><input type="date" id="planDate" onchange="renderPlanDay()"></label>
-    </div>
-    <div id="planDayList"></div>
-    <button class="btn btn-teal btn-block" onclick="openAssignActivity()" style="margin-top:10px;">+ Asignar actividad</button>
-  </div>
-
-  <!-- ---------- ADMIN: EJERCICIOS ---------- -->
-  <div id="screen-admin-ejercicios" class="screen">
-    <div class="row between" style="margin:18px 0 12px;">
-      <div class="section-title" style="margin:0;">Base de ejercicios</div>
-      <button class="btn btn-accent btn-sm" onclick="openAddEjercicio()">+ Nuevo</button>
-    </div>
-    <div id="adminEjerciciosList"></div>
-  </div>
-
-  <div class="bottomnav" id="bottomNav"></div>
-  <button class="fab hidden" id="fabLoad" onclick="openLoadDay()" title="Cargar día">＋</button>
-</div>
-
-<!-- ===================== MODALS ===================== -->
-<div class="modal-bg" id="modalBg"><div class="modal" id="modalBody"></div></div>
 
 <script>
-/* ======================================================================
-   FIREBASE REALTIME DATABASE — conectado al proyecto gym-lucho
-   Como la app solo usa Realtime Database (sin Auth ni Storage),
-   alcanza con la databaseURL para inicializar.
-====================================================================== */
-const firebaseConfig = {
-  databaseURL: "https://gym-lucho-default-rtdb.firebaseio.com"
-};
-firebase.initializeApp(firebaseConfig);
-const fdb = firebase.database();
+/* ================= DATOS: GUÍA PRÁCTICA (seguimiento) ================= */
+const TEMAS=[{id:"dec",n:"Modelos de decisión"},{id:"sim",n:"Simulación"},{id:"pro",n:"Pronósticos"},
+{id:"cvu",n:"Costo–volumen–utilidad"},{id:"cos",n:"Costos e inversión"},{id:"pl",n:"Programación lineal"},{id:"otr",n:"Otros temas"}];
+const EJ=[
+{id:"1",g:"p",t:"dec",n:"Matriz de pagos E1–E4 / N1–N4",d:"Los cinco criterios, primero como ganancias y después como costos."},
+{id:"2",g:"p",t:"dec",n:"Cerro Catedral Ski Resort",d:"Armar las matrices hasta la de resultados; aflicción y valor esperado."},
+{id:"3",g:"p",t:"dec",n:"Concierto: polideportivo o cancha",d:"Criterios de incertidumbre y probabilidades posteriores (Bayes)."},
+{id:"4",g:"p",t:"dec",n:"Juan Price S.A.: opciones de alquiler",d:"Matriz, criterios, árbol, sensibilidad y valor esperado de la información perfecta."},
+{id:"5",g:"p",t:"dec",n:"Proveedores A y B",d:"Árbol de decisión con piezas defectuosas."},
+{id:"6",g:"p",t:"dec",n:"Ejercicio 6",d:"Falta el enunciado: contame de qué va y lo completo."},
+{id:"7",g:"p",t:"dec",n:"Martín: barredora o cuchilla",d:"Árbol, valor esperado y probabilidades a posteriori según un mayo frío."},
+{id:"8",g:"p",t:"sim",n:"Ventas de un comercio minorista",d:"Intervalos de números aleatorios y simulación de 10 días."},
+{id:"9",g:"p",t:"sim",n:"Precio de la tonelada de soja",d:"Simular la evolución del precio durante 5 meses."},
+{id:"10",g:"p",t:"pro",n:"Restaurante Vintage",d:"Pronóstico de ventas trimestrales sobre tres años de datos."},
+{id:"11",g:"p",t:"pro",n:"Ejercicio 11",d:"Falta el enunciado: contame de qué va y lo completo."},
+{id:"12",g:"p",t:"pro",n:"Ejercicio 12",d:"Falta el enunciado: contame de qué va y lo completo."},
+{id:"13",g:"p",t:"cvu",n:"Los costos del competidor",d:"Deducir costos fijos y variables a partir de dos períodos."},
+{id:"14",g:"p",t:"cvu",n:"Jugo concentrado de naranja",d:"Punto de equilibrio físico y monetario, más cuatro variantes."},
+{id:"15",g:"p",t:"cvu",n:"ARIES S.A.U.",d:"Equilibrio económico y financiero con impuestos, mermas y depreciaciones."},
+{id:"16",g:"p",t:"cvu",n:"Ejercicio 16",d:"Falta el enunciado: contame de qué va y lo completo."},
+{id:"17",g:"p",t:"cvu",n:"Líneas A, B, C y D",d:"Equilibrio multiproducto con contribución marginal ponderada."},
+{id:"18",g:"p",t:"cos",n:"Reemplazo de equipo",d:"Flujo de fondos de las dos alternativas y decisión al 10%."},
+{id:"19",g:"p",t:"cos",n:"Heladeras: hacer o comprar",d:"Decisión basada exclusivamente en costos."},
+{id:"20",g:"p",t:"cos",n:"Técnica ABC",d:"Clasificar 30 ítems y definir el control de inventario para A y B."},
+{id:"21",g:"p",t:"pl",n:"Minas A y B",d:"Minimizar costo con restricciones de metal I y II."},
+{id:"22",g:"p",t:"pl",n:"Acciones EG y SH",d:"Maximizar beneficio con restricciones de composición del portafolio."},
+{id:"23",g:"p",t:"pl",n:"Taller de automóviles",d:"Electricistas y mecánicos: maximizar el beneficio por jornada."},
+{id:"24",g:"p",t:"pl",n:"Programación de metas",d:"Portafolio U.S. / H.P. con criterios múltiples."},
+{id:"1C",g:"c",t:"cvu",n:"Costeo absorbente y directo",d:"Utilidad e inventario final según distintos niveles de producción."},
+{id:"2C",g:"c",t:"dec",n:"J.J. y la chipa",d:"Matriz de pagos, criterio de aflicción y resultado esperado."},
+{id:"3C",g:"c",t:"dec",n:"Explotación ganadera",d:"Matriz de resultados con mortandad de terneros y decisión bajo riesgo."},
+{id:"4C",g:"c",t:"dec",n:"Contenedores según el clima",d:"Matrices de ingresos, costos y resultados por alternativa de compra."},
+{id:"5C",g:"c",t:"dec",n:"Ejercicio 5C",d:"Falta el enunciado: contame de qué va y lo completo."},
+{id:"6C",g:"c",t:"dec",n:"Recorrido entre oficinas",d:"Matriz de minutos entre destinos."},
+{id:"7C",g:"c",t:"dec",n:"Ejercicio 7C",d:"Falta el enunciado: contame de qué va y lo completo."},
+{id:"8C",g:"c",t:"dec",n:"Estudio de mercado",d:"Árbol de decisión con probabilidades condicionales y lanzamiento de producto."},
+{id:"9C",g:"c",t:"sim",n:"Siniestros de automóviles",d:"Simular pagos de siniestros para diez asegurados."},
+{id:"10C",g:"c",t:"sim",n:"Precio de una acción",d:"Simular la cotización a lo largo de cuatro trimestres."},
+{id:"11C",g:"c",t:"pro",n:"Costo unitario en ocho años",d:"Identificar la tendencia y hallar la ecuación por mínimos cuadrados."},
+{id:"12C",g:"c",t:"pro",n:"Ventas de órganos electrónicos",d:"Tendencia lineal y pronóstico hacia adelante."},
+{id:"13C",g:"c",t:"pro",n:"Ejercicio 13C",d:"Falta el enunciado: contame de qué va y lo completo."},
+{id:"14C",g:"c",t:"pro",n:"Musik Kompany",d:"Índices estacionales: cuándo pega más la estacionalidad."},
+{id:"15C",g:"c",t:"pro",n:"Eddie's Restaurants",d:"Regresión de publicidad contra ventas y pronóstico."},
+{id:"16C",g:"c",t:"cvu",n:"Equilibrio y estados de resultados",d:"Punto de equilibrio más estado de resultados por costeo absorbente y directo."},
+{id:"17C",g:"c",t:"cvu",n:"Harina de soja",d:"Costo–volumen–beneficio con merma en expedición."},
+{id:"18C",g:"c",t:"cvu",n:"El Súper-Chori",d:"Costo–volumen–beneficio del combo con rendimientos de materia prima."},
+{id:"19C",g:"c",t:"cvu",n:"Ejercicio 19C",d:"Falta el enunciado: contame de qué va y lo completo."},
+{id:"20C",g:"c",t:"pl",n:"LA MUNDIAL S.A.",d:"Mesas y sillas: función objetivo, restricciones y combinación óptima."},
+{id:"21C",g:"c",t:"pl",n:"Veterinaria: Bark Bits y Canine Chow",d:"Mezcla de costo mínimo con requisitos de proteína y grasa."},
+{id:"22C",g:"c",t:"pl",n:"Ejercicio 22C",d:"Falta el enunciado: contame de qué va y lo completo."},
+{id:"23C",g:"c",t:"pl",n:"Ejercicio 23C",d:"Falta el enunciado: contame de qué va y lo completo."},
+{id:"24C",g:"c",t:"otr",n:"Lote económico sin abastecimiento instantáneo",d:"Q óptimo cuando el inventario se acumula a lo largo del período."},
+{id:"25C",g:"c",t:"otr",n:"Lote óptimo de producción",d:"Corridas de producción, costo total y días entre corridas."},
+{id:"26C",g:"c",t:"otr",n:"Análisis de estados contables",d:"Rentabilidad del activo, del patrimonio neto y efecto palanca."}];
 
-const DB = { usuarios:{}, ejercicios:{}, registros:{}, planificacion:{} };
-let dbReady = false;
+/* ================= DATOS: TEORÍA ================= */
+const UNIDADES=[
+{u:1,parcial:1,t:"Las nuevas empresas virtuales",puntos:[
+ {p:"1",n:"Realidad virtual, empresas virtuales y metaverso",qs:[
+  {q:"Según la guía, ¿en qué consiste la tecnología de realidad virtual?",o:["En superponer capas de información digital sobre el entorno físico que el usuario sigue viendo","En la inmersión del usuario en un mundo sintético generado por el ordenador, donde los sentidos dejan de percibir el mundo real","En transmitir video en 360 grados sin que el usuario pueda interactuar","En digitalizar los procesos administrativos de la empresa"],c:1,
+   e:"La RV genera un entorno alternativo en el que el usuario queda inmerso y deja de percibir el mundo real. Superponer capas sobre lo físico es realidad aumentada, no virtual."},
+  {q:"¿Cómo define la guía a una empresa virtual?",o:["Una empresa sin empleados en relación de dependencia","Una empresa que solo vende productos digitales","Una empresa capaz de gestionar sus recursos y enfocar su crecimiento en el mercado objetivo apoyándose en las capacidades tecnológicas de la World Wide Web","Una empresa cuyo capital cotiza únicamente en mercados electrónicos"],c:2,
+   e:"La definición pasa por el apoyo en las capacidades tecnológicas de la web para gestionar recursos y crecer, no por el tipo de producto ni por la forma de contratación."},
+  {q:"Entre las ventajas de las organizaciones virtuales que enumera la guía NO figura:",o:["Reducción de costos de operación e infraestructura","Flexibilidad para los miembros del equipo y su vida personal","Acceso a múltiples disciplinas en diferentes regiones geográficas","Mayor control presencial y supervisión directa del personal"],c:3,
+   e:"Justamente lo contrario: la organización virtual reduce la presencialidad. Las ventajas listadas son costos, flexibilidad, acceso a disciplinas diversas y la posibilidad de volverse multinacional en pocas semanas."},
+  {q:"La palabra metaverso es un acrónimo. ¿De dónde viene?",o:["De 'meta' (más allá, después) y 'verso' (universo)","De 'metadato' y 'universo'","De 'metáfora' y 'diverso'","De 'meta' entendida como objetivo y 'versión'"],c:0,
+   e:"'Meta' viene del griego y significa después o más allá; 'verso' refiere a universo. Es decir, un universo más allá del que conocemos."},
+  {q:"Entre las recomendaciones para las organizaciones que quieran crecer en el metaverso, la guía sugiere:",o:["Invertir de inmediato en las plataformas de metaverso ya existentes","Comenzar digitalizando procesos del negocio, como apps de compra o vitrinas de realidad virtual","Reemplazar toda la operación física por una digital","Delegar la decisión en el área comercial"],c:1,
+   e:"El texto aclara expresamente que no se trata de invertir de inmediato en plataformas existentes, sino de empezar digitalizando procesos, sumando omnicanalidad, ciberseguridad y transformación cultural."},
+  {q:"¿Qué resultado atribuye la guía a la capacitación de empleados mediante realidad virtual frente a los medios tradicionales?",o:["Menor costo pero peor retención","Tasas de retención y ganancias de desempeño considerablemente más altas","Resultados equivalentes, con la ventaja de la novedad","Mejor desempeño solo en tareas administrativas"],c:1,
+   e:"La RV ofrece escenarios seguros y repetibles, y los estudios citados muestran retención y desempeño considerablemente superiores, a un costo menor."}]}]},
 
-async function storageGet(key){
-  try{ const snap = await fdb.ref(key).once('value'); return snap.val(); }
-  catch(e){ console.error('No se pudo leer', key, e); return null; }
-}
-async function storageSet(key, obj){
-  try{ await fdb.ref(key).set(obj); }
-  catch(e){ console.error('No se pudo guardar', key, e); alert('Error de conexión con la base de datos. Revisá tu internet e intentá de nuevo.'); }
-}
-async function loadAll(){
-  DB.usuarios = (await storageGet('usuarios')) || {};
-  DB.ejercicios = (await storageGet('ejercicios')) || {};
-  DB.registros = (await storageGet('registros')) || {};
-  DB.planificacion = (await storageGet('planificacion')) || {};
-  if(Object.keys(DB.ejercicios).length===0){
-    const seed={};
-    SEED_EJERCICIOS.forEach(([nombre,categoria],i)=>{ seed['e'+i+'_'+Date.now()]={nombre,categoria}; });
-    DB.ejercicios = seed;
-    await storageSet('ejercicios', DB.ejercicios);
-  }
-  dbReady = true;
-}
-/* Escucha en tiempo real: cualquier cambio (de Lucho o de un alumno)
-   se refleja al instante en todos los dispositivos conectados. */
-function attachRealtime(){
-  ['usuarios','ejercicios','registros','planificacion'].forEach(k=>{
-    fdb.ref(k).on('value', snap=>{
-      DB[k] = snap.val() || {};
-      dbReady = true;
-      rebuildStateRefs();
-      if(state.user) refreshCurrentScreen();
-      if(k==='usuarios'){
-        const tabReg = document.getElementById('tabRegister');
-        if(tabReg && tabReg.classList.contains('active')) loadRosterForRegister();
-      }
-    });
-  });
-}
-function rebuildStateRefs(){
-  state.roster = DB.usuarios;
-  state.ejercicios = DB.ejercicios;
-  state.registros = DB.registros;
-  state.planificacion = DB.planificacion;
-}
-function uid(prefix){ return prefix+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+{u:2,parcial:1,t:"La planificación y la dirección de la gestión",puntos:[
+ {p:"1",n:"Planificación estratégica: visión, misión, valores",qs:[
+  {q:"¿Cuál es el primer paso del planeamiento estratégico según la guía?",o:["Formular la visión de futuro","Analizar los escenarios para detectar oportunidades y anticipar riesgos","Asignar la misión","Preparar el plan de acción"],c:1,
+   e:"El orden es: analizar escenarios, formular la visión, seleccionar estrategias, asignar la misión, diseñar la estructura y preparar el plan de acción."},
+  {q:"¿Qué distingue a la visión de la misión?",o:["La visión marca el rumbo y responde qué queremos crear a futuro; la misión asigna las actividades inmediatas y responde qué haremos y dónde","La visión es de corto plazo y la misión de largo plazo","La visión la define el directorio y la misión los empleados","Son sinónimos según la bibliografía de la cátedra"],c:0,
+   e:"La visión fija el destino, las estrategias son los caminos y la misión asigna actividades concretas: qué haremos y dónde lo haremos."},
+  {q:"El planeamiento estratégico permite desarrollar conductas proactivas. ¿Qué caracteriza en cambio a la conducta reactiva?",o:["Anticiparse a los riesgos del escenario","Focalizarse en metas que permanecen firmes ante los hechos diarios","Reaccionar frente a estímulos externos, quedando condicionado por las circunstancias","Delegar las decisiones en consultores externos"],c:2,
+   e:"Sin visión de futuro, las decisiones se vuelven respuestas inmediatas a los acontecimientos diarios; con ella, la organización determina su propio rumbo."},
+  {q:"Entre los beneficios del planeamiento estratégico que enumera la guía NO se encuentra:",o:["Fortalece el trabajo de equipo","Favorece la percepción de los cambios","Elimina la incertidumbre del entorno","Asigna con mayor eficacia los recursos"],c:2,
+   e:"El planeamiento no elimina la incertidumbre: ayuda a percibir los cambios y anticiparse. Los beneficios listados son trabajo en equipo, percepción de cambios, actitudes proactivas, resultados económicos y asignación de recursos."},
+  {q:"¿Cuál de estos NO es un componente que deba incluir una declaración de misión?",o:["Clientes y mercados","Filosofía y preocupación por la imagen pública","El organigrama detallado con los nombres de cada gerente","Autoimagen: cuál es la ventaja competitiva más importante"],c:2,
+   e:"La declaración de misión define clientes, mercados, supervivencia y rentabilidad, filosofía, imagen pública, productos, tecnología, autoimagen y preocupación por los empleados. El organigrama es materia de la estructura."}]},
+ {p:"2",n:"Plan operativo, presupuesto y flujos de fondos",qs:[
+  {q:"¿Qué diferencia hay entre planes de uso único y planes permanentes?",o:["Los de uso único se aplican a una situación que no se repite; los permanentes guían actividades que se realizan reiteradamente","Los de uso único son anuales y los permanentes plurianuales","Los de uso único los aprueba el directorio y los permanentes la gerencia","No hay diferencia práctica, solo de denominación"],c:0,
+   e:"El plan de uso único se agota al cumplirse su objetivo (un proyecto, un programa); el permanente —políticas, procedimientos, reglas— se aplica cada vez que se repite la situación."},
+  {q:"La diferencia central entre el criterio contable y el criterio financiero en el flujo de fondos es que:",o:["El contable trabaja con moneda constante y el financiero con moneda corriente","El contable reconoce lo devengado y el financiero solo los movimientos efectivos de fondos","El contable es mensual y el financiero anual","El financiero incluye las amortizaciones y el contable no"],c:1,
+   e:"El criterio financiero solo computa entradas y salidas efectivas de fondos. Por eso las amortizaciones, que se devengan pero no se erogan, quedan fuera del flujo."},
+  {q:"Entre las funciones que la guía asigna al presupuesto NO figura:",o:["De previsión y de planeación","De organización y de dirección","De control","De auditoría externa de los estados contables"],c:3,
+   e:"El presupuesto cumple funciones de previsión, planeación, organización, dirección y control. La auditoría externa es otra cosa."}]},
+ {p:"3",n:"Gobierno corporativo y dirección por objetivos",qs:[
+  {q:"¿Cuáles son los cuatro componentes de la dirección por objetivos (DPO)?",o:["Especificidad de objetivos, toma de decisiones por participación, períodos de tiempo explícitos y retroalimentación sobre el desempeño","Visión, misión, valores y estrategia","Planificación, organización, dirección y control","Costo, calidad, entrega y flexibilidad"],c:0,
+   e:"Los objetivos deben ser específicos, fijarse con participación de quien los va a cumplir, tener plazo explícito y generar retroalimentación sobre el desempeño."},
+  {q:"En el diagnóstico de dirección y organización, la tarea que consiste en comprobar los resultados obtenidos y compararlos con los objetivos definidos es la tarea de:",o:["Análisis","Elección de objetivos","Control","Información"],c:2,
+   e:"La tarea de control cierra el ciclo: compara resultados con objetivos, analiza las diferencias, busca causas y dispara las medidas correctivas."},
+  {q:"La administración por valores se apoya en la idea de que:",o:["Los valores reemplazan a los objetivos cuantificables","Los valores compartidos orientan la conducta diaria y se demuestran con la práctica, no con su mera enumeración","Solo las grandes empresas pueden implementarla","Los valores los define exclusivamente el fundador"],c:1,
+   e:"La guía es explícita: se demuestra quiénes somos por la práctica diaria de los valores, no por enumerar la escala. Redactarlos y difundirlos sirve para que nadie pueda aducir ignorancia."}]}]},
 
-/* Credenciales de acceso para el administrador (Luciano). */
-const ADMIN_USER = "ADM2026";
-const ADMIN_PASS = "ADM.2026";
+{u:3,parcial:1,t:"La gestión de comercialización",puntos:[
+ {p:"1",n:"Diagnóstico comercial, marketing estratégico y consumidor",qs:[
+  {q:"El objetivo del diagnóstico comercial consiste en asegurar que:",o:["Se maximice el volumen de ventas del período","El contenido de la función comercial esté alineado con los conocimientos, técnicas y métodos existentes en la actividad","Se reduzca el costo de la fuerza de ventas","El producto tenga el precio más bajo del mercado"],c:1,
+   e:"El diagnóstico revisa que la función comercial esté actualizada y que los productos y servicios respondan a las necesidades detectadas en los consumidores."},
+  {q:"¿Qué es el benchmarking?",o:["Fijar el precio según el vigente en el mercado","Comparar procesos y prácticas propias con las de los mejores para identificar oportunidades de mejora","Segmentar el mercado por variables demográficas","Medir la satisfacción del cliente mediante encuestas"],c:1,
+   e:"Es una comparación sistemática contra los referentes del sector, o incluso de otros sectores, para detectar brechas y mejorar."},
+  {q:"El posicionamiento se define como:",o:["El lugar que el producto ocupa en la mente de los consumidores, en relación con los productos competidores","La ubicación física del producto en la góndola","El segmento de mercado con mayor rentabilidad","La participación de mercado medida en unidades"],c:0,
+   e:"Es un concepto mental y relativo: siempre se posiciona respecto de los competidores, buscando posiciones claras, distintivas y deseables."},
+  {q:"Una empresa que ignora las diferencias entre segmentos y lanza una única oferta para todo el mercado aplica:",o:["Marketing concentrado","Marketing diferenciado","Marketing indiferenciado","Marketing directo"],c:2,
+   e:"Indiferenciado ignora los segmentos; diferenciado atiende varios con ofertas distintas; concentrado se enfoca en mercados pequeños con atención tipificada."}]},
+ {p:"2",n:"Marketing operativo y mezcla de comercialización",qs:[
+  {q:"Los cuatro elementos de la mezcla de comercialización según la guía son:",o:["Producto, precio, logística y comunicación","Producto, plaza, personas y procesos","Precio, promoción, publicidad y packaging","Producto, precio, posicionamiento y participación"],c:0,
+   e:"La cátedra usa producto, precio, logística (distribución) y comunicación (promoción)."},
+  {q:"Al fijar el precio de un producto, entre los factores que la guía señala NO está:",o:["La demanda estimada, su tamaño y frecuencia de compra","Las reacciones de la competencia en productos semejantes o sustitutos","Los otros elementos de la mezcla de marketing","La antigüedad de los socios de la empresa"],c:3,
+   e:"Los factores son la demanda estimada, las reacciones de la competencia y la coherencia con el resto de la mezcla."},
+  {q:"En el desarrollo de un nuevo producto, la etapa que busca introducirlo en determinadas ciudades antes del lanzamiento general se llama:",o:["Generación de ideas","Prueba de mercado","Desarrollo de la mezcla de marketing","Establecimiento de objetivos"],c:1,
+   e:"La prueba de mercado permite validar el comportamiento real de compra antes de comprometer el lanzamiento completo."}]},
+ {p:"3",n:"Pronósticos, precios y costo–volumen–utilidad",qs:[
+  {q:"¿Cuáles son los componentes de una serie de tiempo?",o:["Tendencia, cíclico, estacional e irregular","Media, mediana, moda y desvío","Corto, mediano y largo plazo","Fijo, variable y semivariable"],c:0,
+   e:"La tendencia es el movimiento de largo plazo, el cíclico son las ondas plurianuales, el estacional se repite dentro del año y el irregular es lo aleatorio no explicado."},
+  {q:"Entre los métodos cuantitativos de suavización de series de tiempo, la guía menciona:",o:["Regresión múltiple, análisis factorial y clusters","Promedios móviles, promedios móviles ponderados y suavización exponencial","Delphi, panel de expertos y encuestas","Método de Montecarlo únicamente"],c:1,
+   e:"Los tres métodos de suavización son promedios móviles, promedios móviles ponderados y suavización exponencial; la simulación se trata aparte."},
+  {q:"Una de las hipótesis básicas del análisis costo–volumen–utilidad es que:",o:["El precio de venta varía según el volumen vendido","La cantidad vendida coincide con la cantidad terminada en el período, de modo que las existencias iniciales y finales son iguales","Los costos fijos crecen proporcionalmente al volumen","Existen bonificaciones y descuentos por cantidad"],c:1,
+   e:"Justamente por eso el análisis produce relaciones lineales: sin variación de stocks, sin cambios de precio y con costos fijos constantes en el rango relevante."},
+  {q:"¿Por qué el punto de equilibrio financiero es menor que el económico?",o:["Porque el financiero considera solo los costos erogables y deja fuera los que no implican salida de fondos, como las amortizaciones","Porque el financiero incluye el impuesto a las ganancias","Porque el financiero usa el precio neto de IVA","Porque el económico se calcula en unidades y el financiero en pesos"],c:0,
+   e:"El equilibrio financiero iguala ingresos monetarios con egresos erogables. Como los costos no erogables quedan afuera, hace falta vender menos para alcanzarlo."},
+  {q:"En un caso de un solo producto, la cantidad de equilibrio se obtiene como:",o:["Costos fijos dividido el precio de venta","Costos fijos dividido la contribución marginal unitaria","Costos totales dividido el precio de venta","Contribución marginal dividido los costos fijos"],c:1,
+   e:"Qe = CF ÷ (precio de venta − costo variable unitario). El denominador es la contribución marginal unitaria, lo que aporta cada unidad para cubrir los fijos."}]}]},
 
-/* ======================================================================
-   ESTADO GLOBAL
-====================================================================== */
-const state = {
-  user: null,        // {uid}
-  role: null,         // 'admin' | 'alumno'
-  profile: null,      // {nombre, apellido, email, rol}
-  roster: {},         // alumnos completos {uid: perfil}
-  ejercicios: {},     // {id: {nombre, categoria}}
-  registros: {},      // {uid: {fecha: {...}}}
-  planificacion: {},  // {uid: {fecha: {...}}}
-  calMonth: new Date(),
-  detCalMonth: new Date(),
-  detUid: null,
-  histView: 'calendario',
-  detView: 'calendario',
-  calSelectedDate: null,
-  detSelectedDate: null
-};
+{u:4,parcial:1,t:"La gestión de la logística",puntos:[
+ {p:"1",n:"Logística y cadena de suministro",qs:[
+  {q:"Según la guía, la logística empresarial busca:",o:["Minimizar el costo de transporte por encima de cualquier otro objetivo","Colocar los productos adecuados en el lugar adecuado, en el momento preciso y en las condiciones deseadas, contribuyendo a la rentabilidad","Maximizar el nivel de inventario para evitar quiebres de stock","Centralizar todas las compras en un único proveedor"],c:1,
+   e:"La definición de la cátedra combina lugar, momento y condiciones, siempre con la mira puesta en la rentabilidad y en el servicio, costo y calidad."},
+  {q:"El canal por el que los productos se trasladan desde el proveedor hasta el almacén o la fábrica se denomina:",o:["Canal de distribución","Canal de aprovisionamiento","Canal intermodal","Canal de posventa"],c:1,
+   e:"Aprovisionamiento va del proveedor a la empresa; distribución va del almacén o fábrica hasta el cliente."},
+  {q:"¿Cuáles son las tres fases de decisión de una cadena de suministro?",o:["Compra, producción y venta","Estrategia o diseño, planeación y operación","Corto, mediano y largo plazo","Aprovisionamiento, almacenamiento y transporte"],c:1,
+   e:"Se distinguen por el horizonte: el diseño es de años, la planeación de meses o trimestres y la operación es semanal o diaria."},
+  {q:"En el enfoque de empuje/tirón de los procesos de la cadena de suministro, los procesos de tirón (pull) son los que:",o:["Se ejecutan de manera anticipada a la orden del cliente, en respuesta a un pronóstico","Se ejecutan en respuesta a una orden concreta del cliente","Se ejecutan únicamente en la etapa de aprovisionamiento","Se ejecutan solo cuando hay quiebre de stock"],c:1,
+   e:"Pull responde a un pedido real; push se anticipa al pedido y trabaja contra pronóstico, con el riesgo de stock que eso implica."}]},
+ {p:"2",n:"Distribución y transporte",qs:[
+  {q:"Los dos factores que la guía señala como determinantes en el diseño de una red de distribución son:",o:["La cantidad de proveedores y la de clientes","Las necesidades del cliente que se satisfacen y el costo de satisfacerlas","El tipo de producto y la estacionalidad","La distancia y el clima"],c:1,
+   e:"Toda red de distribución se evalúa en ese doble eje: el nivel de servicio que entrega y lo que cuesta entregarlo."},
+  {q:"¿Qué caracteriza al transporte aéreo entre los medios analizados?",o:["Es el más económico por tonelada-kilómetro","Es rápido y costoso, adecuado para envíos de alto valor y bajo volumen","Solo sirve para productos a granel","Tiene el menor costo fijo de infraestructura"],c:1,
+   e:"El avión ofrece velocidad a costo alto. En el otro extremo, agua y ducto son baratos y lentos, y el ferrocarril y el camión quedan en posiciones intermedias."},
+  {q:"En una red de embarque directo con recorridos rutinarios (milk runs):",o:["Cada proveedor envía por separado a cada destino","Un camión entrega a varios destinos en un mismo recorrido, o retira de varios orígenes","Todos los embarques pasan por un centro de distribución central","No existe consolidación de cargas"],c:1,
+   e:"El recorrido rutinario permite consolidar cargas pequeñas en un solo viaje, bajando el costo de transporte sin sumar un centro de distribución."}]},
+ {p:"3",n:"Desempeño de la cadena, calidad y nivel de servicio",qs:[
+  {q:"El nivel de servicio, en términos logísticos, expresa:",o:["El margen de contribución de cada pedido","La capacidad de satisfacer la demanda en tiempo y forma, medida por ejemplo como porcentaje de pedidos entregados completos y a tiempo","La cantidad de reclamos recibidos por mes","La rotación del inventario"],c:1,
+   e:"Es una medida de cumplimiento hacia el cliente, y siempre se lo evalúa contra el costo necesario para sostenerlo."},
+  {q:"Un nivel de servicio más alto normalmente implica:",o:["Menor inversión en inventario y menores costos","Mayor inversión en inventario y en capacidad, con costos crecientes","Ningún efecto sobre los costos logísticos","Menor cantidad de centros de distribución"],c:1,
+   e:"Ese es el trade-off central de la logística: pasar de un 95% a un 99% de servicio suele costar desproporcionadamente más en stock de seguridad y capacidad."}]}]},
 
-const CATEGORIAS = ["Calentamiento","Abdominales","Espinales/Lumbares","Piernas","Pecho/Banco","Espalda","Hombro","Bíceps","Tríceps","CrossFit/Funcional","Circuito"];
+{u:5,parcial:2,t:"La gestión de recursos humanos",puntos:[
+ {p:"1",n:"Sistema de administración del personal",qs:[
+  {q:"Las cinco etapas del proceso de administración de personal comienzan por:",o:["Evaluar el desempeño del personal","Definir las necesidades de personal en cantidad y calidad","Integrar el equipo de trabajo","Manejar las diferencias y problemas con el personal"],c:1,
+   e:"El orden es: definir necesidades, integrar el equipo, lograr compromiso y motivación, manejar diferencias y evaluar el desempeño."},
+  {q:"¿Qué distingue a un equipo de trabajo de un grupo?",o:["El equipo tiene más integrantes","El equipo trabaja intensamente en un objetivo específico común, con sinergia positiva, responsabilidad individual y mutua y habilidades complementarias","El grupo tiene un líder formal y el equipo no","No hay diferencia conceptual"],c:1,
+   e:"El grupo es un conjunto de individuos interdependientes que interactúan; el equipo agrega sinergia positiva y responsabilidad compartida."},
+  {q:"La motivación que nace del sentido de servicio hacia otros, más allá del propio interés o de la recompensa externa, es la motivación:",o:["Intrínseca","Extrínseca","Trascendente","Instrumental"],c:2,
+   e:"Extrínseca es la recompensa externa, intrínseca es la satisfacción por la tarea en sí y trascendente es el impacto en los demás."}]},
+ {p:"2",n:"Equipos virtuales, clima y comportamiento organizativo",qs:[
+  {q:"El conflicto, según la guía, puede ser:",o:["Siempre destructivo y debe evitarse","Constructivo o destructivo, según cómo se lo maneje con estrategias y tácticas","Solo constructivo si es de origen personal","Irrelevante para la gestión"],c:1,
+   e:"El conflicto puede tener origen en el trabajo o ser personal, y el resultado depende de las estrategias y tácticas de manejo aplicadas."},
+  {q:"Entre las variables de comportamiento individual que analiza el comportamiento organizativo figura:",o:["La estructura del organigrama","La satisfacción en el puesto, la identificación con el puesto y el compromiso organizativo","La política de dividendos","El tamaño de la planta"],c:1,
+   e:"Satisfacción es la actitud general hacia el puesto; identificación es sentir que uno ejecuta bien su tarea; compromiso es el grado de adhesión a la organización."},
+  {q:"La gestión del flujo de recursos humanos distingue tres momentos. El outflow corresponde a:",o:["La atracción y selección de talentos","La formación, promoción y gestión del desempeño","Las desvinculaciones y los retiros","La inducción del personal nuevo"],c:2,
+   e:"Inflow es atraer e incorporar, internal flow es gestionar y desarrollar, y outflow es la salida: desvinculaciones y retiros."}]},
+ {p:"3",n:"Capital humano, conocimiento y talento",qs:[
+  {q:"El capital humano contribuye al crecimiento, según la guía:",o:["Aumentando la productividad de los factores productivos e impulsando el progreso técnico","Reduciendo la masa salarial","Aumentando la rotación del personal","Disminuyendo la inversión en tecnología"],c:0,
+   e:"Los dos canales señalados son mayor productividad de los factores y mejor eficiencia vía progreso técnico."},
+  {q:"En el modelo de gestión del talento, la instancia DEVELOP consiste en:",o:["Trabajar con individuos clave para asignarlos donde generan más valor","Proveer oportunidades de aprendizaje: desafíos, experiencias y contacto con referentes","Brindar herramientas para construir redes de contacto","Desvincular al personal de bajo desempeño"],c:1,
+   e:"Deploy es ubicar, develop es desarrollar mediante experiencias de aprendizaje y connect es tejer redes de contacto y apoyo."}]}]},
 
-const SEED_EJERCICIOS = [
-  ["Trote suave / cinta","Calentamiento"],["Saltos de tijera (jumping jacks)","Calentamiento"],["Rotación de hombros","Calentamiento"],
-  ["Círculos de cadera","Calentamiento"],["Sentadilla sin peso","Calentamiento"],["Zancada con giro de tronco","Calentamiento"],
-  ["Salto de cuerda","Calentamiento"],["Plancha dinámica","Calentamiento"],["Movilidad de tobillo","Calentamiento"],["Perro-pájaro (bird dog)","Calentamiento"],
-  ["Crunch abdominal","Abdominales"],["Plancha","Abdominales"],["Elevación de piernas","Abdominales"],
-  ["Abdominales en polea","Abdominales"],["Rueda abdominal","Abdominales"],["Sit-up","Abdominales"],
-  ["Hiperextensiones","Espinales/Lumbares"],["Peso muerto rumano","Espinales/Lumbares"],["Buenos días","Espinales/Lumbares"],["Superman","Espinales/Lumbares"],
-  ["Sentadilla con barra","Piernas"],["Sentadilla goblet","Piernas"],["Estocadas","Piernas"],["Peso muerto","Piernas"],
-  ["Prensa de piernas","Piernas"],["Zancadas caminando","Piernas"],["Extensión de cuádriceps","Piernas"],["Curl femoral","Piernas"],["Sentadilla con salto","Piernas"],
-  ["Press banca plano","Pecho/Banco"],["Press banca inclinado","Pecho/Banco"],["Press banca declinado","Pecho/Banco"],["Aperturas con mancuerna","Pecho/Banco"],
-  ["Flexiones de brazos","Pecho/Banco"],["Flexiones inclinadas","Pecho/Banco"],
-  ["Press militar","Hombro"],["Elevaciones laterales","Hombro"],["Elevaciones frontales","Hombro"],["Press mancuerna hombro","Hombro"],["Face pull","Hombro"],
-  ["Dominadas","Espalda"],["Remo con barra","Espalda"],["Remo en polea","Espalda"],["Jalón al pecho","Espalda"],["Remo con mancuerna","Espalda"],
-  ["Curl bíceps con barra","Bíceps"],["Curl con mancuerna","Bíceps"],["Curl martillo","Bíceps"],
-  ["Press francés","Tríceps"],["Extensión de tríceps en polea","Tríceps"],["Fondos de tríceps","Tríceps"],["Flexiones diamante","Tríceps"],
-  ["Wall ball","CrossFit/Funcional"],["Kettlebell swing","CrossFit/Funcional"],["Cargada de potencia (power clean)","CrossFit/Funcional"],
-  ["Arranque (snatch)","CrossFit/Funcional"],["Cargada y envión (clean and jerk)","CrossFit/Funcional"],["Thruster","CrossFit/Funcional"],
-  ["Remo en máquina (rower)","CrossFit/Funcional"],["Burpees","CrossFit/Funcional"],["Toes to bar","CrossFit/Funcional"],["Doble salto de soga","CrossFit/Funcional"],
-  ["Vallas","Circuito"],["Escalera de velocidad","Circuito"],["Salto al cajón","Circuito"],["Pelota medicinal","Circuito"],["Mountain climbers","Circuito"]
+{u:6,parcial:2,t:"La gestión de la producción",puntos:[
+ {p:"1",n:"Sistema productivo, objetivos y decisiones básicas",qs:[
+  {q:"¿Cuáles son los objetivos o resultados deseados del subsistema de operaciones?",o:["Costo, calidad, entrega, flexibilidad e innovación","Eficiencia, eficacia y economía","Rentabilidad, liquidez y solvencia","Producto, precio, plaza y promoción"],c:0,
+   e:"Son las cinco claves competitivas del sistema productivo, y la guía advierte que no pueden maximizarse todas a la vez porque algunas se contraponen."},
+  {q:"La guía afirma que si se fabrica a bajo costo, en serie:",o:["Se logra también la máxima flexibilidad","No se logrará una flexibilidad significativa","Se mejora automáticamente la innovación","Se acorta siempre el plazo de entrega"],c:1,
+   e:"Es el ejemplo textil: la marca masiva produce pocas variantes a gran escala y bajo costo; el modisto produce muchas variantes de manera unitaria y a costo alto."},
+  {q:"Las decisiones estratégicas de estructura (hard) del sistema operativo se caracterizan porque:",o:["Son intangibles y difíciles de imitar","Determinan las capacidades básicas para producir y, al ser tangibles, son imitables por el competidor","Se toman semanalmente","Corresponden al nivel operativo"],c:1,
+   e:"Las hard son planta, procesos y tecnología: tangibles y por eso copiables. Las soft (superestructura), como los sistemas de planeamiento y control, son menos imitables y sostienen mejor la ventaja."},
+  {q:"Según el cuadro de ciclo de vida, en la etapa de aparición del producto el objetivo clave es:",o:["Costo","Entrega y costo","Innovación y flexibilidad","Costo exclusivamente"],c:2,
+   e:"Al comienzo priman innovación y flexibilidad; a medida que el producto madura y declina, el objetivo se desplaza hacia entrega y luego hacia costo."}]},
+ {p:"2",n:"Políticas de producción, cadena de valor y calidad",qs:[
+  {q:"En la cadena de valor de Porter, ¿cuáles son actividades de apoyo?",o:["Logística de entrada, operaciones y logística de salida","Infraestructura de la empresa, administración de RRHH, desarrollo tecnológico y abastecimiento","Marketing y ventas, y servicio","Operaciones y servicio posventa"],c:1,
+   e:"Las primarias van de logística de entrada a servicio, atravesando el flujo del producto; las de apoyo sostienen a todas ellas."},
+  {q:"Un problema de programación lineal siempre requiere:",o:["Una función objetivo a maximizar o minimizar, restricciones y variables no negativas","Al menos tres variables de decisión","Que todas las restricciones sean de igualdad","Que la función objetivo sea de minimización"],c:0,
+   e:"Los tres elementos son función objetivo, restricciones y la condición de no negatividad de las variables."},
+  {q:"En un problema de programación de metas (decisiones multicriterio), a diferencia de la programación lineal clásica:",o:["No existen restricciones","Se busca satisfacer varias metas ordenadas por nivel de prioridad, minimizando las desviaciones","Solo se admite una variable de decisión","Se maximiza siempre la utilidad"],c:1,
+   e:"Se definen las metas, se les asigna prioridad, se formulan las restricciones y se resuelve por niveles hasta agotar todas las prioridades."}]},
+ {p:"3",n:"Economía de la producción: inventarios, tamaño, ABC",qs:[
+  {q:"En el modelo básico de lote óptimo de compra, en el punto óptimo se cumple que:",o:["El costo de emisión de pedidos iguala al costo de mantenimiento de inventario","El costo de mantenimiento es cero","La demanda anual iguala al tamaño del pedido","El inventario promedio es igual a la demanda diaria"],c:0,
+   e:"Justamente por eso el óptimo se obtiene derivando el costo total e igualando a cero: Q* = √(2·S·O / ci)."},
+  {q:"El análisis ABC de inventarios es una aplicación de:",o:["El principio de Pareto","La ley de los grandes números","El teorema de Bayes","El modelo de Wilson"],c:0,
+   e:"Concentra el control en los pocos artículos que explican la mayor parte del valor, en lugar de tratar a todos por igual."},
+  {q:"Los artículos de clase A típicamente representan:",o:["Alrededor del 55% de los artículos y el 5% del valor","Alrededor del 15% de los artículos y entre el 70% y el 80% del valor","El 30% de los artículos y el 30% del valor","El 50% de los artículos y el 50% del valor"],c:1,
+   e:"Pocos artículos concentran casi todo el valor. La clase C es la inversa: muchísimos artículos que apenas explican un 5% del total."},
+  {q:"Para clasificar un artículo en el análisis ABC hay que:",o:["Ordenarlo por su costo unitario","Ordenarlo por su demanda anual en unidades","Multiplicar la demanda anual por el costo unitario y ordenar por ese valor","Ordenarlo alfabéticamente por código"],c:2,
+   e:"Ni el consumo ni el precio por separado sirven: lo que define la clase es el volumen anual en valores monetarios, es decir, el producto de ambos."}]}]},
+
+{u:7,parcial:2,t:"La gestión de la información",puntos:[
+ {p:"1",n:"Análisis de estados contables",qs:[
+  {q:"Entre los destinatarios del análisis de estados contables que menciona la guía NO figura:",o:["Los gerentes y directivos, para el control de gestión","Los otorgantes de crédito financiero y comercial","Los auditores","Los competidores directos, con fines de fijación de precios"],c:3,
+   e:"Los destinatarios típicos son la dirección, los otorgantes de crédito y los auditores, entre otros usuarios de la información."},
+  {q:"La guía señala que el análisis de gestión requiere información:",o:["Únicamente anual y definitiva","Periódica, por lapsos menores al ejercicio, y además proyectada","Solo del último ejercicio cerrado","Exclusivamente de fuentes externas"],c:1,
+   e:"El control de gestión implica guiado y acción correctora inmediata, así que esperar los estados anuales carece de sentido."}]},
+ {p:"2",n:"Gestión financiera e índices",qs:[
+  {q:"La liquidez corriente se calcula como:",o:["Activo corriente sobre pasivo corriente","Activo total sobre pasivo total","Patrimonio neto sobre activo total","Activo corriente menos bienes de cambio, sobre pasivo total"],c:0,
+   e:"La prueba ácida es la variante más exigente: descuenta del activo corriente los bienes de cambio y otros activos de realización más lenta."},
+  {q:"El plazo medio de cobranza de créditos por ventas se obtiene:",o:["Multiplicando la rotación por 365","Dividiendo los días del período por la rotación de créditos por ventas","Dividiendo las ventas por el activo promedio","Restando el pasivo corriente al activo corriente"],c:1,
+   e:"Primero se calcula la rotación (ventas sobre saldo promedio de créditos) y después se la convierte en días."}]},
+ {p:"3",n:"Gestión económica: rentabilidad",qs:[
+  {q:"La rentabilidad del activo puede descomponerse como:",o:["Margen sobre ventas multiplicado por rotación del activo","Ganancia neta dividida el patrimonio neto","Ventas divididas el pasivo total","Contribución marginal sobre costos fijos"],c:0,
+   e:"Es la descomposición de Dupont: (ganancia antes de impuestos e intereses / ventas) × (ventas / activo promedio). Una rentabilidad puede venir del margen o de la rotación."},
+  {q:"El efecto palanca o leverage se obtiene relacionando:",o:["La rentabilidad del patrimonio neto con la rentabilidad del activo total","El pasivo con el patrimonio neto","Las ventas con el activo","La ganancia bruta con la ganancia neta"],c:0,
+   e:"Si el cociente es mayor que uno, el endeudamiento agrega rentabilidad al dueño; si es menor que uno, el costo del capital ajeno supera el rendimiento de la inversión y la palanca es negativa."},
+  {q:"Un efecto palanca fuertemente negativo indica que:",o:["La empresa no tiene deudas","El costo financiero promedio soportado es superior a la rentabilidad de la inversión total","La rentabilidad del activo es negativa","Los dividendos son demasiado altos"],c:1,
+   e:"El capital ajeno cuesta más de lo que rinde su uso, así que endeudarse está destruyendo rentabilidad para los socios."}]},
+ {p:"4",n:"Gestión patrimonial y crecimiento autofinanciado",qs:[
+  {q:"Entre los supuestos del modelo de crecimiento autofinanciado figura que:",o:["Se pagan dividendos crecientes cada año","No se pagan dividendos ni se retiran beneficios, y los socios no aportan nuevo capital","La deuda que vence se cancela y no se renueva","La amortización supera las necesidades de inversión"],c:1,
+   e:"El modelo supone D = 0, Fp = 0, la amortización cubre la reposición (A = I) y la deuda que vence se renueva (Ec = Er)."}]}]},
+
+{u:8,parcial:2,t:"El control de gestión",puntos:[
+ {p:"1",n:"Concepto y proceso de control",qs:[
+  {q:"Desde la perspectiva limitada, el control se concibe como:",o:["Una actividad de todos los niveles y miembros de la entidad","La verificación a posteriori de los resultados conseguidos y el control de los gastos, con fuerte estandarización cuantitativa","Un mecanismo exclusivamente cualitativo","La planificación de los objetivos estratégicos"],c:1,
+   e:"La perspectiva amplia, en cambio, involucra a todos los niveles y combina mediciones cualitativas y cuantitativas, atendiendo factores sociales y culturales."},
+  {q:"¿Cuáles son los pasos del proceso de control?",o:["Planificar, organizar, dirigir y controlar","Establecer normas y métodos para medir el rendimiento, medir resultados, corregir y retroalimentar","Detectar, analizar, decidir y ejecutar","Presupuestar, ejecutar, auditar y aprobar"],c:1,
+   e:"La norma es el plano ideal contra el que se mide; sin retroalimentación el ciclo queda abierto y el control no cumple su función."}]},
+ {p:"2",n:"Cuadro de mando integral y mapa estratégico",qs:[
+  {q:"Las cuatro perspectivas del cuadro de mando integral son:",o:["Financiera, del cliente, del proceso interno y de formación y crecimiento","Financiera, comercial, productiva y logística","Interna, externa, presente y futura","Costo, calidad, entrega y flexibilidad"],c:0,
+   e:"Kaplan y Norton integran las cuatro en un sistema de gestión estratégica, no en un simple tablero de medición."},
+  {q:"El mapa estratégico sirve para:",o:["Reemplazar al presupuesto anual","Describir la estrategia mediante relaciones causa-efecto que constituyen sus hipótesis","Medir exclusivamente indicadores financieros","Definir el organigrama de la empresa"],c:1,
+   e:"Es la arquitectura lógica que conecta objetivos entre perspectivas y da sustento al cuadro de mando."},
+  {q:"El cuadro de mando integral es, según la guía, más que un sistema de medición táctico porque:",o:["Incluye más indicadores que un tablero tradicional","Las empresas innovadoras lo usan como sistema de gestión estratégica a largo plazo","Se actualiza en tiempo real","Lo aprueba el directorio"],c:1,
+   e:"Su valor está en traducir la visión y la estrategia en objetivos e indicadores encadenados, no en la cantidad de métricas."}]},
+ {p:"3",n:"Aplicación del cuadro de mando",qs:[
+  {q:"Los indicadores de resultado (lag) se diferencian de los de actuación (lead) en que:",o:["Los de resultado anticipan el desempeño futuro y los de actuación lo confirman","Los de resultado miden lo ya ocurrido y los de actuación son inductores que anticipan el desempeño","Ambos miden lo mismo con distinto nombre","Los de actuación son siempre financieros"],c:1,
+   e:"Un buen cuadro de mando combina ambos: solo con indicadores de resultado uno se entera tarde, y solo con inductores no se sabe si la estrategia funcionó."},
+  {q:"El primer paso para desarrollar e implementar un cuadro de mando integral es:",o:["Definir los indicadores clave de desempeño","Elaborar el mapa estratégico","Definir las perspectivas del cuadro de mando","Vincular los objetivos estratégicos"],c:2,
+   e:"El orden es: definir perspectivas, vincular objetivos estratégicos, elaborar el mapa y recién entonces definir los KPI."}]}]}
 ];
 
-const BLOQUE_PRESETS = ["Entrada en calor","Piernas","Pecho y Hombro","Espalda y Bíceps","Tríceps y Hombro","Core / Abdominales","CrossFit / Circuito","Vuelta a la calma"];
+/* ================= DATOS: PRÁCTICA PASO A PASO ================= */
+const MATRIZ_1=`<table class="m"><tr><th></th><th>E1</th><th>E2</th><th>E3</th><th>E4</th></tr>
+<tr><td>N1</td><td>14</td><td>11</td><td>9</td><td>8</td></tr>
+<tr><td>N2</td><td>9</td><td>10</td><td>10</td><td>10</td></tr>
+<tr><td>N3</td><td>10</td><td>8</td><td>10</td><td>11</td></tr>
+<tr><td>N4</td><td>5</td><td>7</td><td>11</td><td>13</td></tr></table>`;
 
-const DISCOS = [2.5,5,10,15,20];
-const MANCUERNAS = [2,5,7,10,12,15,20,25];
+const PRACTICA=[
+{id:"p1",ej:"1",parcial:1,tema:"Modelos de decisión",t:"Matriz de pagos: los cinco criterios",
+ datos:`<p><b>Ejercicio 1.</b> Cifras en miles. Las columnas E son las alternativas que vos elegís; las filas N son los estados de naturaleza que decide el azar.</p>`+MATRIZ_1+
+ `<p style="margin-top:8px">Probabilidades para el valor esperado: P(N1)=0,10 · P(N2)=0,30 · P(N3)=0,40 · P(N4)=0,20.</p>`,
+ pasos:[
+ {q:"Matriz de GANANCIAS. Criterio optimista (Maxi-Max): ¿qué alternativa se elige?",o:["E1","E2","E3","E4"],c:0,
+  e:"Tomás el máximo de cada columna: 14, 11, 11 y 13. El mayor de esos máximos es 14, que corresponde a E1."},
+ {q:"Matriz de GANANCIAS. Criterio pesimista de Wald (Maxi-Min): ¿qué alternativa se elige?",o:["E1","E2","E3","E4"],c:2,
+  e:"Los mínimos de cada columna son 5, 7, 9 y 8. El mayor de los peores es 9, o sea E3. Es el mejor de los peores escenarios."},
+ {q:"Hurwicz con α = 0,70 sobre ganancias. ¿Cuánto da E4?",o:["11,30","10,40","11,50","9,80"],c:2,
+  e:"E4 = 0,70 × 13 + 0,30 × 8 = 9,10 + 2,40 = 11,50. Se pondera el mejor resultado por α y el peor por (1−α)."},
+ {q:"Con los cuatro valores de Hurwicz (11,30 · 9,80 · 10,40 · 11,50), ¿qué alternativa se elige en ganancias?",o:["E1","E2","E3","E4"],c:3,
+  e:"En ganancias se busca el mayor: 11,50, que es E4."},
+ {q:"Matriz de aflicción sobre ganancias. En la fila N4 (máximo 13), ¿cuánto vale la celda de E1?",o:["0","5","8","13"],c:2,
+  e:"El arrepentimiento es máximo de la fila menos el valor de la celda: 13 − 5 = 8. Es lo que dejás de ganar si elegiste E1 y ocurrió N4."},
+ {q:"Las máximas aflicciones por columna son 8 · 6 · 5 · 6. ¿Qué alternativa se elige?",o:["E1","E2","E3","E4"],c:2,
+  e:"El criterio de aflicción siempre es Mini-Max: la menor de las máximas aflicciones es 5, que corresponde a E3."},
+ {q:"Valor esperado sobre ganancias. ¿Cuánto vale E4?",o:["9,10","8,70","10,10","10,80"],c:3,
+  e:"E4 = 8(0,10) + 10(0,30) + 11(0,40) + 13(0,20) = 0,80 + 3,00 + 4,40 + 2,60 = 10,80. Es el mayor de los cuatro, así que se elige E4."},
+ {q:"Ahora la matriz es de COSTOS. Criterio optimista (Mini-Min): ¿qué alternativa se elige?",o:["E1","E2","E3","E4"],c:0,
+  e:"En costos, el mejor caso de cada alternativa es su costo mínimo: 5, 7, 9 y 8. Se elige el más chico, 5, que es E1."},
+ {q:"Matriz de COSTOS. Criterio pesimista (Mini-Max): ¿qué se elige?",o:["Solo E1","E2 o E3, empatadas","Solo E4","Solo E3"],c:1,
+  e:"Los peores casos son los máximos: 14, 11, 11 y 13. El menor de esos máximos es 11 y aparece dos veces, en E2 y en E3."},
+ {q:"Hurwicz con α = 0,30 sobre costos. Los valores son 11,30 · 9,80 · 10,40 · 11,50. ¿Qué alternativa se elige?",o:["E1","E2","E3","E4"],c:1,
+  e:"Los números son idénticos a los de ganancias, pero ahora buscás el mínimo: 9,80, es decir E2. Ojo: el coeficiente de optimismo sigue pesando el mejor resultado, que en costos es el más bajo."},
+ {q:"Aflicción sobre COSTOS. En la fila N1 (mínimo 8), ¿cuánto vale la celda de E1?",o:["0","1","6","14"],c:2,
+  e:"En costos el arrepentimiento es valor de la celda menos el mínimo de la fila: 14 − 8 = 6. Es lo que pagaste de más."},
+ {q:"Las máximas aflicciones en costos son 6 · 3 · 6 · 8. ¿Qué alternativa se elige?",o:["E1","E2","E3","E4"],c:1,
+  e:"Sigue siendo Mini-Max: la menor es 3, que corresponde a E2. La matriz de aflicción siempre se minimiza, sea de costos o de ganancias."},
+ {q:"Valor esperado sobre COSTOS (9,10 · 8,70 · 10,10 · 10,80). ¿Qué alternativa se elige?",o:["E1","E2","E3","E4"],c:1,
+  e:"Mismos cálculos, criterio invertido: ahora se busca el menor costo esperado, 8,70, que es E2."}]},
 
-function getBloques(dia){
-  if(!dia) return [];
-  if(dia.bloques) return dia.bloques;
-  if(dia.ejercicios) return [{nombre:'Entrenamiento', ejercicios:dia.ejercicios}];
-  return [];
+{id:"p7",ej:"7",parcial:1,tema:"Modelos de decisión",t:"Martín: barredora o cuchilla",
+ datos:`<p><b>Ejercicio 7.</b> Dos alternativas de inversión, tres estados de nieve.</p>
+ <table class="m"><tr><th></th><th>Barredora</th><th>Cuchilla</th><th>Prob.</th></tr>
+ <tr><td>Severa</td><td>7.000</td><td>3.500</td><td>0,40</td></tr>
+ <tr><td>Moderada</td><td>2.000</td><td>1.000</td><td>0,30</td></tr>
+ <tr><td>Ligera</td><td>−9.000</td><td>−1.500</td><td>0,30</td></tr></table>
+ <p style="margin-top:8px">Probabilidades de un mayo extraordinariamente frío: 0,30 si hubo nevada severa · 0,20 si moderada · 0,05 si ligera.</p>`,
+ pasos:[
+ {q:"¿Cuál es el valor esperado de invertir en la barredora?",o:["$ 700","$ 1.250","$ 2.800","$ 4.230"],c:0,
+  e:"0,40(7.000) + 0,30(2.000) + 0,30(−9.000) = 2.800 + 600 − 2.700 = 700."},
+ {q:"¿Y el de la cuchilla?",o:["$ 700","$ 1.250","$ 1.400","$ 2.346"],c:1,
+  e:"0,40(3.500) + 0,30(1.000) + 0,30(−1.500) = 1.400 + 300 − 450 = 1.250."},
+ {q:"Sin información adicional, ¿qué le recomendarías a Martín?",o:["La barredora, porque tiene el mayor resultado posible","La cuchilla, porque su valor esperado es mayor","Le da igual, los valores esperados coinciden","No invertir"],c:1,
+  e:"El criterio del valor esperado elige el mayor VE: 1.250 contra 700. La barredora tiene el mejor techo pero también el peor piso."},
+ {q:"Bayes. La probabilidad conjunta de nevada severa y mayo frío es:",o:["0,30","0,12","0,40","0,195"],c:1,
+  e:"Conjunta = a priori × condicional = 0,40 × 0,30 = 0,12. Sumando las tres conjuntas (0,12 + 0,06 + 0,015) se llega a 0,195, que es la probabilidad total de un mayo frío."},
+ {q:"La probabilidad a posteriori de nevada severa, dado un mayo frío, es:",o:["0,308","0,077","0,615","0,400"],c:2,
+  e:"0,12 ÷ 0,195 = 0,615. La observación de un mayo frío hace subir la probabilidad de nevada severa del 0,40 original al 0,615."},
+ {q:"Con las probabilidades posteriores (0,615 · 0,308 · 0,077), ¿qué conviene si mayo es extraordinariamente frío?",o:["La barredora, con VE de $ 4.230","La cuchilla, con VE de $ 2.346","La barredora, con VE de $ 700","La cuchilla, con VE de $ 1.250"],c:0,
+  e:"La barredora pasa a 4.230,77 y la cuchilla a 2.346,15. La información nueva da vuelta la decisión: con nevada severa más probable, conviene el equipo de mayor techo."}]},
+
+{id:"p8",ej:"8",parcial:1,tema:"Simulación",t:"Simular las ventas de diez días",
+ datos:`<p><b>Ejercicio 8.</b> Distribución de probabilidad de las ventas diarias de un producto.</p>
+ <table class="m"><tr><th>Ventas</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
+ <tr><td>Prob.</td><td>0,08</td><td>0,12</td><td>0,28</td><td>0,24</td><td>0,14</td><td>0,10</td><td>0,04</td></tr></table>
+ <p style="margin-top:8px">Números aleatorios: 0,4627 · 0,8745 · 0,4479 · 0,6712 · 0,4557 · 0,8435 · 0,2162 · 0,1699 · 0,1338 · 0,2278.</p>`,
+ pasos:[
+ {q:"Para armar los intervalos, primero hay que calcular:",o:["El promedio ponderado de las ventas","La probabilidad acumulada","La varianza de la distribución","La mediana"],c:1,
+  e:"Los intervalos de números aleatorios se construyen sobre la acumulada: 0,08 · 0,20 · 0,48 · 0,72 · 0,86 · 0,96 · 1,00."},
+ {q:"¿Qué intervalo le corresponde a una venta de 2 unidades?",o:["0,08 – 0,20","0,20 – 0,48","0,48 – 0,72","0,72 – 0,86"],c:1,
+  e:"La acumulada llega a 0,20 con una unidad y a 0,48 con dos, así que 2 unidades ocupa el tramo 0,20 – 0,48, el más ancho porque es el valor más probable."},
+ {q:"El primer número aleatorio es 0,4627. ¿Qué venta genera?",o:["1 unidad","2 unidades","3 unidades","4 unidades"],c:1,
+  e:"0,4627 cae dentro de 0,20 – 0,48, o sea 2 unidades."},
+ {q:"Sumando los diez días simulados, la venta total del período es:",o:["20 unidades","24 unidades","28 unidades","30 unidades"],c:1,
+  e:"La serie generada es 2, 5, 2, 3, 2, 4, 2, 1, 1, 2 = 24 unidades. Notá que el promedio simulado (2,4) queda cerca del valor esperado teórico de la distribución."}]},
+
+{id:"p10c",ej:"10C",parcial:1,tema:"Simulación",t:"Simular el precio de una acción",
+ datos:`<p><b>Ejercicio 10C.</b> Precio actual: $ 39. Distribución del cambio trimestral:</p>
+ <table class="m"><tr><th>Cambio</th><td>−2</td><td>−1</td><td>0</td><td>+1</td><td>+2</td><td>+3</td><td>+4</td></tr>
+ <tr><td>Prob.</td><td>0,05</td><td>0,10</td><td>0,25</td><td>0,20</td><td>0,20</td><td>0,10</td><td>0,10</td></tr></table>
+ <p style="margin-top:8px">Números aleatorios, en orden: 0,1091 · 0,9407 · 0,1941 · 0,8083.</p>`,
+ pasos:[
+ {q:"El primer aleatorio, 0,1091, cae en el intervalo 0,051 – 0,150. ¿Qué cambio genera y a qué precio lleva?",o:["−2, precio $ 37","−1, precio $ 38","0, precio $ 39","+1, precio $ 40"],c:1,
+  e:"Ese tramo corresponde a una baja de $1, así que el precio pasa de 39 a 38."},
+ {q:"El segundo aleatorio es 0,9407, que cae en 0,901 – 1,000. ¿A cuánto llega el precio?",o:["$ 40","$ 41","$ 42","$ 45"],c:2,
+  e:"Ese tramo es un alza de $4: 38 + 4 = 42. Importante: cada cambio se aplica sobre el precio del período anterior, no sobre el inicial."},
+ {q:"Con los cuatro aleatorios aplicados, ¿cuál es el precio simulado final?",o:["$ 42","$ 43","$ 45","$ 47"],c:2,
+  e:"La secuencia es 39 → 38 (−1) → 42 (+4) → 42 (0) → 45 (+3). El precio esperado al cabo de los cuatro trimestres es $ 45."}]},
+
+{id:"p11c",ej:"11C",parcial:1,tema:"Pronósticos",t:"Tendencia del costo unitario",
+ datos:`<p><b>Ejercicio 11C.</b> Serie de tiempo del costo unitario durante ocho años.</p>
+ <table class="m"><tr><th>Año</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td></tr>
+ <tr><td>Costo</td><td>20,00</td><td>24,50</td><td>28,20</td><td>27,50</td><td>26,60</td><td>30,00</td><td>31,00</td><td>36,00</td></tr></table>
+ <p style="margin-top:8px">Σt = 36 · ΣY = 223,80 · Σt·Y = 1.081,60 · Σt² = 204 · media de t = 4,50 · media de Y = 27,975.</p>`,
+ pasos:[
+ {q:"En la fórmula de mínimos cuadrados, ¿qué representa b₁?",o:["El valor de Y cuando t = 0","La pendiente: cuánto varía Y cuando varía t","El error de estimación","El promedio de la serie"],c:1,
+  e:"b₁ es la pendiente y a₁ la ordenada al origen, es decir el valor de Y cuando t vale cero."},
+ {q:"El numerador de b₁ es Σt·Y − n·t̄·Ȳ. ¿Cuánto da?",o:["74,50","150,00","1.007,10","42,00"],c:0,
+  e:"1.081,60 − (8 × 4,50 × 27,975) = 1.081,60 − 1.007,10 = 74,50."},
+ {q:"El denominador es Σt² − n·t̄². ¿Cuánto vale b₁?",o:["1,55","1,77","2,10","0,57"],c:1,
+  e:"Denominador: 204 − (8 × 4,50²) = 204 − 162 = 42. Entonces b₁ = 74,50 ÷ 42 = 1,7738."},
+ {q:"¿Cuál es la ecuación de tendencia?",o:["Y = 1,77t + 27,98","Y = 1,77t + 19,99","Y = 19,99t + 1,77","Y = 27,98t − 1,77"],c:1,
+  e:"a₁ = Ȳ − b₁·t̄ = 27,975 − 1,7738 × 4,50 = 19,993. La ecuación queda Y = 1,7738t + 19,993: el costo unitario crece unos $1,77 por año."}]},
+
+{id:"p17",ej:"17",parcial:1,tema:"Costo–volumen–utilidad",t:"Equilibrio con cuatro líneas de producto",
+ datos:`<p><b>Ejercicio 17.</b> Costos fijos totales: $ 140.000. Impuesto a las ganancias: 35%.</p>
+ <table class="m"><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr>
+ <tr><td>Precio</td><td>38</td><td>25</td><td>45</td><td>14</td></tr>
+ <tr><td>Costo var.</td><td>18</td><td>15</td><td>30</td><td>4</td></tr>
+ <tr><td>Particip.</td><td>30%</td><td>40%</td><td>20%</td><td>10%</td></tr></table>`,
+ pasos:[
+ {q:"¿Cuál es la contribución marginal unitaria de la línea A?",o:["$ 18","$ 20","$ 38","$ 6"],c:1,
+  e:"38 − 18 = 20. Las cuatro contribuciones son 20, 10, 15 y 10."},
+ {q:"¿Cuál es la contribución marginal ponderada del mix?",o:["$ 13","$ 14","$ 15","$ 55"],c:1,
+  e:"20(0,30) + 10(0,40) + 15(0,20) + 10(0,10) = 6 + 4 + 3 + 1 = 14. Es lo que aporta, en promedio, cada unidad vendida del mix."},
+ {q:"¿Cuál es la cantidad de equilibrio total del mercado?",o:["10.000 unidades","12.500 unidades","14.000 unidades","8.750 unidades"],c:0,
+  e:"140.000 ÷ 14 = 10.000 unidades en total, repartidas según la participación de cada línea."},
+ {q:"¿Cuántas unidades corresponden a la línea B en el equilibrio?",o:["2.000","3.000","4.000","5.000"],c:2,
+  e:"El 40% de 10.000 = 4.000 unidades. A vende 3.000, C vende 2.000 y D vende 1.000."},
+ {q:"Si se quiere una utilidad de $ 35.000 antes de impuestos, la cantidad total pasa a ser:",o:["10.000","11.250","12.500","13.750"],c:2,
+  e:"(140.000 + 35.000) ÷ 14 = 12.500 unidades. La utilidad pretendida se suma a los costos fijos en el numerador."}]},
+
+{id:"p20",ej:"20",parcial:2,tema:"Producción e inventarios",t:"Clasificación ABC del inventario",
+ datos:`<p><b>Ejercicio 20.</b> Treinta ítems con distinta demanda anual y costo unitario. El objetivo es clasificarlos en A, B y C y definir el control adecuado.</p>`,
+ pasos:[
+ {q:"¿Cuál es el primer paso del análisis?",o:["Ordenar los ítems por costo unitario, de mayor a menor","Multiplicar la demanda anual por el costo unitario de cada ítem","Ordenar por demanda anual en unidades","Calcular el lote óptimo de cada ítem"],c:1,
+  e:"Ese producto es la valuación, el volumen anual en pesos. Recién después se ordena de mayor a menor y se acumula el porcentaje."},
+ {q:"En la solución de la guía, los artículos de clase A resultan:",o:["13,19% de los ítems y 75,87% del valor","34,91% de los ítems y 17,63% del valor","51,91% de los ítems y 6,50% del valor","50% de los ítems y 50% del valor"],c:0,
+  e:"Los porcentajes de B son 34,91% de ítems y 17,63% del valor; los de C, 51,91% y 6,50%. Poquísimos artículos concentran casi todo el valor."},
+ {q:"¿Qué sistema de control corresponde aplicar a los artículos de clase A?",o:["El mismo que a B y C, para simplificar","Control físico más estricto, resguardo más seguro y comprobación más frecuente de los registros","Ningún control, porque son pocos","Solo control anual por muestreo"],c:1,
+  e:"No es realista seguir a los artículos baratos con la misma intensidad que a los caros: el esfuerzo de control se concentra donde está el valor."}]},
+
+{id:"p18c",ej:"18C",parcial:1,tema:"Costo–volumen–utilidad",t:"El Súper-Chori",
+ datos:`<p><b>Ejercicio 18C.</b> El combo se vende a $ 2. Costos fijos: $ 150 semanales.</p>
+ <p>· El kg de chorizos cuesta $ 1,80 y trae 8 chorizos. Rendimiento del chorizo: 94% (se pierde el 6%).<br>
+ · El kg de papas cuesta $ 0,30 y alcanza para 4 combos. Rendimiento de la papa: 85%.<br>
+ · Carbón, aceite, pan y aderezos: $ 0,30 por combo.</p>`,
+ pasos:[
+ {q:"¿Cuál es el costo unitario del chorizo por combo, ya considerando la merma?",o:["$ 0,225","$ 0,2394","$ 0,2500","$ 0,1800"],c:1,
+  e:"1,80 ÷ 8 = 0,225 por chorizo; dividido el rendimiento del 94%: 0,225 ÷ 0,94 = 0,2394. La merma encarece el insumo."},
+ {q:"Sumando chorizo (0,2394), papa (0,0882) y varios (0,30), ¿cuál es la contribución marginal del combo?",o:["$ 0,6276","$ 1,3724","$ 2,0000","$ 0,8724"],c:1,
+  e:"Costo variable total: 0,6276. Contribución marginal = 2 − 0,6276 = 1,3724."},
+ {q:"¿Cuántos combos hay que vender por semana para llegar al equilibrio?",o:["109 combos","150 combos","239 combos","400 combos"],c:0,
+  e:"150 ÷ 1,3724 = 109,3 combos semanales. Como no se venden fracciones, en la práctica son 110."}]}
+];
+
+/* ================= ESTADO ================= */
+const NIVELES=[{min:0,n:"Aprendiz"},{min:400,n:"Optimista"},{min:900,n:"Wald"},{min:1600,n:"Hurwicz"},
+{min:2500,n:"Savage"},{min:3600,n:"Valor esperado"},{min:4800,n:"Zona factible"},{min:6000,n:"Información perfecta"}];
+const XP={p:100,c:60}, XP_Q=10, XP_S=15;
+const TOTAL_Q=UNIDADES.reduce((a,u)=>a+u.puntos.reduce((b,p)=>b+p.qs.length,0),0);
+const TOTAL_S=PRACTICA.reduce((a,e)=>a+e.pasos.length,0);
+const TOTAL_XP=EJ.reduce((a,e)=>a+XP[e.g],0)+TOTAL_Q*XP_Q+TOTAL_S*XP_S;
+const CLAVE="gestion_empresas_v2";
+const ETIQUETA={pendiente:"Pendiente",curso:"En curso",hecho:"Hecho",repasar:"Repasar"};
+let estado={items:{},teo:{},pra:{},ts:0};
+let filtro="todos", guardando=null, quiz=null;
+
+const est=id=>(estado.items[id]&&estado.items[id].e)||"pendiente";
+const nota=id=>(estado.items[id]&&estado.items[id].nota)||"";
+const sello=id=>(estado.items[id]&&estado.items[id].ts)||null;
+const cont=e=>EJ.filter(x=>est(x.id)===e).length;
+const temaListo=(t,g)=>{const l=EJ.filter(x=>x.t===t&&x.g===g);return l.length>0&&l.every(x=>est(x.id)==="hecho")};
+const qOK=id=>estado.teo[id]===true;
+const sOK=id=>estado.pra[id]===true;
+const teoOK=()=>Object.values(estado.teo).filter(Boolean).length;
+const praOK=()=>Object.values(estado.pra).filter(Boolean).length;
+function uniQs(u){let n=0,ok=0;u.puntos.forEach(p=>p.qs.forEach((q,i)=>{n++;if(qOK("u"+u.u+"-"+p.p+"-"+i))ok++}));return[ok,n]}
+function xpTotal(){
+  let x=EJ.reduce((a,e)=>{const s=est(e.id);
+    if(s==="hecho"||s==="repasar")return a+XP[e.g];
+    if(s==="curso")return a+Math.round(XP[e.g]*0.3);return a},0);
+  return x+teoOK()*XP_Q+praOK()*XP_S;
 }
-function exerciseOptionsGrouped(selectedId){
-  const porCat = {};
-  Object.entries(state.ejercicios).forEach(([id,e])=>{ (porCat[e.categoria]=porCat[e.categoria]||[]).push([id,e]); });
-  return CATEGORIAS.filter(c=>porCat[c]).map(cat=>`<optgroup label="${cat}">${porCat[cat].map(([id,e])=>`<option value="${id}" ${id===selectedId?'selected':''}>${e.nombre}</option>`).join('')}</optgroup>`).join('');
-}
 
-/* ======================================================================
-   UTILIDADES
-====================================================================== */
-function fmtDate(d){ // yyyy-mm-dd
-  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,'0')+"-"+String(d.getDate()).padStart(2,'0');
-}
-function todayStr(){ return fmtDate(new Date()); }
-function initials(nombre,apellido){ return ((nombre?.[0]||'')+(apellido?.[0]||'')).toUpperCase(); }
-function monthLabel(d){ const s = d.toLocaleDateString('es-AR',{month:'long',year:'numeric'}); return s.charAt(0).toUpperCase()+s.slice(1); }
-function showModal(html){ document.getElementById('modalBody').innerHTML = '<div class="modal-handle"></div>'+html; document.getElementById('modalBg').classList.add('active'); }
-function closeModal(){ document.getElementById('modalBg').classList.remove('active'); document.getElementById('modalBody').innerHTML=''; }
-document.getElementById('modalBg').addEventListener('click',e=>{ if(e.target.id==='modalBg') closeModal(); });
+/* ================= ALMACENAMIENTO Y SINCRONIZACIÓN =================
+   Sin configurar nada: guarda en este dispositivo.
+   Con Firebase configurado: sincroniza entre la compu y el teléfono.  */
+const FIREBASE_CONFIG={
+  apiKey:"",            // pegá acá los datos de tu proyecto de Firebase
+  authDomain:"",        // Configuración del proyecto > Tus apps > Web
+  projectId:"",
+  appId:""
+};
+const CLAVE_SYNC="mi-guia-gestion";   // cambiala por una frase tuya, difícil de adivinar
 
-function setAuthTab(tab){
-  hideAuthErr();
-  document.getElementById('tabLogin').classList.toggle('active',tab==='login');
-  document.getElementById('tabRegister').classList.toggle('active',tab==='register');
-  document.getElementById('tabAdmin').classList.toggle('active',tab==='admin');
-  document.getElementById('loginForm').classList.toggle('hidden',tab!=='login');
-  document.getElementById('registerForm').classList.toggle('hidden',tab!=='register');
-  document.getElementById('adminLoginForm').classList.toggle('hidden',tab!=='admin');
-  if(tab==='register') loadRosterForRegister();
-}
-function showAuthErr(msg){ const e=document.getElementById('authErr'); e.textContent=msg; e.style.display='block'; }
-function hideAuthErr(){ document.getElementById('authErr').style.display='none'; }
+const enClaude = typeof window!=="undefined" && window.storage && typeof window.storage.get==="function";
+let nube=null, sincronizando=false;
 
-/* ======================================================================
-   AUTH: LOGIN / REGISTRO (local, sin Firebase)
-====================================================================== */
-function loadRosterForRegister(){
-  const sel = document.getElementById('regRosterSelect');
-  if(!dbReady){ sel.innerHTML='<option value="">Cargando…</option>'; return; }
-  const opciones = Object.entries(DB.usuarios).filter(([id,p])=>!p.claimed);
-  if(!opciones.length){ sel.innerHTML='<option value="">No hay alumnos cargados por Luciano todavía</option>'; return; }
-  sel.innerHTML = '<option value="">Elegí tu nombre…</option>' + opciones.map(([id,p])=>`<option value="${id}">${p.apellido}, ${p.nombre}</option>`).join('');
-}
+const local={
+  async leer(){
+    if(enClaude){ try{ const r=await window.storage.get(CLAVE); return r&&r.value?JSON.parse(r.value):null }catch(e){ return null } }
+    try{ const v=localStorage.getItem(CLAVE); return v?JSON.parse(v):null }catch(e){ return null }
+  },
+  async escribir(o){
+    if(enClaude){ try{ await window.storage.set(CLAVE,JSON.stringify(o)) }catch(e){} return }
+    try{ localStorage.setItem(CLAVE,JSON.stringify(o)) }catch(e){}
+  },
+  async borrar(){
+    if(enClaude){ try{ await window.storage.delete(CLAVE) }catch(e){} return }
+    try{ localStorage.removeItem(CLAVE) }catch(e){}
+  }
+};
 
-/* ======================================================================
-   SESIÓN PERSISTENTE
-   La sesión queda guardada en el teléfono: al volver a abrir la app
-   entra directo, hasta que la persona toque "Cerrar sesión" (⎋).
-====================================================================== */
-const SESSION_KEY = 'luchoGymSesion';
-function guardarSesion(){
+async function conectarNube(){
+  if(!FIREBASE_CONFIG.apiKey) return null;
   try{
-    if(state.role==='admin') localStorage.setItem(SESSION_KEY, JSON.stringify({tipo:'admin'}));
-    else localStorage.setItem(SESSION_KEY, JSON.stringify({tipo:'alumno', uid:state.user.uid}));
-  }catch(e){}
-}
-function borrarSesion(){ try{ localStorage.removeItem(SESSION_KEY); }catch(e){} }
-function restaurarSesion(){
-  let ses = null;
-  try{ ses = JSON.parse(localStorage.getItem(SESSION_KEY)); }catch(e){}
-  if(!ses) return false;
-  if(ses.tipo==='admin'){
-    state.user = {uid:'admin-luciano'};
-    state.profile = {nombre:'Luciano',apellido:'(Admin)',rol:'admin'};
-    state.role = 'admin';
-    enterApp();
-    return true;
-  }
-  if(ses.tipo==='alumno' && ses.uid && DB.usuarios[ses.uid] && DB.usuarios[ses.uid].claimed){
-    state.user = {uid:ses.uid};
-    state.profile = DB.usuarios[ses.uid];
-    state.role = 'alumno';
-    enterApp();
-    return true;
-  }
-  borrarSesion(); // la cuenta ya no existe
-  return false;
+    const [appMod,fsMod]=await Promise.all([
+      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
+    ]);
+    const app=appMod.initializeApp(FIREBASE_CONFIG);
+    const db=fsMod.getFirestore(app);
+    const ref=fsMod.doc(db,"progreso",CLAVE_SYNC);
+    return {ref,fs:fsMod};
+  }catch(e){ pieEstado("Sin conexión con la nube. Guardando en este dispositivo."); return null }
 }
 
-async function doRegister(){
-  hideAuthErr();
-  const rosterUid = document.getElementById('regRosterSelect').value;
-  const email = document.getElementById('regEmail').value.trim();
-  const pass = document.getElementById('regPass').value;
-  if(!rosterUid){ showAuthErr('Elegí tu nombre en la lista.'); return; }
-  if(!email || !pass || pass.length<6){ showAuthErr('Completá email y una contraseña de al menos 6 caracteres.'); return; }
-  const yaExiste = Object.values(DB.usuarios).some(p=>p.email && p.email.toLowerCase()===email.toLowerCase());
-  if(yaExiste){ showAuthErr('Ese email ya está registrado.'); return; }
-  const perfil = DB.usuarios[rosterUid];
-  if(!perfil){ showAuthErr('Ese registro ya no existe, actualizá la página.'); return; }
-  DB.usuarios[rosterUid] = {...perfil, email, password:pass, claimed:true};
-  await storageSet('usuarios', DB.usuarios);
-  rebuildStateRefs();
-  state.user = {uid:rosterUid};
-  state.profile = DB.usuarios[rosterUid];
-  state.role = 'alumno';
-  guardarSesion();
-  enterApp();
+function adoptar(p){
+  if(!p) return false;
+  estado={items:p.items||{},teo:p.teo||{},pra:p.pra||{},ts:p.ts||0};
+  return true;
 }
 
-function doLogin(){
-  hideAuthErr();
-  const email = document.getElementById('loginEmail').value.trim();
-  const pass = document.getElementById('loginPass').value;
-  if(!email||!pass){ showAuthErr('Completá email y contraseña.'); return; }
-  const match = Object.entries(DB.usuarios).find(([id,p])=> p.email && p.email.toLowerCase()===email.toLowerCase() && p.password===pass);
-  if(!match){ showAuthErr('Email o contraseña incorrectos.'); return; }
-  state.user = {uid:match[0]};
-  state.profile = match[1];
-  state.role = 'alumno';
-  guardarSesion();
-  enterApp();
-}
-
-function doLogout(){
-  if(!confirm('¿Cerrar sesión?')) return;
-  borrarSesion();
-  state.user=null; state.role=null; state.profile=null;
-  document.getElementById('appShell').classList.add('hidden');
-  document.getElementById('screen-auth').classList.add('active');
-  setAuthTab('login');
-}
-
-function doAdminLogin(){
-  hideAuthErr();
-  const u = document.getElementById('adminUser').value.trim();
-  const p = document.getElementById('adminPass').value;
-  if(u !== ADMIN_USER || p !== ADMIN_PASS){ showAuthErr('Usuario o contraseña incorrectos.'); return; }
-  state.user = {uid:'admin-luciano'};
-  state.profile = {nombre:'Luciano',apellido:'(Admin)',rol:'admin'};
-  state.role = 'admin';
-  guardarSesion();
-  enterApp();
-}
-
-/* ======================================================================
-   CARGA INICIAL
-====================================================================== */
-window.addEventListener('DOMContentLoaded', async ()=>{
-  await loadAll();
-  rebuildStateRefs();
-  attachRealtime();
-  if(restaurarSesion()) return;
-  if(document.getElementById('tabRegister').classList.contains('active')) loadRosterForRegister();
-});
-
-function enterApp(){
-  document.getElementById('screen-auth').classList.remove('active');
-  document.getElementById('appShell').classList.remove('hidden');
-  document.getElementById('userSubtitle').textContent = (state.profile.nombre+' '+state.profile.apellido).trim();
-  const pill = document.getElementById('rolePill');
-  pill.textContent = state.role==='admin' ? 'Lucho · admin' : 'alumno';
-  pill.classList.toggle('role-admin', state.role==='admin');
-  document.getElementById('fabLoad').classList.toggle('hidden', state.role!=='alumno');
-  buildBottomNav();
-  showScreen(state.role==='admin' ? 'admin-home' : 'alumno-home');
-}
-
-/* Con Firebase en tiempo real el refresco es automático; este botón
-   queda como opción manual por si hiciera falta forzar una recarga. */
-function stopPolling(){}
-async function manualRefresh(){
-  const btn = event && event.currentTarget;
-  if(btn) btn.style.opacity = '.4';
-  await loadAll();
-  rebuildStateRefs();
-  refreshCurrentScreen();
-  if(btn) btn.style.opacity = '1';
-}
-
-/* ======================================================================
-   NAV
-====================================================================== */
-function buildBottomNav(){
-  const nav = document.getElementById('bottomNav');
-  if(state.role==='admin'){
-    nav.innerHTML = `
-      <button class="navbtn" data-s="admin-home" onclick="showScreen('admin-home')"><span class="ic">🏠</span>Inicio</button>
-      <button class="navbtn" data-s="admin-alumnos" onclick="showScreen('admin-alumnos')"><span class="ic">👥</span>Alumnos</button>
-      <button class="navbtn" data-s="admin-plan" onclick="showScreen('admin-plan')"><span class="ic">📅</span>Plan</button>
-      <button class="navbtn" data-s="admin-ejercicios" onclick="showScreen('admin-ejercicios')"><span class="ic">🏋️</span>Ejercicios</button>
-    `;
-  } else {
-    nav.innerHTML = `
-      <button class="navbtn" data-s="alumno-home" onclick="showScreen('alumno-home')"><span class="ic">🏠</span>Inicio</button>
-      <button class="navbtn" data-s="alumno-historial" onclick="showScreen('alumno-historial')"><span class="ic">📅</span>Historial</button>
-      <button class="navbtn" data-s="alumno-records" onclick="showScreen('alumno-records')"><span class="ic">🏆</span>Récords</button>
-    `;
-  }
-}
-function showScreen(name){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('screen-'+name).classList.add('active');
-  document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active', b.dataset.s===name));
-  if(name==='alumno-home') renderAlumnoHome();
-  if(name==='alumno-historial') renderHistorial();
-  if(name==='alumno-records') renderRecords(state.user.uid,'recordsList');
-  if(name==='admin-home') renderAdminHome();
-  if(name==='admin-alumnos') renderAdminAlumnos();
-  if(name==='admin-plan') renderAdminPlan();
-  if(name==='admin-ejercicios') renderAdminEjercicios();
-  if(name==='admin-detalle') renderDetalle();
-}
-function refreshCurrentScreen(){
-  const active = document.querySelector('.screen.active');
-  if(!active) return;
-  showScreen(active.id.replace('screen-',''));
-}
-
-/* ======================================================================
-   ALUMNO · INICIO
-====================================================================== */
-function renderAlumnoHome(){
-  const uidA = state.user.uid;
-  const fecha = todayStr();
-  // hero con saludo y stats del mes
-  const hero = document.getElementById('alumnoHero');
-  const st = statsMes(uidA);
-  const hoyLabel = new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'});
-  hero.innerHTML = `
-    <div class="saludo">Hola, ${state.profile.nombre} 👋</div>
-    <div class="fecha">${hoyLabel}</div>
-    ${(r=>r>=2?`<div style="margin-top:8px;"><span class="badge pend">🔥 ${r} días seguidos</span></div>`:'')(rachaDias(uidA))}
-    <div class="stat-grid">
-      <div class="stat"><div class="val">${st.dias}</div><div class="lbl">Entrenos<br>del mes</div></div>
-      <div class="stat"><div class="val">${fmtVol(st.volumen)}</div><div class="lbl">Volumen<br>(kg)</div></div>
-      <div class="stat"><div class="val">${Object.keys(calcularRecords(uidA)).length}</div><div class="lbl">Récords<br>personales</div></div>
-    </div>`;
-  const planHoy = (state.planificacion[uidA]||{})[fecha];
-  const regHoy = (state.registros[uidA]||{})[fecha];
-  const bloquesPlan = getBloques(planHoy);
-  const bloquesReg = getBloques(regHoy);
-  const card = document.getElementById('alumnoTodayCard');
-  let html = '';
-  if(bloquesPlan.length){
-    html += `<div class="row between" style="margin-bottom:8px;"><span class="badge ${planHoy.completado?'ok':'pend'}">${planHoy.completado?'Completado':'Asignado por Luciano'}</span><span class="small muted mono">${fecha}</span></div>`;
-    html += `<div class="small muted" style="text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Plan de hoy</div>`;
-    html += bloquesPlan.map(renderBloqueResumenHTML).join('');
-  }
-  if(bloquesReg.length){
-    html += `<div class="small muted" style="text-transform:uppercase;letter-spacing:.06em;margin:${bloquesPlan.length?'14px':'0'} 0 2px;">${bloquesPlan.length?'Lo que registraste':'Registrado hoy'}</div>`;
-    html += bloquesReg.map(renderBloqueResumenHTML).join('');
-  }
-  if(!bloquesPlan.length && !bloquesReg.length){
-    card.innerHTML = `<div class="empty"><div class="ic">📋</div>Todavía no cargaste tu entrenamiento de hoy.<br><br><button class="btn btn-accent" onclick="openLoadDay()">Cargar ahora</button></div>`;
-  } else {
-    if(!bloquesReg.length) html += `<button class="btn btn-accent btn-block" style="margin-top:12px;" onclick="openLoadDay()">Cargar lo que hiciste</button>`;
-    else html += `<button class="btn btn-ghost btn-block btn-sm" style="margin-top:10px;" onclick="openLoadDay()">Editar registro de hoy</button>`;
-    card.innerHTML = html;
-  }
-  const upcomingWrap = document.getElementById('alumnoUpcoming');
-  const futureDates = Object.keys(state.planificacion[uidA]||{}).filter(f=>f>fecha).sort().slice(0,5);
-  if(!futureDates.length){ upcomingWrap.innerHTML = `<div class="empty small"><div class="ic">🗓️</div>No tenés actividades planificadas próximamente.</div>`; }
-  else {
-    upcomingWrap.innerHTML = futureDates.map(f=>{
-      const p = state.planificacion[uidA][f];
-      const label = new Date(f+'T00:00').toLocaleDateString('es-AR',{weekday:'short',day:'numeric',month:'short'});
-      const nombres = getBloques(p).map(b=>`${b.nombre}: ${(b.ejercicios||[]).map(e=>nombreEjercicio(e.ejercicioId)).join(', ')}`).join(' · ');
-      return `<div class="card card-tight"><div class="row between"><b>${label}</b><span class="badge ${p.completado?'ok':'pend'}">${p.completado?'Hecho':'Pendiente'}</span></div>
-        <div class="small muted" style="margin-top:6px;">${nombres}</div></div>`;
-    }).join('');
-  }
-  renderRankingMes('alumnoRankingMes');
-  renderRecords(uidA,'alumnoRecordsMini',true);
-}
-function renderBloqueResumenHTML(bloque){
-  if(!bloque || !bloque.ejercicios || !bloque.ejercicios.length) return '';
-  return `<div style="margin:10px 0 4px;font-weight:800;font-size:11.5px;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;">${bloque.nombre||'Bloque'}</div>` +
-    bloque.ejercicios.map(renderEjercicioResumenLinea).join('');
-}
-function renderEjercicioResumenLinea(ej){
-  const pills = (ej.series||[]).map(s=>`<span class="set-pill"><b>${s.peso!==''&&s.peso!=null?s.peso+' KG':'—'}</b>${s.reps!==''&&s.reps!=null?s.reps+' REP':''}</span>`).join('');
-  return `<div class="list-item" style="border-color:var(--line);align-items:flex-start;">
-    <div class="avatar" style="background:var(--accent-dim);color:var(--accent);font-size:17px;">${iconoEjercicio(ej.ejercicioId)}</div>
-    <div style="flex:1;">
-      <div style="font-weight:700;font-size:14px;">${nombreEjercicio(ej.ejercicioId)}</div>
-      <div class="pill-row">${pills}</div>
-      ${ej.dolor? `<div class="small" style="color:var(--danger);margin-top:5px;">⚠ ${ej.nota||'Molestia reportada'}</div>`:''}
-    </div>
-  </div>`;
-}
-function nombreEjercicio(id){ return state.ejercicios[id]?.nombre || 'Ejercicio'; }
-const CAT_ICONS = {"Calentamiento":"🔥","Abdominales":"🧱","Espinales/Lumbares":"🧘","Piernas":"🦵","Pecho/Banco":"🏋️","Espalda":"🚣","Hombro":"🤸","Bíceps":"💪","Tríceps":"🦾","CrossFit/Funcional":"⚡","Circuito":"🔁"};
-function iconoEjercicio(id){ return CAT_ICONS[state.ejercicios[id]?.categoria] || '🏋️'; }
-
-/* ======================================================================
-   ESTADÍSTICAS (volumen levantado y días entrenados)
-====================================================================== */
-function volumenDia(dia){
-  let v = 0;
-  getBloques(dia).forEach(b=>(b.ejercicios||[]).forEach(ej=>(ej.series||[]).forEach(s=>{
-    v += (parseFloat(s.peso)||0) * (parseFloat(s.reps)||0);
-  })));
-  return v;
-}
-function statsMes(uidX){
-  const pref = todayStr().slice(0,7);
-  const regs = state.registros[uidX]||{};
-  let dias = 0, volumen = 0, ejercicios = 0;
-  Object.entries(regs).forEach(([f,dia])=>{
-    if(!f.startsWith(pref)) return;
-    const bloques = getBloques(dia);
-    if(!bloques.length) return;
-    dias++;
-    volumen += volumenDia(dia);
-    bloques.forEach(b=> ejercicios += (b.ejercicios||[]).length);
-  });
-  return {dias, volumen, ejercicios};
-}
-function fmtVol(v){
-  if(v>=1000) return (v/1000).toFixed(1).replace('.0','')+'k';
-  return String(Math.round(v));
-}
-
-/* ======================================================================
-   RANKING MENSUAL DE ASISTENCIAS
-====================================================================== */
-function calcularRankingMes(){
-  const pref = todayStr().slice(0,7); // yyyy-mm
-  return Object.keys(state.roster||{}).map(uidX=>{
-    const regs = state.registros[uidX]||{};
-    const dias = Object.keys(regs).filter(f=> f.startsWith(pref) && getBloques(regs[f]).length ).length;
-    return {uid:uidX, dias};
-  }).sort((a,b)=> b.dias - a.dias || (state.roster[a.uid].apellido||'').localeCompare(state.roster[b.uid].apellido||''));
-}
-function renderRankingMes(targetId){
-  const el = document.getElementById(targetId);
-  if(!el) return;
-  const ranking = calcularRankingMes();
-  const mesLabel = new Date().toLocaleDateString('es-AR',{month:'long'});
-  if(!ranking.length || ranking.every(r=>r.dias===0)){
-    el.innerHTML = `<div class="empty small"><div class="ic">🏆</div>Todavía nadie registró entrenamientos en ${mesLabel}.</div>`;
-    return;
-  }
-  const max = Math.max(ranking[0].dias, 1);
-  const medallas = ['🥇','🥈','🥉'];
-  el.innerHTML = `<div class="small muted" style="text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Asistencias de ${mesLabel}</div>` +
-    ranking.slice(0,10).map((r,i)=>{
-      const p = state.roster[r.uid];
-      const esYo = state.role==='alumno' && r.uid===state.user.uid;
-      return `<div class="rank-item ${esYo?'me':''}">
-        <div class="rank-pos">${medallas[i]||i+1}</div>
-        <div class="avatar">${initials(p.nombre,p.apellido)}</div>
-        <div style="flex:1;">
-          <div style="font-weight:700;font-size:13.5px;">${p.nombre} ${p.apellido}${esYo?' <span class="small muted">(vos)</span>':''}</div>
-          <div class="rank-bar"><div style="width:${r.dias/max*100}%"></div></div>
-        </div>
-        <div class="rank-days">${r.dias} día${r.dias===1?'':'s'}</div>
-      </div>`;
-    }).join('');
-}
-
-/* ======================================================================
-   RÉCORDS
-====================================================================== */
-function calcularRecords(uidX){
-  const regs = state.registros[uidX]||{};
-  const recs = {};
-  Object.entries(regs).forEach(([fecha,dia])=>{
-    getBloques(dia).forEach(bloque=>{
-      (bloque.ejercicios||[]).forEach(ej=>{
-        (ej.series||[]).forEach(s=>{
-          const peso = parseFloat(s.peso)||0;
-          if(!recs[ej.ejercicioId] || peso > recs[ej.ejercicioId].peso){
-            recs[ej.ejercicioId] = {peso, fecha};
-          }
-        });
-      });
-    });
-  });
-  return recs;
-}
-function renderRecords(uid, targetId, mini){
-  const recs = calcularRecords(uid);
-  const entries = Object.entries(recs).sort((a,b)=>b[1].peso-a[1].peso);
-  const el = document.getElementById(targetId);
-  if(!entries.length){ el.innerHTML = `<div class="empty small"><div class="ic">🏆</div>Todavía no hay récords cargados.</div>`; return; }
-  const show = mini ? entries.slice(0,3) : entries;
-  el.innerHTML = show.map(([id,r])=>`
-    <div class="rec-card">
-      <div><div style="font-weight:700;font-size:13.5px;">${nombreEjercicio(id)}</div><div class="small muted">${new Date(r.fecha+'T00:00').toLocaleDateString('es-AR',{day:'numeric',month:'short',year:'numeric'})}</div></div>
-      <div class="val">${r.peso} kg</div>
-    </div>`).join('');
-}
-
-/* ======================================================================
-   EDITOR SIMPLE DE ENTRENAMIENTO
-   Buscador de ejercicios + rondas / repeticiones / peso.
-   (reutilizado por: carga del alumno, planificación del admin y
-   carga de resultado del admin)
-====================================================================== */
-let editorState = {fecha:null, ejercicios:[]};
-let editorMode = null;      // 'log' (alumno carga su día) | 'plan' (admin asigna) | 'markplan' (admin carga resultado)
-let editorContext = {};     // datos extra: {uid} para 'markplan'
-
-/* aplana un día guardado (bloques/series) al formato simple del editor */
-function flattenDia(dia){
-  const out = [];
-  getBloques(dia).forEach(b=>(b.ejercicios||[]).forEach(ej=>{
-    const series = ej.series||[];
-    const first = series.find(x=>(x.reps!=='' && x.reps!=null) || (x.peso!=='' && x.peso!=null)) || series[0] || {};
-    out.push({ejercicioId:ej.ejercicioId, rondas:series.length||'', reps:(first.reps!=null?first.reps:''), peso:(first.peso!=null?first.peso:'')});
-  }));
-  return out;
-}
-
-function openLoadDay(fechaPre){
-  const fecha = fechaPre || todayStr();
-  const existentes = (state.registros[state.user.uid]||{})[fecha];
-  const planDelDia = (state.planificacion[state.user.uid]||{})[fecha];
-  let inicial = [];
-  if(existentes && getBloques(existentes).length) inicial = flattenDia(existentes);
-  else if(planDelDia && getBloques(planDelDia).length) inicial = flattenDia(planDelDia);
-  editorState = {fecha, ejercicios: inicial};
-  editorMode = 'log';
-  editorContext = {};
-  openEditorModal('Cargar entrenamiento','Guardar día');
-}
-
-function openAssignActivity(){
-  const fecha = document.getElementById('planDate').value || todayStr();
-  const uids = Object.keys(state.roster||{});
-  if(!uids.length){ showToast('Agregá alumnos primero'); return; }
-  editorState = {fecha, ejercicios: []};
-  editorMode = 'plan';
-  editorContext = {};
-  openEditorModal('Asignar actividad','Guardar planificación', {withAlumnoSelect:true, uids});
-}
-
-function openMarkComplete(uidT, fecha){
-  const plan = (state.planificacion[uidT]||{})[fecha];
-  const regExist = (state.registros[uidT]||{})[fecha];
-  const base = (regExist && getBloques(regExist).length) ? regExist : plan;
-  editorState = {fecha, ejercicios: flattenDia(base)};
-  editorMode = 'markplan';
-  editorContext = {uid:uidT};
-  const p = state.roster[uidT];
-  openEditorModal('Cargar resultado · '+(p?p.nombre+' '+p.apellido:'Alumno'), 'Guardar resultado');
-}
-
-async function markNotDone(uidT,fecha){
-  if(!(DB.planificacion[uidT] && DB.planificacion[uidT][fecha])) return;
-  DB.planificacion[uidT][fecha].completado = false;
-  await storageSet('planificacion', DB.planificacion);
-  rebuildStateRefs();
-  refreshCurrentScreen();
-}
-
-function openEditorModal(title, saveLabel, opts){
-  opts = opts||{};
-  let alumnoSelectHtml = '';
-  if(opts.withAlumnoSelect){
-    alumnoSelectHtml = `<label class="field"><span>Alumno</span><select id="editorAlumno" onchange="renderEditorRecents();renderEditorEjercicios();">${opts.uids.map(id=>`<option value="${id}">${state.roster[id].nombre} ${state.roster[id].apellido}</option>`).join('')}</select></label>`;
-  }
-  const regActual = editorMode==='log' ? (state.registros[state.user.uid]||{})[editorState.fecha] : null;
-  const puedeEliminar = !!(regActual && getBloques(regActual).length);
-  showModal(`
-    <h2 style="margin-top:0;">${title}</h2>
-    ${alumnoSelectHtml}
-    <label class="field"><span>Fecha</span><input type="date" id="editorFecha" value="${editorState.fecha}" onchange="editorState.fecha=this.value;renderEditorEjercicios();"></label>
-    ${editorMode==='log' && !editorState.ejercicios.length?`<button class="btn btn-ghost btn-block" id="btnCopiarUltimo" style="margin-bottom:10px;" onclick="copiarUltimoDia()">⧉ Repetir mi último entrenamiento</button>`:''}
-    <div id="editorEjList"></div>
-    <div id="editorRecents"></div>
-    <div class="search-wrap">
-      <input type="text" id="ejSearch" placeholder="🔍 Buscar ejercicio para agregar…" autocomplete="off" oninput="renderEjSearch(this.value)">
-      <div id="ejSearchResults" class="search-results"></div>
-    </div>
-    <button class="btn btn-accent btn-block" style="margin-top:14px;" onclick="saveEditor()">${saveLabel}</button>
-    ${puedeEliminar?`<button class="btn btn-danger btn-block" style="margin-top:10px;" onclick="deleteDiaActual()">🗑 Eliminar este día</button>`:''}
-  `);
-  renderEditorEjercicios();
-  renderEditorRecents();
-}
-
-function renderEditorEjercicios(){
-  const wrap = document.getElementById('editorEjList');
-  if(!wrap) return;
-  if(!editorState.ejercicios.length){
-    wrap.innerHTML = `<div class="empty small" style="padding:16px 8px;"><div class="ic">🏋️</div>Buscá un ejercicio abajo para agregarlo.</div>`;
-    return;
-  }
-  const uidT = editorTargetUid();
-  const fechaRef = editorState.fecha || todayStr();
-  wrap.innerHTML = editorState.ejercicios.map((ej,i)=>{
-    const uv = uidT ? ultimaVezEjercicio(uidT, ej.ejercicioId, fechaRef) : null;
-    const uvHtml = uv ? `<div class="small" style="margin-top:7px;color:var(--teal);">↩ Última vez: ${uv.rondas}×${uv.reps!==''&&uv.reps!=null?uv.reps:'—'}${uv.peso!==''&&uv.peso!=null?` · ${uv.peso} kg`:''} <span class="muted">(${new Date(uv.fecha+'T00:00').toLocaleDateString('es-AR',{day:'numeric',month:'short'})})</span></div>` : '';
-    return `
-    <div class="exercise-block">
-      <div class="row between" style="margin-bottom:10px;">
-        <div style="font-weight:700;font-size:14px;">${iconoEjercicio(ej.ejercicioId)} ${nombreEjercicio(ej.ejercicioId)}</div>
-        <button class="remove-x" onclick="removeEjercicioEditor(${i})">✕</button>
-      </div>
-      <div class="triple">
-        <label><span>Rondas</span><input type="number" min="1" inputmode="numeric" placeholder="3" value="${ej.rondas!=null?ej.rondas:''}" oninput="setEjVal(${i},'rondas',this.value)"></label>
-        <label><span>Reps</span><input type="number" min="0" inputmode="numeric" placeholder="10" value="${ej.reps!=null?ej.reps:''}" oninput="setEjVal(${i},'reps',this.value)"></label>
-        <label><span>Peso (kg)</span><input type="number" min="0" step="0.5" inputmode="decimal" placeholder="0" value="${ej.peso!=null?ej.peso:''}" oninput="setEjVal(${i},'peso',this.value)"></label>
-      </div>
-      ${uvHtml}
-    </div>`;
-  }).join('');
-}
-
-function normalizarTxt(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
-function renderEjSearch(q){
-  const box = document.getElementById('ejSearchResults');
-  if(!box) return;
-  const raw = q.trim();
-  const nq = normalizarTxt(raw);
-  if(!nq){ box.innerHTML=''; return; }
-  const matches = Object.entries(state.ejercicios||{})
-    .filter(([id,e])=> normalizarTxt(e.nombre).includes(nq) || normalizarTxt(e.categoria).includes(nq))
-    .slice(0,8);
-  const yaExiste = Object.values(state.ejercicios||{}).some(e=>normalizarTxt(e.nombre)===nq);
-  let html = matches.map(([id,e])=>`<div class="search-item" onclick="addEjercicioEditor('${id}')">${CAT_ICONS[e.categoria]||'🏋️'} ${e.nombre} <span class="small muted">· ${e.categoria}</span></div>`).join('');
-  if(!yaExiste && raw.length>=3) html += `<div class="search-item" style="color:var(--accent);" onclick="pedirCategoriaNuevoEj()">➕ Crear «${raw}» como ejercicio nuevo</div>`;
-  if(!html) html = `<div class="search-item" style="cursor:default;color:var(--muted);">Sin resultados</div>`;
-  box.innerHTML = html;
-}
-/* crear un ejercicio nuevo sin salir del editor: elegís categoría y queda
-   agregado a la rutina y guardado en la base de ejercicios */
-function pedirCategoriaNuevoEj(){
-  const inp = document.getElementById('ejSearch');
-  const nombre = (inp ? inp.value : '').trim();
-  if(!nombre) return;
-  const box = document.getElementById('ejSearchResults');
-  box.innerHTML = `<div class="search-item" style="cursor:default;color:var(--muted);">¿En qué categoría va «${nombre}»?</div>` +
-    CATEGORIAS.map((c,i)=>`<div class="search-item" onclick="crearEjercicioRapido(${i})">${CAT_ICONS[c]||'🏋️'} ${c}</div>`).join('');
-}
-async function crearEjercicioRapido(catIdx){
-  const inp = document.getElementById('ejSearch');
-  const nombre = (inp ? inp.value : '').trim();
-  if(!nombre) return;
-  const id = uid('ej');
-  DB.ejercicios[id] = {nombre, categoria: CATEGORIAS[catIdx]};
-  await storageSet('ejercicios', DB.ejercicios);
-  rebuildStateRefs();
-  addEjercicioEditor(id);
-  showToast('✓ «'+nombre+'» creado y agregado');
-}
-function addEjercicioEditor(id){
-  editorState.ejercicios.push({ejercicioId:id, rondas:'', reps:'', peso:''});
-  const inp = document.getElementById('ejSearch');
-  if(inp) inp.value='';
-  const box = document.getElementById('ejSearchResults');
-  if(box) box.innerHTML='';
-  renderEditorEjercicios();
-  renderEditorRecents();
-}
-function removeEjercicioEditor(i){ editorState.ejercicios.splice(i,1); renderEditorEjercicios(); renderEditorRecents(); }
-function setEjVal(i,f,v){ editorState.ejercicios[i][f]=v; }
-
-/* eliminar el día abierto en el editor (por si se cargó mal) */
-async function deleteDiaActual(){
-  if(!confirm('¿Eliminar todo lo cargado en este día?')) return;
-  const uidT = state.user.uid;
-  if(DB.registros[uidT]) delete DB.registros[uidT][editorState.fecha];
-  await storageSet('registros', DB.registros);
-  rebuildStateRefs();
-  closeModal();
-  refreshCurrentScreen();
-  showToast('Día eliminado');
-}
-
-/* eliminar el registro de un día desde el calendario */
-async function deleteRegistroDia(uidT, fecha){
-  if(!confirm('¿Eliminar el registro de este día?')) return;
-  if(DB.registros[uidT]) delete DB.registros[uidT][fecha];
-  await storageSet('registros', DB.registros);
-  rebuildStateRefs();
-  refreshCurrentScreen();
-  showToast('Día eliminado');
-}
-
-/* ---------- toast de confirmación ---------- */
-let toastTimer = null;
-function showToast(msg, tipo, dur){
-  let t = document.getElementById('toastBox');
-  if(!t){ t = document.createElement('div'); t.id = 'toastBox'; document.body.appendChild(t); }
-  t.className = 'toast' + (tipo==='record' ? ' record' : '');
-  t.innerHTML = msg;
-  requestAnimationFrame(()=>t.classList.add('show'));
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>t.classList.remove('show'), dur||2200);
-}
-
-/* ---------- ayudas del editor ---------- */
-function editorTargetUid(){
-  if(editorMode==='markplan') return editorContext.uid;
-  if(editorMode==='plan'){ const sel = document.getElementById('editorAlumno'); return sel ? sel.value : null; }
-  return state.user ? state.user.uid : null;
-}
-function ejerciciosFrecuentes(uidT, limit){
-  const regs = state.registros[uidT]||{};
-  const score = {};
-  const fechas = Object.keys(regs).sort();
-  fechas.forEach((f,idx)=>{
-    getBloques(regs[f]).forEach(b=>(b.ejercicios||[]).forEach(e=>{
-      score[e.ejercicioId] = (score[e.ejercicioId]||0) + 1 + (idx>=fechas.length-5 ? 2 : 0);
-    }));
-  });
-  return Object.entries(score).filter(([id])=>state.ejercicios[id]).sort((a,b)=>b[1]-a[1]).slice(0,limit||6).map(([id])=>id);
-}
-function renderEditorRecents(){
-  const box = document.getElementById('editorRecents');
-  if(!box) return;
-  const uidT = editorTargetUid();
-  if(!uidT){ box.innerHTML=''; return; }
-  const ya = new Set(editorState.ejercicios.map(e=>e.ejercicioId));
-  const ids = ejerciciosFrecuentes(uidT, 10).filter(id=>!ya.has(id)).slice(0,6);
-  if(!ids.length){ box.innerHTML=''; return; }
-  box.innerHTML = `<div class="small muted" style="margin:4px 0 6px;">Frecuentes (tocá para agregar):</div><div class="chip-row">` +
-    ids.map(id=>`<span class="chip" onclick="addEjercicioEditor('${id}')">${iconoEjercicio(id)} ${nombreEjercicio(id)}</span>`).join('') + `</div>`;
-}
-function ultimaVezEjercicio(uidT, ejId, antesDe){
-  const regs = state.registros[uidT]||{};
-  const fechas = Object.keys(regs).filter(f=>f<antesDe).sort().reverse();
-  for(const f of fechas){
-    for(const b of getBloques(regs[f])){
-      const e = (b.ejercicios||[]).find(x=>x.ejercicioId===ejId);
-      if(e){
-        const sr = (e.series||[])[0]||{};
-        return {fecha:f, rondas:(e.series||[]).length, reps:sr.reps, peso:sr.peso};
+async function cargar(){
+  adoptar(await local.leer());
+  nube=await conectarNube();
+  if(!nube) return;
+  try{
+    const snap=await nube.fs.getDoc(nube.ref);
+    if(snap.exists()){
+      const d=snap.data();
+      if((d.ts||0)>(estado.ts||0)){ adoptar(d); await local.escribir(estado); }
+      else if((estado.ts||0)>(d.ts||0)){ await nube.fs.setDoc(nube.ref,estado); }
+    }else{
+      await nube.fs.setDoc(nube.ref,estado);
+    }
+    nube.fs.onSnapshot(nube.ref,s=>{
+      if(sincronizando) return;
+      const d=s.data();
+      if(d&&(d.ts||0)>(estado.ts||0)){
+        adoptar(d); local.escribir(estado);
+        pintarCabecera(); pintarSeg(); pintarTeoria(); pintarPractica();
+        pieEstado("Actualizado desde otro dispositivo.");
       }
-    }
-  }
-  return null;
-}
-function copiarUltimoDia(){
-  const uidT = state.user.uid;
-  const regs = state.registros[uidT]||{};
-  const ref = editorState.fecha || todayStr();
-  const fechas = Object.keys(regs).filter(f=>f<ref && getBloques(regs[f]).length).sort().reverse();
-  if(!fechas.length){ showToast('No tenés entrenamientos anteriores para copiar'); return; }
-  editorState.ejercicios = flattenDia(regs[fechas[0]]);
-  const btn = document.getElementById('btnCopiarUltimo'); if(btn) btn.remove();
-  renderEditorEjercicios();
-  renderEditorRecents();
-  showToast('✓ Copiado del '+new Date(fechas[0]+'T00:00').toLocaleDateString('es-AR',{day:'numeric',month:'short'}));
-}
-function maxPesoPrevio(uidT, ejId, excluirFecha){
-  let max = 0;
-  Object.entries(state.registros[uidT]||{}).forEach(([f,dia])=>{
-    if(f===excluirFecha) return;
-    getBloques(dia).forEach(b=>(b.ejercicios||[]).forEach(e=>{
-      if(e.ejercicioId!==ejId) return;
-      (e.series||[]).forEach(sr=>{ const pz = parseFloat(sr.peso)||0; if(pz>max) max = pz; });
-    }));
-  });
-  return max;
-}
-
-/* ---------- racha de días seguidos ---------- */
-function rachaDias(uidT){
-  const regs = state.registros[uidT]||{};
-  const tiene = f => !!(regs[f] && getBloques(regs[f]).length);
-  const d = new Date();
-  let racha = 0;
-  if(!tiene(fmtDate(d))) d.setDate(d.getDate()-1);
-  while(tiene(fmtDate(d))){ racha++; d.setDate(d.getDate()-1); }
-  return racha;
-}
-
-async function saveEditor(){
-  const ejerciciosLimpios = editorState.ejercicios
-    .filter(e=>e.ejercicioId)
-    .map(e=>{
-      const n = Math.max(1, parseInt(e.rondas)||1);
-      return {
-        ejercicioId: e.ejercicioId,
-        series: Array.from({length:n}, ()=>({reps:e.reps||'', peso:e.peso||''})),
-        dolor: false,
-        nota: ''
-      };
     });
-  const limpiaBloques = ejerciciosLimpios.length ? [{nombre:'Entrenamiento', ejercicios:ejerciciosLimpios}] : [];
+    pieEstado("Sincronizado.");
+  }catch(e){ pieEstado("No se pudo sincronizar. Guardando en este dispositivo.") }
+}
 
-  const fechaInput = document.getElementById('editorFecha');
-  const fecha = (fechaInput && fechaInput.value) || editorState.fecha;
+async function guardar(){
+  clearTimeout(guardando);
+  guardando=setTimeout(async()=>{
+    estado.ts=Date.now();
+    sincronizando=true;
+    await local.escribir(estado);
+    if(nube){
+      try{ await nube.fs.setDoc(nube.ref,estado); pieEstado("Guardado y sincronizado.") }
+      catch(e){ pieEstado("Guardado acá. La nube no respondió.") }
+    }else pieEstado("Guardado.");
+    setTimeout(()=>{sincronizando=false},600);
+  },400);
+}
+function pieEstado(t){
+  const el=document.getElementById("pie-estado"); if(!el) return;
+  el.textContent=t;
+  clearTimeout(pieEstado._t);
+  pieEstado._t=setTimeout(()=>{el.textContent=nube?"Sincronizado con tus otros dispositivos.":"Guardado en este dispositivo."},2600);
+}
+const esc=s=>s.replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 
-  if(editorMode==='log' || editorMode==='markplan'){
-    const uidT = editorMode==='log' ? state.user.uid : editorContext.uid;
-    // detectar nuevos récords antes de pisar los datos
-    const records = [];
-    ejerciciosLimpios.forEach(e=>{
-      const peso = parseFloat(e.series[0] && e.series[0].peso)||0;
-      const prev = maxPesoPrevio(uidT, e.ejercicioId, fecha);
-      if(prev>0 && peso>prev) records.push(`${nombreEjercicio(e.ejercicioId)}: ${peso} kg`);
+/* ================= CABECERA ================= */
+function pintarCabecera(){
+  const xp=xpTotal();let nivel=NIVELES[0],sig=null;
+  NIVELES.forEach((n,i)=>{if(xp>=n.min){nivel=n;sig=NIVELES[i+1]||null}});
+  document.getElementById("m-nivel").textContent=nivel.n;
+  document.getElementById("m-hechos").innerHTML=cont("hecho")+' <small>/ '+EJ.length+'</small>';
+  document.getElementById("m-teoria").innerHTML=teoOK()+' <small>/ '+TOTAL_Q+'</small>';
+  document.getElementById("m-pasos").innerHTML=praOK()+' <small>/ '+TOTAL_S+'</small>';
+  document.getElementById("m-barra").style.width=Math.min(100,xp/TOTAL_XP*100)+"%";
+  document.getElementById("m-xp").textContent=xp+" XP de "+TOTAL_XP;
+  document.getElementById("m-prox").textContent=sig?(sig.min-xp)+" XP para "+sig.n:"Nivel máximo";
+}
+
+/* ================= SEGUIMIENTO ================= */
+function setEstado(id,e){
+  if(!estado.items[id])estado.items[id]={};
+  estado.items[id].e=(est(id)===e)?"pendiente":e;
+  estado.items[id].ts=Date.now();guardar();pintarSeg();pintarCabecera();
+}
+function setNota(id,v){
+  if(!estado.items[id])estado.items[id]={};
+  estado.items[id].nota=v;estado.items[id].ts=Date.now();guardar();
+}
+const proximo=()=>EJ.find(e=>est(e.id)==="curso")||EJ.find(e=>est(e.id)==="pendiente")||null;
+function abrir(id){
+  irTab("seg");filtro="todos";pintarSeg();
+  const el=document.getElementById("ej-"+id);if(!el)return;
+  document.querySelectorAll(".ej.abierto").forEach(x=>x.classList.remove("abierto"));
+  el.classList.add("abierto");el.querySelector(".ej-head").setAttribute("aria-expanded","true");
+  el.scrollIntoView({behavior:"smooth",block:"center"});
+}
+function pintarSiguiente(){
+  const p=proximo();
+  if(p){
+    document.getElementById("sig-tit").textContent="Ejercicio "+p.id+" — "+p.n;
+    document.getElementById("sig-sub").textContent=est(p.id)==="curso"?(nota(p.id)||"Lo tenés empezado."):p.d;
+    document.getElementById("sig-btn").textContent=est(p.id)==="curso"?"Retomar":"Empezar";
+    document.getElementById("sig-btn").onclick=()=>abrir(p.id);
+  }else{
+    document.getElementById("sig-tit").textContent="Terminaste la guía entera";
+    document.getElementById("sig-sub").textContent="Cincuenta ejercicios, cero pendientes.";
+    document.getElementById("sig-btn").style.display="none";
+  }
+}
+function pintarMatriz(){
+  const c=document.getElementById("matriz");c.innerHTML="";
+  [["p","Guía principal"],["c","Complementarios"]].forEach(([g,rot])=>{
+    const enc=document.createElement("div");enc.className="mrow";
+    enc.innerHTML='<div class="mlabel" style="font-weight:600;color:var(--tinta)">'+rot+'</div><div class="mcells"></div>';
+    c.appendChild(enc);
+    TEMAS.forEach(t=>{
+      const l=EJ.filter(e=>e.g===g&&e.t===t.id);if(!l.length)return;
+      const row=document.createElement("div");row.className="mrow";
+      const lab=document.createElement("div");lab.className="mlabel";lab.textContent=t.n;
+      const cells=document.createElement("div");cells.className="mcells";
+      l.forEach(e=>{
+        const b=document.createElement("button");b.className="cell";b.dataset.e=est(e.id);b.textContent=e.id;
+        b.title="Ejercicio "+e.id+" — "+e.n+" · "+ETIQUETA[est(e.id)];b.setAttribute("aria-label",b.title);
+        b.onclick=()=>abrir(e.id);cells.appendChild(b);
+      });
+      row.appendChild(lab);row.appendChild(cells);c.appendChild(row);
     });
-    if(editorMode==='markplan' && DB.planificacion[uidT] && DB.planificacion[uidT][fecha]) DB.planificacion[uidT][fecha].completado = true;
-    DB.registros[uidT] = DB.registros[uidT] || {};
-    DB.registros[uidT][fecha] = editorMode==='log'
-      ? {bloques:limpiaBloques, actualizado:Date.now()}
-      : {bloques:limpiaBloques, actualizado:Date.now(), origenPlan:true};
-    if(editorMode==='markplan') await Promise.all([storageSet('planificacion',DB.planificacion), storageSet('registros',DB.registros)]);
-    else await storageSet('registros', DB.registros);
-    rebuildStateRefs();
-    closeModal();
-    if(editorMode==='log') showScreen('alumno-home'); else refreshCurrentScreen();
-    if(records.length) showToast('🎉 ¡Nuevo récord! '+records.join(' · '), 'record', 4500);
-    else showToast(editorMode==='log' ? '✓ Día guardado' : '✓ Resultado guardado');
-  } else if(editorMode==='plan'){
-    const uidT = document.getElementById('editorAlumno').value;
-    DB.planificacion[uidT] = DB.planificacion[uidT] || {};
-    DB.planificacion[uidT][fecha] = {bloques:limpiaBloques, completado:false};
-    await storageSet('planificacion', DB.planificacion);
-    rebuildStateRefs();
-    closeModal();
-    renderPlanDay();
-    showToast('✓ Planificación guardada');
-  }
-}
-
-/* ======================================================================
-   HISTORIAL — alumno (calendario propio)
-====================================================================== */
-function setHistView(v,btn){
-  state.histView=v;
-  document.querySelectorAll('#screen-alumno-historial .seg button').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('histCalendarWrap').classList.toggle('hidden', v!=='calendario');
-  document.getElementById('histResumenWrap').classList.toggle('hidden', v!=='resumen');
-  renderHistorial();
-}
-function calShift(dir){ state.calMonth.setMonth(state.calMonth.getMonth()+dir); renderHistorial(); }
-function renderHistorial(){
-  if(state.histView==='calendario') renderCalendar(state.user.uid, state.calMonth, 'calLabel','calDowRow','calGrid','calDayDetail', d=>{ state.calSelectedDate=d; renderHistorial(); }, state.calSelectedDate, false);
-  else renderResumenAlumno();
-}
-function renderResumenAlumno(){
-  const uidA = state.user.uid;
-  const regs = state.registros[uidA]||{};
-  const fechas = Object.keys(regs).sort().reverse();
-  const wrap = document.getElementById('histResumenWrap');
-  if(!fechas.length){ wrap.innerHTML=`<div class="empty"><div class="ic">📊</div>Sin registros todavía.</div>`; return; }
-  const conteo = {};
-  const totalPorFecha = {};
-  fechas.forEach(f=>{
-    let n=0;
-    getBloques(regs[f]).forEach(b=> (b.ejercicios||[]).forEach(e=>{ const cat=state.ejercicios[e.ejercicioId]?.categoria||'Otro'; conteo[cat]=(conteo[cat]||0)+1; n++; }));
-    totalPorFecha[f]=n;
   });
-  const max = Math.max(...Object.values(conteo),1);
-  wrap.innerHTML = `<div class="card"><h3 style="margin:0 0 10px;font-size:18px;">Distribución por grupo muscular</h3>` +
-    Object.entries(conteo).sort((a,b)=>b[1]-a[1]).map(([cat,n])=>`
-      <div style="margin-bottom:10px;"><div class="row between small"><span>${cat}</span><span class="mono muted">${n}</span></div>
-      <div class="progress-mini"><div style="width:${n/max*100}%"></div></div></div>`).join('') + `</div>` +
-    `<div class="section-title" style="font-size:18px;">Últimos días</div>` +
-    fechas.slice(0,10).map(f=>`<div class="card card-tight"><div class="row between"><b>${new Date(f+'T00:00').toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'short'})}</b><span class="small muted mono">${totalPorFecha[f]} ejerc.</span></div></div>`).join('');
 }
-
-/* generic calendar renderer, reused for alumno + admin detalle */
-function renderCalendar(uid, monthDate, labelId, dowId, gridId, detailId, onSelect, selectedDate, isAdminView){
-  document.getElementById(labelId).textContent = monthLabel(monthDate);
-  const dow = document.getElementById(dowId);
-  dow.innerHTML = ['D','L','M','M','J','V','S'].map(d=>`<div class="cal-dow">${d}</div>`).join('');
-  const grid = document.getElementById(gridId);
-  const year = monthDate.getFullYear(), month = monthDate.getMonth();
-  const firstDow = new Date(year,month,1).getDay();
-  const daysInMonth = new Date(year,month+1,0).getDate();
-  const regs = state.registros[uid]||{};
-  const plan = state.planificacion[uid]||{};
-  let html='';
-  for(let i=0;i<firstDow;i++) html+=`<div class="cal-cell empty-cell"></div>`;
-  for(let d=1; d<=daysInMonth; d++){
-    const dateStr = fmtDate(new Date(year,month,d));
-    const hasLog = !!(regs[dateStr] && getBloques(regs[dateStr]).length);
-    const hasPlan = !!plan[dateStr];
-    const isToday = dateStr===todayStr();
-    const dots = (hasLog||hasPlan) ? `<span class="dots">${hasLog?'<i class="d-log"></i>':''}${hasPlan?'<i class="d-plan"></i>':''}</span>` : `<span class="dots"></span>`;
-    html += `<div class="cal-cell ${hasLog?'has-log':''} ${isToday?'today':''}" onclick="(${onSelect.toString()})('${dateStr}')"><span>${d}</span>${dots}</div>`;
-  }
-  grid.innerHTML = html;
-  const detail = document.getElementById(detailId);
-  const sel = selectedDate || todayStr();
-  const diaReg = regs[sel];
-  const diaPlan = plan[sel];
-  const bloquesReg = getBloques(diaReg);
-  const bloquesPlan = getBloques(diaPlan);
-  const volSel = diaReg ? volumenDia(diaReg) : 0;
-  let out = `<div class="row between"><b>${new Date(sel+'T00:00').toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'})}</b>${volSel>0?`<span class="badge ok">Σ ${fmtVol(volSel)} kg</span>`:''}</div>`;
-  let huboAlgo = false;
-  if(bloquesPlan.length){
-    huboAlgo = true;
-    out += `<div class="row between" style="margin:8px 0 2px;"><span class="small muted" style="text-transform:uppercase;letter-spacing:.06em;">Planificado por Luciano</span><span class="badge ${diaPlan.completado?'ok':'pend'}">${diaPlan.completado?'Completado':'Pendiente'}</span></div>`;
-    out += bloquesPlan.map(renderBloqueResumenHTML).join('');
-  }
-  if(bloquesReg.length){
-    huboAlgo = true;
-    out += `<div class="small muted" style="margin:${bloquesPlan.length?'14px':'8px'} 0 2px;text-transform:uppercase;letter-spacing:.06em;">Registrado</div>`;
-    out += bloquesReg.map(renderBloqueResumenHTML).join('');
-  }
-  if(!huboAlgo){
-    out += `<div class="empty small"><div class="ic">📭</div>Sin registro ni plan este día.</div>`;
-  }
-  if(uid===state.user.uid && state.role==='alumno'){
-    out += `<button class="btn btn-ghost btn-block btn-sm" style="margin-top:12px;" onclick="openLoadDay('${sel}')">Cargar / editar este día</button>`;
-    if(bloquesReg.length) out += `<button class="btn btn-danger btn-block btn-sm" style="margin-top:8px;" onclick="deleteRegistroDia('${uid}','${sel}')">🗑 Eliminar registro del día</button>`;
-  }
-  if(isAdminView && bloquesReg.length){
-    out += `<button class="btn btn-danger btn-block btn-sm" style="margin-top:12px;" onclick="deleteRegistroDia('${uid}','${sel}')">🗑 Eliminar registro del día</button>`;
-  }
-  detail.innerHTML = out;
-}
-
-/* ======================================================================
-   ADMIN · INICIO (resumen del día de todos los alumnos)
-====================================================================== */
-function renderAdminHome(){
-  const wrap = document.getElementById('adminTodaySummary');
-  const uids = Object.keys(state.roster||{});
-  // hero con stats globales del gimnasio
-  const hero = document.getElementById('adminHero');
-  const hoy = todayStr();
-  let entrenosMes = 0, volumenMes = 0, activosHoy = 0;
-  uids.forEach(uidX=>{
-    const st = statsMes(uidX);
-    entrenosMes += st.dias; volumenMes += st.volumen;
-    const regHoy = (state.registros[uidX]||{})[hoy];
-    if(regHoy && getBloques(regHoy).length) activosHoy++;
+function pintarFiltros(){
+  const defs=[["todos","Todos"],["p","Guía principal"],["c","Complementarios"],
+    ["pendiente","Pendientes"],["curso","En curso"],["hecho","Hechos"],["repasar","Para repasar"]];
+  const c=document.getElementById("filtros");c.innerHTML="";
+  defs.forEach(([k,n])=>{
+    const b=document.createElement("button");b.className="chip";b.textContent=n;
+    b.setAttribute("aria-pressed",filtro===k?"true":"false");
+    b.onclick=()=>{filtro=k;pintarSeg()};c.appendChild(b);
   });
-  hero.innerHTML = `
-    <div class="saludo">Hola, Lucho 👋</div>
-    <div class="fecha">${new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'})}</div>
-    <div class="stat-grid">
-      <div class="stat"><div class="val">${activosHoy}/${uids.length}</div><div class="lbl">Entrenaron<br>hoy</div></div>
-      <div class="stat"><div class="val">${entrenosMes}</div><div class="lbl">Entrenos<br>del mes</div></div>
-      <div class="stat"><div class="val">${fmtVol(volumenMes)}</div><div class="lbl">Volumen<br>(kg)</div></div>
-    </div>`;
-  renderRankingMes('adminRankingMes');
-  if(!uids.length){ wrap.innerHTML=`<div class="empty"><div class="ic">👥</div>Todavía no agregaste alumnos.</div>`; return; }
-  wrap.innerHTML = uids.map(uid=>{
-    const p = state.roster[uid];
-    const reg = (state.registros[uid]||{})[hoy];
-    const nEj = getBloques(reg).reduce((acc,b)=>acc+(b.ejercicios||[]).length,0);
-    const hecho = nEj > 0;
-    return `<div class="list-item" style="cursor:pointer;" onclick="openDetalle('${uid}')">
-      <div class="avatar">${initials(p.nombre,p.apellido)}</div>
-      <div style="flex:1;">
-        <div style="font-weight:700;font-size:14px;">${p.nombre} ${p.apellido}</div>
-        <div class="small muted">${hecho? (nEj+' ejercicio(s) hoy') : 'Sin cargar hoy'}</div>
-      </div>
-      <span class="badge ${hecho?'ok':'off'}">${hecho?'Hecho':'Pendiente'}</span>
-    </div>`;
-  }).join('');
 }
-function openDetalle(uid){
-  state.detUid = uid;
-  state.detCalMonth = new Date();
-  state.detSelectedDate = null;
-  document.getElementById('detalleNombre').textContent = state.roster[uid] ? (state.roster[uid].nombre+' '+state.roster[uid].apellido) : 'Alumno';
-  showScreen('admin-detalle');
+const visible=e=>filtro==="todos"?true:(filtro==="p"||filtro==="c")?e.g===filtro:est(e.id)===filtro;
+function pintarLista(){
+  const c=document.getElementById("lista");
+  const abiertos=new Set([...document.querySelectorAll(".ej.abierto")].map(x=>x.id));
+  c.innerHTML="";const p=proximo();let grupo=null;
+  const lista=EJ.filter(visible);
+  if(!lista.length){c.innerHTML='<div class="aviso">Nada en este filtro todavía.</div>';return}
+  lista.forEach(e=>{
+    const g=e.g+"|"+e.t;
+    if(g!==grupo){grupo=g;const h=document.createElement("div");h.className="tema-tit";
+      h.innerHTML="<span>"+(e.g==="p"?"":"Complementarios · ")+TEMAS.find(t=>t.id===e.t).n+"</span>";c.appendChild(h)}
+    const s=est(e.id);
+    const card=document.createElement("article");
+    card.className="ej"+(p&&p.id===e.id?" destacado":"")+(abiertos.has("ej-"+e.id)?" abierto":"");
+    card.id="ej-"+e.id;card.dataset.e=s;
+    const head=document.createElement("button");head.className="ej-head";
+    head.setAttribute("aria-expanded",abiertos.has("ej-"+e.id)?"true":"false");
+    head.innerHTML='<span class="num">'+e.id+'</span><span class="ej-txt"><span class="t">'+e.n+
+      '</span><span class="d">'+(nota(e.id)?"✎ "+esc(nota(e.id).slice(0,110)):e.d)+
+      '</span></span><span class="estado-chip" data-e="'+s+'">'+ETIQUETA[s]+'</span>';
+    head.onclick=()=>{const ab=card.classList.toggle("abierto");head.setAttribute("aria-expanded",ab?"true":"false")};
+    const body=document.createElement("div");body.className="ej-body";
+    body.innerHTML='<p style="font-size:13.5px;color:var(--grafito);margin:12px 0 0">'+e.d+'</p><div class="lab">Estado</div>';
+    const acc=document.createElement("div");acc.className="acciones";
+    [["curso","Lo estoy haciendo"],["hecho","Terminado"],["repasar","Repasar antes del parcial"]].forEach(([k,n])=>{
+      const b=document.createElement("button");b.className="acc";b.textContent=n;
+      b.setAttribute("aria-pressed",s===k?"true":"false");b.onclick=()=>setEstado(e.id,k);acc.appendChild(b);
+    });
+    body.appendChild(acc);
+    const pr=PRACTICA.find(x=>x.ej===e.id);
+    if(pr){const bb=document.createElement("div");bb.style.marginTop="10px";
+      const b2=document.createElement("button");b2.className="btn sec";b2.style.fontSize="13px";b2.style.padding="8px 14px";
+      b2.textContent="Resolverlo paso a paso";b2.onclick=()=>{irTab("pra");abrirPractica(pr.id)};bb.appendChild(b2);body.appendChild(bb)}
+    const lab=document.createElement("div");lab.className="lab";lab.textContent="¿Por dónde lo dejé?";body.appendChild(lab);
+    const ta=document.createElement("textarea");ta.value=nota(e.id);
+    ta.placeholder="Ej: armé la matriz de aflicción pero me falta el valor esperado.";
+    ta.oninput=()=>setNota(e.id,ta.value);ta.onblur=()=>pintarSeg();body.appendChild(ta);
+    if(sello(e.id)){const sm=document.createElement("div");sm.className="sello";
+      sm.textContent="Última vez: "+new Date(sello(e.id)).toLocaleString("es-AR",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+      body.appendChild(sm)}
+    card.appendChild(head);card.appendChild(body);c.appendChild(card);
+  });
+}
+const LOGROS=[
+{n:"Primera decisión",c:"Resolvés tu primer ejercicio",f:()=>cont("hecho")>=1},
+{n:"Bajo incertidumbre",c:"Modelos de decisión completo",f:()=>temaListo("dec","p")},
+{n:"Sin azar",c:"Simulación completa",f:()=>temaListo("sim","p")},
+{n:"Mínimos cuadrados",c:"Pronósticos completo",f:()=>temaListo("pro","p")},
+{n:"Equilibrio",c:"Costo–volumen–utilidad completo",f:()=>temaListo("cvu","p")},
+{n:"Región factible",c:"Programación lineal completa",f:()=>temaListo("pl","p")},
+{n:"Teoría al día",c:"Cuarenta preguntas de teoría bien",f:()=>teoOK()>=40},
+{n:"Primer parcial",c:"Teoría de las unidades 1 a 4 completa",f:()=>UNIDADES.filter(u=>u.parcial===1).every(u=>{const[o,n]=uniQs(u);return o===n})},
+{n:"Paso a paso",c:"Todos los pasos de práctica resueltos",f:()=>praOK()>=TOTAL_S},
+{n:"Guía cerrada",c:"Los cincuenta ejercicios",f:()=>cont("hecho")===EJ.length}];
+function pintarLogros(){
+  const c=document.getElementById("logros");c.innerHTML="";
+  LOGROS.forEach(l=>{const d=document.createElement("div");d.className="logro"+(l.f()?" ok":"");
+    d.innerHTML='<div class="n">'+l.n+'</div><div class="c">'+l.c+'</div>';c.appendChild(d)});
+}
+function pintarSeg(){pintarSiguiente();pintarMatriz();pintarFiltros();pintarLista();pintarLogros()}
+
+/* ================= TEORÍA ================= */
+function pintarTeoria(){
+  const c=document.getElementById("teo-lista");c.innerHTML="";
+  [1,2].forEach(par=>{
+    const h=document.createElement("div");h.className="parcial-tit";
+    h.textContent=par===1?"Primer parcial · Unidades 1 a 4":"Segundo parcial · Unidades 5 a 8";
+    c.appendChild(h);
+    const g=document.createElement("div");g.className="uni-grid";
+    UNIDADES.filter(u=>u.parcial===par).forEach(u=>{
+      const[ok,n]=uniQs(u);
+      const b=document.createElement("button");b.className="uni";
+      b.innerHTML='<div class="n">Unidad '+u.u+'</div><div class="t">'+u.t+'</div>'+
+        '<div class="m">'+u.puntos.length+' punto'+(u.puntos.length>1?'s':'')+' · '+ok+' de '+n+' preguntas</div>'+
+        '<div class="mini"><i style="width:'+(n?ok/n*100:0)+'%"></i></div>';
+      b.onclick=()=>iniciarTeoria(u);g.appendChild(b);
+    });
+    c.appendChild(g);
+  });
+}
+function iniciarTeoria(u){
+  const qs=[];
+  u.puntos.forEach(p=>p.qs.forEach((q,i)=>qs.push({...q,pid:p.p,pn:p.n,id:"u"+u.u+"-"+p.p+"-"+i})));
+  quiz={tipo:"teo",titulo:"Unidad "+u.u+" · "+u.t,sub:"Teoría",qs,i:0,ok:0,mal:0,resp:null,datos:null};
+  document.getElementById("teo-menu").style.display="none";
+  const z=document.getElementById("teo-quiz");z.style.display="block";
+  render(z);window.scrollTo({top:0,behavior:"smooth"});
 }
 
-/* ======================================================================
-   ADMIN · ALUMNOS
-====================================================================== */
-function renderAdminAlumnos(){
-  const wrap = document.getElementById('adminAlumnosList');
-  const uids = Object.keys(state.roster||{});
-  if(!uids.length){ wrap.innerHTML=`<div class="empty"><div class="ic">👥</div>Agregá tu primer alumno.</div>`; return; }
-  wrap.innerHTML = uids.map(uid=>{
-    const p = state.roster[uid];
-    return `<div class="list-item" style="cursor:pointer;" onclick="openDetalle('${uid}')">
-      <div class="avatar">${initials(p.nombre,p.apellido)}</div>
-      <div style="flex:1;">
-        <div style="font-weight:700;font-size:14px;">${p.nombre} ${p.apellido}</div>
-        <div class="small muted">${p.claimed? p.email : 'Aún no creó su cuenta'}</div>
-      </div>
-      ${p.claimed?'':'<span class="badge pend">Sin cuenta</span>'}
-      <button class="remove-x" onclick="event.stopPropagation();deleteAlumno('${uid}')">✕</button>
-    </div>`;
-  }).join('');
+/* ================= PRÁCTICA ================= */
+function pintarPractica(){
+  const c=document.getElementById("pra-lista");c.innerHTML="";
+  [1,2].forEach(par=>{
+    const l=PRACTICA.filter(e=>e.parcial===par);if(!l.length)return;
+    const h=document.createElement("div");h.className="parcial-tit";
+    h.textContent=par===1?"Primer parcial":"Segundo parcial";c.appendChild(h);
+    const g=document.createElement("div");g.className="uni-grid";
+    l.forEach(e=>{
+      const ok=e.pasos.filter((p,i)=>sOK(e.id+"-"+i)).length;
+      const b=document.createElement("button");b.className="uni";
+      b.innerHTML='<div class="n">Ejercicio '+e.ej+' · '+e.tema+'</div><div class="t">'+e.t+'</div>'+
+        '<div class="m">'+ok+' de '+e.pasos.length+' pasos</div>'+
+        '<div class="mini"><i style="width:'+(ok/e.pasos.length*100)+'%"></i></div>';
+      b.onclick=()=>abrirPractica(e.id);g.appendChild(b);
+    });
+    c.appendChild(g);
+  });
 }
-function openAddAlumno(){
-  showModal(`
-    <h2 style="margin-top:0;">Agregar alumno</h2>
-    <p class="muted small">Cargá el nombre y apellido. El alumno después elige su nombre de la lista al crear su cuenta con su propio email y contraseña.</p>
-    <label class="field"><span>Nombre</span><input type="text" id="newAlumnoNombre"></label>
-    <label class="field"><span>Apellido</span><input type="text" id="newAlumnoApellido"></label>
-    <button class="btn btn-accent btn-block" onclick="saveAlumno()">Guardar</button>
-  `);
-}
-async function saveAlumno(){
-  const nombre = document.getElementById('newAlumnoNombre').value.trim();
-  const apellido = document.getElementById('newAlumnoApellido').value.trim();
-  if(!nombre||!apellido){ showToast('Completá nombre y apellido'); return; }
-  const id = uid('al');
-  DB.usuarios[id] = {nombre,apellido,rol:'alumno',claimed:false};
-  await storageSet('usuarios', DB.usuarios);
-  rebuildStateRefs();
-  closeModal();
-  refreshCurrentScreen();
-}
-async function deleteAlumno(uidBorrar){
-  if(!confirm('¿Eliminar a este alumno y todos sus registros?')) return;
-  delete DB.usuarios[uidBorrar];
-  delete DB.registros[uidBorrar];
-  delete DB.planificacion[uidBorrar];
-  await Promise.all([storageSet('usuarios',DB.usuarios), storageSet('registros',DB.registros), storageSet('planificacion',DB.planificacion)]);
-  rebuildStateRefs();
-  refreshCurrentScreen();
+function abrirPractica(id){
+  const e=PRACTICA.find(x=>x.id===id);if(!e)return;
+  irTab("pra");
+  quiz={tipo:"pra",titulo:"Ejercicio "+e.ej+" — "+e.t,sub:e.tema,datos:e.datos,
+    qs:e.pasos.map((p,i)=>({...p,id:e.id+"-"+i,pn:"Paso "+(i+1)})),i:0,ok:0,mal:0,resp:null};
+  document.getElementById("pra-menu").style.display="none";
+  const z=document.getElementById("pra-quiz");z.style.display="block";
+  render(z);window.scrollTo({top:0,behavior:"smooth"});
 }
 
-/* ======================================================================
-   ADMIN · DETALLE (calendario + récords de un alumno)
-====================================================================== */
-function setDetView(v,btn){
-  state.detView=v;
-  document.querySelectorAll('#screen-admin-detalle .seg button').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('detCalendarWrap').classList.toggle('hidden', v!=='calendario');
-  document.getElementById('detRecordsWrap').classList.toggle('hidden', v!=='records');
-  renderDetalle();
+/* ================= MOTOR DE QUIZ ================= */
+function salirQuiz(){
+  quiz=null;
+  ["teo","pra"].forEach(k=>{
+    document.getElementById(k+"-quiz").style.display="none";
+    document.getElementById(k+"-quiz").innerHTML="";
+    document.getElementById(k+"-menu").style.display="block";
+  });
+  pintarTeoria();pintarPractica();pintarCabecera();
 }
-function detCalShift(dir){ state.detCalMonth.setMonth(state.detCalMonth.getMonth()+dir); renderDetalle(); }
-function renderDetalle(){
-  if(!state.detUid) return;
-  const st = statsMes(state.detUid);
-  document.getElementById('detStats').innerHTML = `
-    <div class="stat-grid" style="margin-top:0;">
-      <div class="stat"><div class="val">${st.dias}</div><div class="lbl">Entrenos<br>del mes</div></div>
-      <div class="stat"><div class="val">${fmtVol(st.volumen)}</div><div class="lbl">Volumen<br>(kg)</div></div>
-      <div class="stat"><div class="val">${st.ejercicios}</div><div class="lbl">Ejercicios<br>del mes</div></div>
-    </div>`;
-  if(state.detView==='calendario'){
-    renderCalendar(state.detUid, state.detCalMonth, 'detCalLabel','detCalDowRow','detCalGrid','detDayDetail', d=>{ state.detSelectedDate=d; renderDetalle(); }, state.detSelectedDate, true);
-  } else {
-    renderRecords(state.detUid,'detRecordsWrap');
+function responder(k){
+  if(quiz.resp!==null)return;
+  quiz.resp=k;
+  const q=quiz.qs[quiz.i], bien=(k===q.c);
+  if(bien)quiz.ok++;else quiz.mal++;
+  if(quiz.tipo==="teo"){if(bien)estado.teo[q.id]=true}
+  else{if(bien)estado.pra[q.id]=true}
+  guardar();pintarCabecera();
+  render(quiz.tipo==="teo"?document.getElementById("teo-quiz"):document.getElementById("pra-quiz"));
+}
+function siguiente(){
+  if(quiz.i<quiz.qs.length-1){quiz.i++;quiz.resp=null}
+  else{quiz.i=-1}
+  render(quiz.tipo==="teo"?document.getElementById("teo-quiz"):document.getElementById("pra-quiz"));
+}
+function render(z){
+  if(!quiz)return;
+  const total=quiz.qs.length;
+  if(quiz.i===-1){
+    const pct=Math.round(quiz.ok/total*100);
+    let msg;
+    if(pct===100)msg="Perfecto. Ese tema lo tenés.";
+    else if(pct>=70)msg="Muy bien. Repasá las que fallaste y queda cerrado.";
+    else if(pct>=40)msg="Vas encaminado. Volvé sobre las explicaciones y probá de nuevo.";
+    else msg="Este tema todavía necesita una vuelta más. Leé las explicaciones y reintentá.";
+    z.innerHTML='<div class="quiz"><div class="quiz-top"><div><div class="l">'+esc(quiz.sub)+
+      '</div><div class="t">'+esc(quiz.titulo)+'</div></div><button class="volver" id="q-salir">Volver</button></div>'+
+      '<div class="res"><div class="big">'+quiz.ok+'/'+total+'</div><div class="lbl">respuestas correctas</div>'+
+      '<div class="msg">'+msg+'</div></div>'+
+      '<div class="quiz-nav"><button class="btn sec" id="q-otra">Volver a intentar</button>'+
+      '<button class="btn" id="q-fin">Listo</button></div></div>';
+    document.getElementById("q-salir").onclick=salirQuiz;
+    document.getElementById("q-fin").onclick=salirQuiz;
+    document.getElementById("q-otra").onclick=()=>{quiz.i=0;quiz.ok=0;quiz.mal=0;quiz.resp=null;render(z)};
+    return;
   }
+  const q=quiz.qs[quiz.i];
+  let pasos='';
+  for(let j=0;j<total;j++){
+    let cl="pp";
+    if(j===quiz.i)cl+=" now";
+    else if(quiz.tipo==="teo"?qOK(quiz.qs[j].id):sOK(quiz.qs[j].id))cl+=" ok";
+    pasos+='<span class="'+cl+'"></span>';
+  }
+  let html='<div class="quiz"><div class="quiz-top"><div><div class="l">'+esc(quiz.sub)+
+    '</div><div class="t">'+esc(quiz.titulo)+'</div></div><button class="volver" id="q-salir">Volver</button></div>';
+  if(quiz.datos)html+='<div class="datos">'+quiz.datos+'</div>';
+  html+='<div class="punto-lab">'+esc(q.pn?(quiz.tipo==="teo"?"Punto "+q.pid+" · "+q.pn:q.pn):"")+
+    ' · '+(quiz.i+1)+' de '+total+'</div><p class="preg">'+esc(q.q)+'</p><div class="opts">';
+  const letras=["A","B","C","D"];
+  q.o.forEach((op,k)=>{
+    let cl="opt";
+    if(quiz.resp!==null){if(k===q.c)cl+=" ok";else if(k===quiz.resp)cl+=" no"}
+    html+='<button class="'+cl+'" data-k="'+k+'"'+(quiz.resp!==null?" disabled":"")+
+      '><span class="k">'+letras[k]+'</span><span>'+esc(op)+'</span></button>';
+  });
+  html+='</div>';
+  if(quiz.resp!==null){
+    const bien=quiz.resp===q.c;
+    html+='<div class="fb '+(bien?"ok":"no")+'"><b>'+(bien?"Correcto. ":"No era esa. ")+'</b>'+esc(q.e)+'</div>';
+  }
+  html+='<div class="quiz-nav"><div class="prog-pasos">'+pasos+'</div>';
+  if(quiz.resp!==null)html+='<button class="btn" id="q-next">'+(quiz.i<total-1?"Siguiente":"Ver resultado")+'</button>';
+  html+='</div></div>';
+  z.innerHTML=html;
+  document.getElementById("q-salir").onclick=salirQuiz;
+  z.querySelectorAll(".opt").forEach(b=>b.onclick=()=>responder(+b.dataset.k));
+  const nx=document.getElementById("q-next");if(nx)nx.onclick=siguiente;
 }
 
-/* ======================================================================
-   ADMIN · PLANIFICACIÓN
-====================================================================== */
-function renderAdminPlan(){
-  const inp = document.getElementById('planDate');
-  if(!inp.value) inp.value = todayStr();
-  renderPlanDay();
+/* ================= TABS ================= */
+function irTab(t){
+  document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.t===t?"true":"false"));
+  document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id==="p-"+t));
 }
-function renderPlanDay(){
-  const fecha = document.getElementById('planDate').value || todayStr();
-  const wrap = document.getElementById('planDayList');
-  const uids = Object.keys(state.roster||{});
-  const items = uids.map(uidX=>{
-    const p = state.roster[uidX];
-    const plan = (state.planificacion[uidX]||{})[fecha];
-    if(!plan) return '';
-    const resumen = getBloques(plan).map(b=>`<b>${b.nombre}:</b> ${(b.ejercicios||[]).map(e=>nombreEjercicio(e.ejercicioId)).join(', ')}`).join(' · ');
-    return `<div class="card">
-      <div class="row between">
-        <div class="row"><div class="avatar">${initials(p.nombre,p.apellido)}</div><b>${p.nombre} ${p.apellido}</b></div>
-        <span class="badge ${plan.completado?'ok':'pend'}">${plan.completado?'Completado':'Pendiente'}</span>
-      </div>
-      <div class="small muted" style="margin:8px 0;">${resumen}</div>
-      <div class="row wrap">
-        <button class="btn btn-teal btn-sm" onclick="openMarkComplete('${uidX}','${fecha}')">Cargar resultado</button>
-        <button class="btn btn-ghost btn-sm" onclick="markNotDone('${uidX}','${fecha}')">Marcar no realizado</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteActivity('${uidX}','${fecha}')">Eliminar</button>
-      </div>
-    </div>`;
-  }).filter(Boolean).join('');
-  wrap.innerHTML = items || `<div class="empty small"><div class="ic">🗓️</div>Nadie tiene actividad asignada este día.</div>`;
-}
-async function deleteActivity(alumnoUid,fecha){
-  if(!confirm('¿Eliminar esta actividad planificada?')) return;
-  delete DB.planificacion[alumnoUid][fecha];
-  await storageSet('planificacion', DB.planificacion);
-  rebuildStateRefs();
-  refreshCurrentScreen();
-}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>irTab(b.dataset.t));
 
-/* ======================================================================
-   ADMIN · BASE DE EJERCICIOS
-====================================================================== */
-function renderAdminEjercicios(){
-  const wrap = document.getElementById('adminEjerciciosList');
-  const entries = Object.entries(state.ejercicios||{});
-  if(!entries.length){ wrap.innerHTML = `<div class="empty">Sin ejercicios cargados.</div>`; return; }
-  const porCategoria = {};
-  entries.forEach(([id,e])=>{ (porCategoria[e.categoria]=porCategoria[e.categoria]||[]).push([id,e]); });
-  wrap.innerHTML = CATEGORIAS.filter(c=>porCategoria[c]).map(cat=>`
-    <div class="card">
-      <b>${cat}</b>
-      ${porCategoria[cat].map(([id,e])=>`
-        <div class="list-item">
-          <div style="flex:1;">${e.nombre}</div>
-          <button class="remove-x" onclick="deleteEjercicio('${id}')">✕</button>
-        </div>`).join('')}
-    </div>`).join('');
-}
-function openAddEjercicio(){
-  showModal(`
-    <h2 style="margin-top:0;">Nuevo ejercicio</h2>
-    <label class="field"><span>Nombre</span><input type="text" id="newEjNombre" placeholder="Ej: Remo en máquina T"></label>
-    <label class="field"><span>Categoría</span><select id="newEjCat">${CATEGORIAS.map(c=>`<option>${c}</option>`).join('')}</select></label>
-    <button class="btn btn-accent btn-block" onclick="saveEjercicio()">Guardar</button>
-  `);
-}
-async function saveEjercicio(){
-  const nombre = document.getElementById('newEjNombre').value.trim();
-  const categoria = document.getElementById('newEjCat').value;
-  if(!nombre){ showToast('Escribí un nombre'); return; }
-  const id = uid('ej');
-  DB.ejercicios[id] = {nombre,categoria};
-  await storageSet('ejercicios', DB.ejercicios);
-  rebuildStateRefs();
-  closeModal();
-  refreshCurrentScreen();
-}
-async function deleteEjercicio(id){
-  if(!confirm('¿Eliminar este ejercicio de la base?')) return;
-  delete DB.ejercicios[id];
-  await storageSet('ejercicios', DB.ejercicios);
-  rebuildStateRefs();
-  refreshCurrentScreen();
-}
+document.getElementById("reset").onclick=async()=>{
+  if(!confirm("Se borra todo: estados, notas, teoría y práctica. ¿Seguro?"))return;
+  estado={items:{},teo:{},pra:{},ts:Date.now()};
+  await local.borrar();
+  if(nube){try{await nube.fs.setDoc(nube.ref,estado)}catch(e){}}
+  salirQuiz();pintarSeg();pintarCabecera();
+};
 
-/* ======================================================================
-   PWA: permite instalar la app en la pantalla de inicio del celular
-====================================================================== */
-(function setupPWA(){
-  try{
-    function iconPNG(size){
-      const c = document.createElement('canvas'); c.width = c.height = size;
-      const ctx = c.getContext('2d');
-      const g = ctx.createLinearGradient(0,0,size,size);
-      g.addColorStop(0,'#ffc300'); g.addColorStop(1,'#cc9100');
-      ctx.fillStyle = g;
-      ctx.fillRect(0,0,size,size);
-      ctx.fillStyle = '#231a00';
-      ctx.font = '700 '+Math.round(size*0.4)+'px sans-serif';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText('LG', size/2, size/2 + size*0.03);
-      return c.toDataURL('image/png');
-    }
-    const i192 = iconPNG(192), i512 = iconPNG(512);
-    const manifest = {
-      name:'Lucho Gym', short_name:'Lucho Gym',
-      start_url: location.href.split('#')[0],
-      display:'standalone', background_color:'#0d0f14', theme_color:'#0d0f14',
-      icons:[{src:i192,sizes:'192x192',type:'image/png'},{src:i512,sizes:'512x512',type:'image/png'}]
-    };
-    const link = document.createElement('link');
-    link.rel = 'manifest';
-    link.href = URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'}));
-    document.head.appendChild(link);
-    const apple = document.createElement('link');
-    apple.rel = 'apple-touch-icon'; apple.href = i192;
-    document.head.appendChild(apple);
-  }catch(e){}
+(async function(){
+  await cargar();
+  pintarCabecera();pintarSeg();pintarTeoria();pintarPractica();
 })();
 </script>
-</body>
-</html>
