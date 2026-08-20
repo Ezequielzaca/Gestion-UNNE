@@ -1,172 +1,190 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#15223A">
+<meta name="theme-color" content="#0A1220">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Gestión">
 <title>Gestión de Empresas — tablero de estudio</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap');
 :root{
-  --papel:#F3F5F8; --rejilla:#DDE5ED; --tinta:#15223A; --grafito:#66748C; --borde:#C8D3DF; --tarjeta:#FFF;
-  --hecho:#1B7F55; --hecho-suave:#DFF1E8; --curso:#C2700B; --curso-suave:#FBEBD5;
-  --repasar:#5D3FB5; --repasar-suave:#E9E3FA; --pendiente:#AEBBCA; --mal:#B03A3A; --mal-suave:#F8E3E3;
+  --fondo:#0A1220; --rejilla:#152238; --panel:#111D31; --panel2:#16253C;
+  --borde:#22364F; --borde2:#2E4869;
+  --texto:#E4EDFA; --texto2:#93A9C6; --tenue:#6B819E;
+  --amarillo:#FFC94A; --amarillo-op:#3A2F12;
+  --verde:#2FD07E; --verde-op:#0F2E22; --rojo:#FF5D5D; --rojo-op:#331519;
+  --azul:#4C9AFF; --azul-op:#12253F; --violeta:#A98CFF; --violeta-op:#221D3B;
   --display:"Space Grotesk","Trebuchet MS",sans-serif; --body:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
-body{font-family:var(--body);color:var(--tinta);background-color:var(--papel);
+body{font-family:var(--body);color:var(--texto);background-color:var(--fondo);
   background-image:linear-gradient(var(--rejilla) 1px,transparent 1px),linear-gradient(90deg,var(--rejilla) 1px,transparent 1px);
-  background-size:26px 26px;line-height:1.5;-webkit-font-smoothing:antialiased}
-.wrap{max-width:960px;margin:0 auto;padding:24px 16px 80px}
-.head{background:var(--tarjeta);border:1.5px solid var(--tinta);box-shadow:5px 5px 0 var(--borde);padding:20px}
-.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--grafito);margin:0 0 5px}
-h1{font-family:var(--display);font-weight:700;font-size:clamp(24px,5vw,36px);line-height:1.05;margin:0 0 14px;letter-spacing:-.02em}
-.metrics{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end}
-.metric .k{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--grafito)}
-.metric .v{font-family:var(--display);font-weight:700;font-size:22px;line-height:1.1}
-.metric .v small{font-family:var(--mono);font-weight:400;font-size:11.5px;color:var(--grafito)}
-.barra{margin-top:14px;height:11px;background:var(--papel);border:1.5px solid var(--tinta);overflow:hidden}
-.barra i{display:block;height:100%;background:var(--tinta);width:0;transition:width .5s ease}
-.barra-pie{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--grafito);margin-top:5px}
-/* tabs */
-.tabs{display:flex;gap:0;margin:20px 0 0;border-bottom:1.5px solid var(--tinta)}
-.tab{font-family:var(--display);font-weight:700;font-size:14px;background:var(--rejilla);border:1.5px solid var(--borde);border-bottom:0;
-  color:var(--grafito);padding:11px 18px;cursor:pointer;margin-right:4px;position:relative;top:1.5px}
-.tab[aria-selected="true"]{background:var(--tinta);border-color:var(--tinta);color:#fff}
-.tab:focus-visible{outline:2.5px solid var(--tinta);outline-offset:2px}
-.panel{display:none;padding-top:22px}
+  background-size:30px 30px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:980px;margin:0 auto;padding:24px 16px 90px}
+::selection{background:var(--amarillo);color:#0A1220}
+
+.head{background:var(--panel);border:1px solid var(--borde2);border-top:4px solid var(--amarillo);padding:22px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--amarillo);margin:0 0 6px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(25px,5vw,38px);line-height:1.05;margin:0 0 16px;letter-spacing:-.02em}
+.metrics{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-end}
+.metric .k{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--tenue)}
+.metric .v{font-family:var(--display);font-weight:700;font-size:23px;line-height:1.1;color:var(--texto)}
+.metric:first-child .v{color:var(--amarillo)}
+.metric .v small{font-family:var(--mono);font-weight:400;font-size:11.5px;color:var(--tenue)}
+.barra{margin-top:16px;height:10px;background:var(--fondo);border:1px solid var(--borde2);overflow:hidden}
+.barra i{display:block;height:100%;background:linear-gradient(90deg,var(--azul),var(--amarillo));width:0;transition:width .5s ease}
+.barra-pie{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--tenue);margin-top:6px}
+
+.tabs{display:flex;margin:22px 0 0;border-bottom:1px solid var(--borde2)}
+.tab{font-family:var(--display);font-weight:700;font-size:14px;background:transparent;border:0;border-bottom:3px solid transparent;
+  color:var(--texto2);padding:12px 18px;cursor:pointer;margin-bottom:-1px}
+.tab:hover{color:var(--texto)}
+.tab[aria-selected="true"]{color:var(--amarillo);border-bottom-color:var(--amarillo)}
+.tab:focus-visible{outline:2px solid var(--azul);outline-offset:-2px}
+.panel{display:none;padding-top:24px}
 .panel.on{display:block}
-h2{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.03em;margin:0 0 4px;text-transform:uppercase}
-.desc{font-size:13px;color:var(--grafito);margin:0 0 14px}
-.seccion{margin-top:30px}
-.aviso{font-family:var(--mono);font-size:11px;color:var(--grafito);padding:9px 12px;background:var(--tarjeta);border:1.5px dashed var(--borde);margin-bottom:14px}
-/* siguiente */
-.siguiente{margin-top:16px;background:var(--tinta);color:#fff;padding:16px 18px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-.siguiente .lab{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.62}
-.siguiente .tit{font-family:var(--display);font-weight:700;font-size:18px;margin-top:3px}
-.siguiente .sub{font-size:13px;opacity:.72;margin-top:2px;max-width:52ch}
-.btn-ir{font-family:var(--display);font-weight:700;font-size:14px;background:#fff;color:var(--tinta);border:0;padding:11px 20px;cursor:pointer;white-space:nowrap}
-.btn-ir:hover{background:var(--rejilla)}
-/* matriz */
-.matriz{background:var(--tarjeta);border:1.5px solid var(--tinta);padding:13px}
-.mrow{display:flex;gap:12px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed var(--borde)}
+h2{font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.1em;margin:0 0 5px;text-transform:uppercase;color:var(--amarillo)}
+.desc{font-size:13.5px;color:var(--texto2);margin:0 0 16px}
+.seccion{margin-top:34px}
+.aviso{font-family:var(--mono);font-size:11.5px;color:var(--texto2);padding:10px 13px;background:var(--azul-op);border-left:3px solid var(--azul);margin-bottom:16px}
+
+.siguiente{margin-top:18px;background:var(--panel2);border:1px solid var(--borde2);border-left:4px solid var(--amarillo);
+  padding:18px 20px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.siguiente .lab{font-family:var(--mono);font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:var(--amarillo)}
+.siguiente .tit{font-family:var(--display);font-weight:700;font-size:18px;margin-top:4px}
+.siguiente .sub{font-size:13px;color:var(--texto2);margin-top:3px;max-width:54ch}
+.btn-ir{font-family:var(--display);font-weight:700;font-size:14px;background:var(--amarillo);color:#0A1220;border:0;padding:11px 22px;cursor:pointer;white-space:nowrap}
+.btn-ir:hover{background:#FFD86E}
+
+.matriz{background:var(--panel);border:1px solid var(--borde);padding:14px}
+.mrow{display:flex;gap:14px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--rejilla)}
 .mrow:last-child{border-bottom:0}
-.mlabel{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--grafito);width:150px;flex:none;padding-top:7px}
+.mlabel{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--tenue);width:152px;flex:none;padding-top:8px}
 .mcells{display:flex;flex-wrap:wrap;gap:6px}
-.cell{width:34px;height:34px;border:1.5px solid var(--borde);background:var(--papel);font-family:var(--mono);font-size:12px;font-weight:600;
-  color:var(--grafito);display:grid;place-items:center;cursor:pointer;padding:0;transition:transform .12s ease}
-.cell:hover{transform:translateY(-2px)}
-.cell:focus-visible{outline:2.5px solid var(--tinta);outline-offset:2px}
-.cell[data-e="hecho"]{background:var(--hecho);border-color:var(--hecho);color:#fff}
-.cell[data-e="curso"]{background:var(--curso-suave);border-color:var(--curso);color:var(--curso)}
-.cell[data-e="repasar"]{background:var(--repasar-suave);border-color:var(--repasar);color:var(--repasar)}
-/* chips */
-.filtros{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 14px}
-.chip{font-family:var(--mono);font-size:11.5px;background:var(--tarjeta);border:1.5px solid var(--borde);color:var(--grafito);padding:6px 12px;cursor:pointer}
-.chip[aria-pressed="true"]{background:var(--tinta);border-color:var(--tinta);color:#fff}
-.chip:focus-visible{outline:2.5px solid var(--tinta);outline-offset:2px}
-/* lista ejercicios */
-.tema-tit{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--grafito);margin:20px 0 8px;display:flex;align-items:center;gap:10px}
+.cell{width:34px;height:34px;border:1px solid var(--borde2);background:var(--fondo);font-family:var(--mono);font-size:12px;font-weight:600;
+  color:var(--tenue);display:grid;place-items:center;cursor:pointer;padding:0;transition:transform .12s ease}
+.cell:hover{transform:translateY(-2px);border-color:var(--amarillo)}
+.cell:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+.cell[data-e="hecho"]{background:var(--verde);border-color:var(--verde);color:#062015}
+.cell[data-e="curso"]{background:var(--amarillo-op);border-color:var(--amarillo);color:var(--amarillo)}
+.cell[data-e="repasar"]{background:var(--violeta-op);border-color:var(--violeta);color:var(--violeta)}
+
+.filtros{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 16px}
+.chip{font-family:var(--mono);font-size:11.5px;background:var(--panel);border:1px solid var(--borde2);color:var(--texto2);padding:7px 13px;cursor:pointer}
+.chip:hover{border-color:var(--azul);color:var(--texto)}
+.chip[aria-pressed="true"]{background:var(--amarillo);border-color:var(--amarillo);color:#0A1220;font-weight:600}
+.chip:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+
+.tema-tit{font-family:var(--mono);font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:var(--tenue);margin:22px 0 9px;display:flex;align-items:center;gap:12px}
 .tema-tit::after{content:"";flex:1;height:1px;background:var(--borde)}
-.ej{background:var(--tarjeta);border:1.5px solid var(--borde);margin-bottom:8px}
-.ej[data-e="hecho"]{border-left:5px solid var(--hecho)}
-.ej[data-e="curso"]{border-left:5px solid var(--curso)}
-.ej[data-e="repasar"]{border-left:5px solid var(--repasar)}
-.ej[data-e="pendiente"]{border-left:5px solid var(--pendiente)}
-.ej.destacado{border-color:var(--tinta);box-shadow:4px 4px 0 var(--rejilla)}
-.ej-head{display:flex;gap:12px;align-items:flex-start;width:100%;background:none;border:0;padding:13px 14px;text-align:left;cursor:pointer;font:inherit;color:inherit}
-.ej-head:focus-visible{outline:2.5px solid var(--tinta);outline-offset:-3px}
-.num{font-family:var(--mono);font-size:13px;font-weight:600;min-width:34px;height:26px;display:grid;place-items:center;border:1.5px solid var(--borde);color:var(--grafito);flex:none}
-.ej[data-e="hecho"] .num{background:var(--hecho);border-color:var(--hecho);color:#fff}
+.ej{background:var(--panel);border:1px solid var(--borde);margin-bottom:7px}
+.ej[data-e="hecho"]{border-left:4px solid var(--verde)}
+.ej[data-e="curso"]{border-left:4px solid var(--amarillo)}
+.ej[data-e="repasar"]{border-left:4px solid var(--violeta)}
+.ej[data-e="pendiente"]{border-left:4px solid var(--borde2)}
+.ej.destacado{border-color:var(--amarillo)}
+.ej-head{display:flex;gap:13px;align-items:flex-start;width:100%;background:none;border:0;padding:14px;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.ej-head:hover{background:var(--panel2)}
+.ej-head:focus-visible{outline:2px solid var(--azul);outline-offset:-2px}
+.num{font-family:var(--mono);font-size:13px;font-weight:600;min-width:34px;height:26px;display:grid;place-items:center;border:1px solid var(--borde2);color:var(--tenue);flex:none}
+.ej[data-e="hecho"] .num{background:var(--verde);border-color:var(--verde);color:#062015}
 .ej-txt{flex:1;min-width:0}
 .ej-txt .t{font-weight:600;font-size:14.5px}
-.ej-txt .d{font-size:13px;color:var(--grafito);margin-top:2px}
-.estado-chip{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:4px 8px;flex:none;align-self:center;white-space:nowrap}
-.estado-chip[data-e="pendiente"]{background:var(--papel);color:var(--grafito)}
-.estado-chip[data-e="hecho"]{background:var(--hecho-suave);color:var(--hecho)}
-.estado-chip[data-e="curso"]{background:var(--curso-suave);color:var(--curso)}
-.estado-chip[data-e="repasar"]{background:var(--repasar-suave);color:var(--repasar)}
-.ej-body{display:none;padding:0 14px 14px 60px;border-top:1px dashed var(--borde)}
+.ej-txt .d{font-size:13px;color:var(--texto2);margin-top:3px}
+.estado-chip{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;padding:4px 8px;flex:none;align-self:center;white-space:nowrap;border:1px solid transparent}
+.estado-chip[data-e="pendiente"]{color:var(--tenue);border-color:var(--borde2)}
+.estado-chip[data-e="hecho"]{background:var(--verde-op);color:var(--verde);border-color:var(--verde)}
+.estado-chip[data-e="curso"]{background:var(--amarillo-op);color:var(--amarillo);border-color:var(--amarillo)}
+.estado-chip[data-e="repasar"]{background:var(--violeta-op);color:var(--violeta);border-color:var(--violeta)}
+.ej-body{display:none;padding:0 14px 15px 61px;border-top:1px solid var(--rejilla)}
 .ej.abierto .ej-body{display:block}
-.ej-body .lab{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--grafito);margin:13px 0 7px}
+.ej-body .lab{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--tenue);margin:14px 0 8px}
 .acciones{display:flex;flex-wrap:wrap;gap:6px}
-.acc{font-family:var(--body);font-size:13px;font-weight:500;background:var(--papel);border:1.5px solid var(--borde);padding:7px 13px;cursor:pointer;color:var(--grafito)}
-.acc:hover{border-color:var(--tinta);color:var(--tinta)}
-.acc[aria-pressed="true"]{background:var(--tinta);border-color:var(--tinta);color:#fff}
-.acc:focus-visible{outline:2.5px solid var(--tinta);outline-offset:2px}
-textarea{width:100%;min-height:70px;font-family:var(--body);font-size:13.5px;color:var(--tinta);border:1.5px solid var(--borde);background:var(--papel);padding:10px;resize:vertical}
-textarea:focus{outline:2.5px solid var(--tinta);outline-offset:-1px;background:#fff}
-.sello{font-family:var(--mono);font-size:10.5px;color:var(--grafito);margin-top:7px}
-/* unidades */
-.parcial-tit{font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta);
-  margin:26px 0 10px;padding:7px 11px;background:var(--rejilla);border-left:5px solid var(--tinta)}
-.uni-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:9px}
-.uni{background:var(--tarjeta);border:1.5px solid var(--borde);padding:14px;text-align:left;cursor:pointer;font:inherit;color:inherit;display:block;width:100%}
-.uni:hover{border-color:var(--tinta);box-shadow:4px 4px 0 var(--rejilla)}
-.uni:focus-visible{outline:2.5px solid var(--tinta);outline-offset:2px}
-.uni .n{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--grafito)}
-.uni .t{font-family:var(--display);font-weight:700;font-size:16px;margin:3px 0 7px;line-height:1.2}
-.uni .m{font-family:var(--mono);font-size:11px;color:var(--grafito)}
-.uni .mini{height:7px;background:var(--papel);border:1.5px solid var(--borde);margin-top:8px;overflow:hidden}
-.uni .mini i{display:block;height:100%;background:var(--hecho);width:0}
-/* quiz */
-.quiz{background:var(--tarjeta);border:1.5px solid var(--tinta);box-shadow:5px 5px 0 var(--borde);padding:20px}
-.quiz-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px dashed var(--borde)}
-.quiz-top .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--grafito)}
-.quiz-top .t{font-family:var(--display);font-weight:700;font-size:17px;margin-top:2px}
-.volver{font-family:var(--mono);font-size:11px;background:none;border:1.5px solid var(--borde);color:var(--grafito);padding:7px 12px;cursor:pointer}
-.volver:hover{border-color:var(--tinta);color:var(--tinta)}
-.punto-lab{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--grafito);margin-bottom:8px}
-.preg{font-family:var(--display);font-weight:700;font-size:18px;line-height:1.3;margin:0 0 14px}
+.acc{font-family:var(--body);font-size:13px;font-weight:500;background:var(--fondo);border:1px solid var(--borde2);padding:8px 14px;cursor:pointer;color:var(--texto2)}
+.acc:hover{border-color:var(--azul);color:var(--texto)}
+.acc[aria-pressed="true"]{background:var(--verde);border-color:var(--verde);color:#062015;font-weight:600}
+.acc:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+textarea{width:100%;min-height:72px;font-family:var(--body);font-size:13.5px;color:var(--texto);border:1px solid var(--borde2);background:var(--fondo);padding:11px;resize:vertical}
+textarea::placeholder{color:var(--tenue)}
+textarea:focus{outline:0;border-color:var(--amarillo);background:var(--panel2)}
+.sello{font-family:var(--mono);font-size:10.5px;color:var(--tenue);margin-top:8px}
+
+.parcial-tit{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--texto);
+  margin:28px 0 12px;padding:9px 13px;background:var(--panel2);border-left:4px solid var(--azul)}
+.parcial-tit.p2{border-left-color:var(--violeta)}
+.parcial-tit.p3{border-left-color:var(--amarillo)}
+.uni-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(262px,1fr));gap:9px}
+.uni{background:var(--panel);border:1px solid var(--borde);padding:15px;text-align:left;cursor:pointer;font:inherit;color:inherit;display:block;width:100%}
+.uni:hover{border-color:var(--amarillo);background:var(--panel2)}
+.uni:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+.uni .n{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--amarillo)}
+.uni .t{font-family:var(--display);font-weight:700;font-size:16px;margin:4px 0 8px;line-height:1.2;color:var(--texto)}
+.uni .m{font-family:var(--mono);font-size:11px;color:var(--texto2)}
+.uni .mini{height:6px;background:var(--fondo);border:1px solid var(--borde2);margin-top:9px;overflow:hidden}
+.uni .mini i{display:block;height:100%;background:var(--verde);width:0}
+
+.quiz{background:var(--panel);border:1px solid var(--borde2);border-top:3px solid var(--amarillo);padding:22px}
+.quiz-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--rejilla)}
+.quiz-top .l{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--amarillo)}
+.quiz-top .t{font-family:var(--display);font-weight:700;font-size:17px;margin-top:3px}
+.volver{font-family:var(--mono);font-size:11px;background:transparent;border:1px solid var(--borde2);color:var(--texto2);padding:8px 13px;cursor:pointer}
+.volver:hover{border-color:var(--rojo);color:var(--rojo)}
+.punto-lab{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--tenue);margin-bottom:9px}
+.preg{font-family:var(--display);font-weight:700;font-size:18px;line-height:1.35;margin:0 0 16px}
 .opts{display:flex;flex-direction:column;gap:7px}
-.opt{text-align:left;font:inherit;font-size:14px;background:var(--papel);border:1.5px solid var(--borde);padding:12px 14px;cursor:pointer;display:flex;gap:11px;align-items:flex-start;color:var(--tinta)}
-.opt:hover:not(:disabled){border-color:var(--tinta)}
-.opt:disabled{cursor:default}
-.opt:focus-visible{outline:2.5px solid var(--tinta);outline-offset:2px}
-.opt .k{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--grafito);flex:none;padding-top:1px}
-.opt.ok{background:var(--hecho-suave);border-color:var(--hecho)}
-.opt.ok .k{color:var(--hecho)}
-.opt.no{background:var(--mal-suave);border-color:var(--mal)}
-.opt.no .k{color:var(--mal)}
-.fb{margin-top:14px;padding:13px 15px;border-left:5px solid var(--tinta);background:var(--papel);font-size:13.5px}
-.fb b{font-family:var(--display)}
-.fb.ok{border-left-color:var(--hecho)}
-.fb.no{border-left-color:var(--mal)}
-.quiz-nav{margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.opt{text-align:left;font:inherit;font-size:14px;background:var(--fondo);border:1px solid var(--borde2);padding:13px 15px;cursor:pointer;display:flex;gap:12px;align-items:flex-start;color:var(--texto)}
+.opt:hover:not(:disabled){border-color:var(--amarillo);background:var(--panel2)}
+.opt:disabled{cursor:default;opacity:.75}
+.opt:focus-visible{outline:2px solid var(--azul);outline-offset:2px}
+.opt .k{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--tenue);flex:none;padding-top:1px}
+.opt.ok{background:var(--verde-op);border-color:var(--verde);opacity:1}
+.opt.ok .k{color:var(--verde)}
+.opt.no{background:var(--rojo-op);border-color:var(--rojo);opacity:1}
+.opt.no .k{color:var(--rojo)}
+.fb{margin-top:16px;padding:14px 16px;border-left:3px solid var(--azul);background:var(--panel2);font-size:13.5px;color:var(--texto2)}
+.fb b{font-family:var(--display);color:var(--texto)}
+.fb.ok{border-left-color:var(--verde);background:var(--verde-op)}
+.fb.ok b{color:var(--verde)}
+.fb.no{border-left-color:var(--rojo);background:var(--rojo-op)}
+.fb.no b{color:var(--rojo)}
+.quiz-nav{margin-top:18px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .prog-pasos{display:flex;gap:4px;flex-wrap:wrap}
-.pp{width:22px;height:5px;background:var(--borde)}
-.pp.ok{background:var(--hecho)}
-.pp.no{background:var(--mal)}
-.pp.now{background:var(--tinta)}
-.btn{font-family:var(--display);font-weight:700;font-size:14px;background:var(--tinta);color:#fff;border:0;padding:11px 20px;cursor:pointer}
-.btn:hover{background:#25355a}
-.btn.sec{background:var(--tarjeta);color:var(--tinta);border:1.5px solid var(--tinta)}
-.datos{background:var(--papel);border:1.5px solid var(--borde);padding:14px;margin-bottom:16px;font-size:13.5px}
+.pp{width:22px;height:4px;background:var(--borde2)}
+.pp.ok{background:var(--verde)}
+.pp.no{background:var(--rojo)}
+.pp.now{background:var(--amarillo)}
+.btn{font-family:var(--display);font-weight:700;font-size:14px;background:var(--amarillo);color:#0A1220;border:0;padding:11px 22px;cursor:pointer}
+.btn:hover{background:#FFD86E}
+.btn.sec{background:transparent;color:var(--texto2);border:1px solid var(--borde2)}
+.btn.sec:hover{border-color:var(--azul);color:var(--texto)}
+.datos{background:var(--fondo);border:1px solid var(--borde);border-left:3px solid var(--azul);padding:15px;margin-bottom:18px;font-size:13.5px;color:var(--texto2)}
+.datos b{color:var(--texto)}
 .datos p{margin:0 0 8px}
 .datos p:last-child{margin-bottom:0}
-table.m{border-collapse:collapse;font-family:var(--mono);font-size:13px;margin:10px 0 4px}
-table.m th,table.m td{border:1px solid var(--borde);padding:6px 11px;text-align:center}
-table.m th{background:var(--tinta);color:#fff;font-weight:600}
-table.m td:first-child{background:var(--rejilla);font-weight:600}
-.res{text-align:center;padding:14px 0}
-.res .big{font-family:var(--display);font-weight:700;font-size:46px;line-height:1}
-.res .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--grafito);margin-top:5px}
-.res .msg{font-size:14px;margin-top:12px}
-/* logros + pie */
-.logros{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:8px}
-.logro{background:var(--tarjeta);border:1.5px solid var(--borde);padding:12px 13px;opacity:.5}
-.logro.ok{opacity:1;border-color:var(--tinta);box-shadow:3px 3px 0 var(--rejilla)}
+table.m{border-collapse:collapse;font-family:var(--mono);font-size:13px;margin:11px 0 4px;color:var(--texto)}
+table.m th,table.m td{border:1px solid var(--borde2);padding:6px 12px;text-align:center}
+table.m th{background:var(--azul-op);color:var(--azul);font-weight:600}
+table.m td:first-child{background:var(--panel2);font-weight:600;color:var(--texto2)}
+.res{text-align:center;padding:16px 0}
+.res .big{font-family:var(--display);font-weight:700;font-size:48px;line-height:1;color:var(--amarillo)}
+.res .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tenue);margin-top:6px}
+.res .msg{font-size:14px;margin-top:14px;color:var(--texto2)}
+.logros{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+.logro{background:var(--panel);border:1px solid var(--borde);padding:13px;opacity:.42}
+.logro.ok{opacity:1;border-color:var(--amarillo);background:var(--panel2)}
 .logro .n{font-family:var(--display);font-weight:700;font-size:13.5px}
-.logro .c{font-size:11.5px;color:var(--grafito);margin-top:2px}
-.pie{margin-top:34px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--grafito)}
-.reset{font-family:var(--mono);font-size:11px;background:none;border:1.5px solid var(--borde);color:var(--grafito);padding:7px 12px;cursor:pointer}
-.reset:hover{border-color:var(--mal);color:var(--mal)}
+.logro.ok .n{color:var(--amarillo)}
+.logro .c{font-size:11.5px;color:var(--texto2);margin-top:3px}
+.pie{margin-top:38px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--tenue);
+  border-top:1px solid var(--borde);padding-top:16px}
+.reset{font-family:var(--mono);font-size:11px;background:transparent;border:1px solid var(--borde2);color:var(--tenue);padding:8px 13px;cursor:pointer}
+.reset:hover{border-color:var(--rojo);color:var(--rojo)}
 @media (max-width:640px){
-  .mrow{flex-direction:column;gap:4px}.mlabel{width:auto;padding-top:0}.ej-body{padding-left:14px}
+  .mrow{flex-direction:column;gap:5px}.mlabel{width:auto;padding-top:0}.ej-body{padding-left:14px}
   .siguiente{flex-direction:column;align-items:flex-start}
-  .tab{font-size:13px;padding:10px 13px}
-  .quiz{padding:16px}
+  .tab{font-size:13px;padding:11px 13px}
+  .quiz{padding:17px}.metrics{gap:18px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -300,21 +318,69 @@ const EJ=[
 
 /* ================= DATOS: TEORÍA ================= */
 const UNIDADES=[
-{u:1,parcial:1,t:"Las nuevas empresas virtuales",puntos:[
- {p:"1",n:"Realidad virtual, empresas virtuales y metaverso",qs:[
-  {q:"Según la guía, ¿en qué consiste la tecnología de realidad virtual?",o:["En superponer capas de información digital sobre el entorno físico que el usuario sigue viendo","En la inmersión del usuario en un mundo sintético generado por el ordenador, donde los sentidos dejan de percibir el mundo real","En transmitir video en 360 grados sin que el usuario pueda interactuar","En digitalizar los procesos administrativos de la empresa"],c:1,
-   e:"La RV genera un entorno alternativo en el que el usuario queda inmerso y deja de percibir el mundo real. Superponer capas sobre lo físico es realidad aumentada, no virtual."},
-  {q:"¿Cómo define la guía a una empresa virtual?",o:["Una empresa sin empleados en relación de dependencia","Una empresa que solo vende productos digitales","Una empresa capaz de gestionar sus recursos y enfocar su crecimiento en el mercado objetivo apoyándose en las capacidades tecnológicas de la World Wide Web","Una empresa cuyo capital cotiza únicamente en mercados electrónicos"],c:2,
-   e:"La definición pasa por el apoyo en las capacidades tecnológicas de la web para gestionar recursos y crecer, no por el tipo de producto ni por la forma de contratación."},
-  {q:"Entre las ventajas de las organizaciones virtuales que enumera la guía NO figura:",o:["Reducción de costos de operación e infraestructura","Flexibilidad para los miembros del equipo y su vida personal","Acceso a múltiples disciplinas en diferentes regiones geográficas","Mayor control presencial y supervisión directa del personal"],c:3,
-   e:"Justamente lo contrario: la organización virtual reduce la presencialidad. Las ventajas listadas son costos, flexibilidad, acceso a disciplinas diversas y la posibilidad de volverse multinacional en pocas semanas."},
-  {q:"La palabra metaverso es un acrónimo. ¿De dónde viene?",o:["De 'meta' (más allá, después) y 'verso' (universo)","De 'metadato' y 'universo'","De 'metáfora' y 'diverso'","De 'meta' entendida como objetivo y 'versión'"],c:0,
-   e:"'Meta' viene del griego y significa después o más allá; 'verso' refiere a universo. Es decir, un universo más allá del que conocemos."},
-  {q:"Entre las recomendaciones para las organizaciones que quieran crecer en el metaverso, la guía sugiere:",o:["Invertir de inmediato en las plataformas de metaverso ya existentes","Comenzar digitalizando procesos del negocio, como apps de compra o vitrinas de realidad virtual","Reemplazar toda la operación física por una digital","Delegar la decisión en el área comercial"],c:1,
-   e:"El texto aclara expresamente que no se trata de invertir de inmediato en plataformas existentes, sino de empezar digitalizando procesos, sumando omnicanalidad, ciberseguridad y transformación cultural."},
-  {q:"¿Qué resultado atribuye la guía a la capacitación de empleados mediante realidad virtual frente a los medios tradicionales?",o:["Menor costo pero peor retención","Tasas de retención y ganancias de desempeño considerablemente más altas","Resultados equivalentes, con la ventaja de la novedad","Mejor desempeño solo en tareas administrativas"],c:1,
-   e:"La RV ofrece escenarios seguros y repetibles, y los estudios citados muestran retención y desempeño considerablemente superiores, a un costo menor."}]}]},
-
+{u:1,parcial:1,t:"La gestión empresaria",puntos:[
+ {p:"1",n:"La empresa como sistema, responsabilidad social y cultura",qs:[
+  {q:"¿Cómo define la guía a la Gestión de Empresas como ciencia?",o:["El arte de conducir personas dentro de una organización","El campo del conocimiento científico cuyo objeto de estudio son las empresas, que explica su comportamiento y busca que se conduzcan con eficiencia","La rama de la contabilidad que mide resultados empresariales","El conjunto de normas legales que regulan la actividad comercial"],c:1,
+   e:"La definición combina las tres cosas: es conocimiento científico, explica el comportamiento de las empresas y busca eficiencia mediante técnicas y el arte de quien las aplica."},
+  {q:"Según la Teoría General de Sistemas, ¿qué elementos definen a un sistema?",o:["Un conjunto de elementos, interrelación entre ellos y la persecución de un fin común","Entradas, salidas y utilidades","Estructura, jerarquía y autoridad","Recursos, procesos y controles"],c:0,
+   e:"Los tres son necesarios. Una estantería con objetos distintos y cercanos no es un sistema, porque le falta la interrelación orientada a un fin común."},
+  {q:"La empresa se define como un sistema abierto. Entre sus características NO figura:",o:["Búsqueda del equilibrio interno (eficiencia) y externo (eficacia)","Capacidad de adaptación","Comportamiento probabilístico o no determinístico","Comportamiento determinístico y previsible"],c:3,
+   e:"Justamente lo contrario: al ser abierto y depender del entorno, su comportamiento es probabilístico. El sistema cerrado sería el que no se ve afectado por lo que ocurre afuera."},
+  {q:"El concepto clásico de responsabilidad social, defendido por Milton Friedman, sostiene que:",o:["La empresa debe promover la justicia social aunque dañe sus utilidades","La única responsabilidad social de la administración es obtener las mayores ganancias para los accionistas","La empresa debe atender primero a sus empleados","La responsabilidad social se limita a cumplir con la ley ambiental"],c:1,
+   e:"Friedman argumenta que gastar recursos en el bien social eleva los costos, que terminan trasladándose a los consumidores vía precios o a los accionistas vía menores dividendos. El concepto socioeconómico es la posición opuesta."},
+  {q:"En la progresión de las responsabilidades sociales, la Etapa 3 corresponde a que los gerentes extiendan su responsabilidad hacia:",o:["Los accionistas y la dirección","Los empleados","El entorno específico: clientes y proveedores","Toda la sociedad"],c:2,
+   e:"La progresión va de propietarios y dirección (1), a empleados (2), al entorno específico (3) y finalmente a toda la sociedad (4)."},
+  {q:"¿Qué diferencia hay entre obligación social y sensibilidad social?",o:["La obligación social es el deber de cumplir con las responsabilidades económicas y legales; la sensibilidad social es la capacidad de adaptarse a los cambios de las condiciones sociales","Son sinónimos","La obligación social es voluntaria y la sensibilidad es obligatoria","La sensibilidad social solo se aplica a empresas multinacionales"],c:0,
+   e:"La obligación social es hacer únicamente lo que se está obligado a hacer. La responsabilidad y la sensibilidad van un paso más allá de las normas básicas."},
+  {q:"La noción utilitaria de la ética plantea que las decisiones morales se toman:",o:["De acuerdo con los derechos individuales de las personas afectadas","De acuerdo con sus resultados o consecuencias, buscando el mayor bien para el mayor número","Siguiendo estrictamente lo que indica la ley","Según los valores personales del gerente"],c:1,
+   e:"Es un método cuantitativo: el ejemplo de la guía es el gerente que justifica despedir al 20% del personal porque mejora la rentabilidad y la seguridad del 80% restante."},
+  {q:"¿Qué caracteriza a una cultura organizacional fuerte?",o:["Que la empresa sea grande y antigua","Que los valores fundamentales estén muy arraigados y difundidos, y que los empleados los acepten y se comprometan con ellos","Que existan manuales de procedimiento escritos","Que haya baja rotación de personal"],c:1,
+   e:"Depende de factores como tamaño, antigüedad, rotación y la fuerza con que se originó la compañía. La falta de claridad sobre qué es importante es típica de las culturas débiles."},
+  {q:"La cultura organizacional es, según la definición de la guía, una expresión descriptiva. Eso significa que:",o:["Describe lo que a los integrantes les gusta de la organización","Se refiere a la manera en que los integrantes perciben la organización, no a lo que les gusta","Está escrita en el manual de la empresa","La define el área de recursos humanos"],c:1,
+   e:"Las tres notas de la definición son que la cultura es una percepción, es compartida y es descriptiva. Describe cómo se percibe, no si agrada."}]},
+ {p:"2",n:"La decisión: proceso, etapas, limitaciones y tipos",qs:[
+  {q:"Según el cuadro de condiciones en que se toman las decisiones, la alta dirección trabaja habitualmente en un estado de naturaleza de:",o:["Certidumbre, con probabilidades conocidas","Riesgo, con asignación de probabilidades","Incertidumbre, con probabilidades subjetivas","Certeza absoluta"],c:2,
+   e:"Alta dirección: incertidumbre, probabilidades subjetivas, decisiones no programadas. Gerencias medias: riesgo. Mandos medios: certidumbre y decisiones programadas."},
+  {q:"¿Cuántas etapas tiene el proceso de toma de decisiones y con cuál comienza?",o:["Ocho etapas, comenzando por identificar el problema","Seis etapas, comenzando por desarrollar alternativas","Cinco etapas, comenzando por analizar alternativas","Cuatro etapas, comenzando por seleccionar una alternativa"],c:0,
+   e:"Va de identificar el problema hasta evaluar la eficacia de la decisión, pasando por identificar criterios, ponderarlos, desarrollar y analizar alternativas, seleccionar e implementar."},
+  {q:"La identificación del problema, primera etapa del proceso, se caracteriza por ser:",o:["Una actividad objetiva y medible","Una actividad subjetiva: lo que un gerente considera un problema otro puede no verlo así","Una tarea exclusiva del área de control de gestión","Un paso opcional si el problema es recurrente"],c:1,
+   e:"La guía advierte que el gerente que por equivocación resuelve el problema erróneo tiene un desempeño tan malo como el que no identifica nada."},
+  {q:"Para identificar mejor un problema, los gerentes deben reconocer tres características. ¿Cuáles?",o:["Estar conscientes de él, estar presionados para actuar y tener los recursos necesarios","Que sea urgente, importante y medible","Que sea económico, técnico y social","Que tenga solución, responsable y plazo"],c:0,
+   e:"Sin presión para actuar, un problema podría posponerse indefinidamente; sin recursos, no se puede emprender ninguna acción."},
+  {q:"¿En qué etapa el gerente debe comunicar la decisión a los afectados y lograr que se comprometan con ella?",o:["Etapa 5: analizar las alternativas","Etapa 6: seleccionar una alternativa","Etapa 7: implementar la alternativa","Etapa 8: evaluar la eficacia"],c:2,
+   e:"La guía subraya que si quienes deben implementar la decisión participaron del proceso, es más probable que apoyen el resultado con entusiasmo."},
+  {q:"Las decisiones no programadas se caracterizan por:",o:["Ser repetitivas y resolverse con políticas y procedimientos establecidos","Abordar problemas poco frecuentes o excepcionales, que necesitan un modelo específico de solución","Tomarse siempre en la base de la pirámide jerárquica","Resolverse mediante técnicas cuantitativas de riesgo"],c:1,
+   e:"También se las llama no estructuradas. El lanzamiento de un nuevo producto es el ejemplo típico: no hay política previa que lo cubra."},
+  {q:"Las decisiones medianamente programadas son elecciones tomadas en condiciones de:",o:["Certeza","Riesgo, respondiendo a cambios en la relación entorno-empresa","Incertidumbre total","Conflicto de intereses"],c:1,
+   e:"En esa franja las técnicas cuantitativas son de gran utilidad, porque hay probabilidades que se pueden asignar."},
+  {q:"Entre los factores que intervienen en la toma de decisiones, ¿cuál basa la elección en una fuerza interna, sin sopesar los pro y los contra de cada alternativa?",o:["La experiencia","La intuición o insight","Los valores personales","La capacidad de juzgar situaciones"],c:1,
+   e:"Los otros tres son la experiencia (las vivencias acumuladas), los valores personales y la capacidad de juzgar situaciones según los conocimientos propios."}]},
+ {p:"3",n:"Modelos de decisión: matrices, criterios, árboles y sensibilidad",qs:[
+  {q:"En el análisis de decisiones, los resultados posibles de un evento fortuito se conocen como:",o:["Alternativas de decisión","Estados de la naturaleza","Consecuencias esperadas","Nodos de decisión"],c:1,
+   e:"Se definen de modo que pueda ocurrir uno y sólo uno de todos los posibles. Ese es el requisito clave para construir la matriz."},
+  {q:"¿Cuál es el orden correcto en un problema de decisión?",o:["Ocurre un estado de la naturaleza, luego la administración elige y después hay un resultado","La administración selecciona una alternativa, luego sigue un estado de la naturaleza y por último hay una consecuencia","Primero se conoce la consecuencia y después se elige","Los tres momentos ocurren simultáneamente"],c:1,
+   e:"Ese orden es lo que genera el riesgo: uno elige antes de saber qué estado va a ocurrir. Por eso la falta de certidumbre sobre la consecuencia final es consecuencia directa de la elección."},
+  {q:"En una matriz de pagos, las filas y las columnas representan respectivamente:",o:["Las alternativas de decisión y los estados de la naturaleza","Los estados de la naturaleza y las alternativas de decisión","Los costos y los ingresos","Las probabilidades y los resultados"],c:1,
+   e:"En la matriz de la guía las columnas E son lo que uno elige y las filas N son lo que decide el azar. Vos controlás la columna, nunca la fila."},
+  {q:"Los criterios optimista, pesimista, de Hurwicz y de aflicción se aplican a decisiones en condiciones de:",o:["Certeza","Riesgo","Incertidumbre","Conflicto"],c:2,
+   e:"En incertidumbre no se conocen las probabilidades, así que el criterio refleja la actitud del decisor. El valor esperado, en cambio, es decisión bajo riesgo."},
+  {q:"El valor esperado de la información perfecta (VEIP) mide:",o:["El costo de contratar un estudio de mercado","Cuánto se estaría dispuesto a pagar como máximo por conocer con certeza qué estado va a ocurrir","La probabilidad de acertar la mejor alternativa","La diferencia entre el mejor y el peor resultado de la matriz"],c:1,
+   e:"Es la diferencia entre el resultado esperado con información perfecta y el mejor valor esperado sin ella. Marca el techo de lo que conviene gastar en información."},
+  {q:"En un árbol de decisión, los nodos cuadrados y los circulares representan:",o:["Nodos de decisión y nodos de azar respectivamente","Nodos de azar y nodos de decisión respectivamente","Ambos representan decisiones","Ingresos y costos"],c:0,
+   e:"En el cuadrado decide el sujeto; del círculo salen ramas con probabilidades que decide la naturaleza. El árbol se resuelve de derecha a izquierda."},
+  {q:"¿Para qué sirve el análisis de sensibilidad?",o:["Para calcular la matriz de aflicción","Para determinar en qué medida cambian los resultados y la decisión óptima ante variaciones en las probabilidades o en los valores de la matriz","Para asignar probabilidades subjetivas","Para clasificar las decisiones en programadas y no programadas"],c:1,
+   e:"Permite ver hasta dónde puede moverse una probabilidad sin que cambie la alternativa elegida. Si la decisión aguanta cambios grandes, es robusta."}]},
+ {p:"Anexo",n:"Las nuevas empresas del mundo virtual",qs:[
+  {q:"Según el anexo, ¿en qué consiste la tecnología de realidad virtual?",o:["En superponer capas de información digital sobre el entorno físico que el usuario sigue viendo","En la inmersión del usuario en un mundo sintético generado por el ordenador, donde los sentidos dejan de percibir el mundo real","En transmitir video en 360 grados sin interacción","En digitalizar los procesos administrativos"],c:1,
+   e:"La RV genera un entorno alternativo en el que el usuario queda inmerso. Superponer capas sobre lo físico es realidad aumentada, no virtual."},
+  {q:"¿Cómo se define una empresa virtual?",o:["Una empresa sin empleados en relación de dependencia","Una empresa que solo vende productos digitales","Una empresa capaz de gestionar sus recursos y enfocar su crecimiento apoyándose en las capacidades tecnológicas de la World Wide Web","Una empresa que cotiza en mercados electrónicos"],c:2,
+   e:"La definición pasa por el apoyo en las capacidades tecnológicas de la web, no por el tipo de producto ni por la forma de contratación."},
+  {q:"Entre las ventajas de las organizaciones virtuales NO figura:",o:["Reducción de costos de operación e infraestructura","Flexibilidad para los miembros del equipo y su vida personal","Acceso a múltiples disciplinas en diferentes regiones geográficas","Mayor control presencial y supervisión directa del personal"],c:3,
+   e:"Justamente lo contrario. Las ventajas listadas son costos, flexibilidad, acceso a disciplinas diversas y volverse multinacional en pocas semanas."},
+  {q:"La palabra metaverso es un acrónimo. ¿De dónde viene?",o:["De 'meta' (más allá, después) y 'verso' (universo)","De 'metadato' y 'universo'","De 'metáfora' y 'diverso'","De 'meta' como objetivo y 'versión'"],c:0,
+   e:"'Meta' viene del griego y significa después o más allá; 'verso' refiere a universo. Un universo más allá del que conocemos."},
+  {q:"Entre las recomendaciones para crecer en el metaverso, el texto sugiere:",o:["Invertir de inmediato en las plataformas de metaverso ya existentes","Comenzar digitalizando procesos del negocio, como apps de compra o vitrinas de realidad virtual","Reemplazar toda la operación física por una digital","Delegar la decisión en el área comercial"],c:1,
+   e:"El texto aclara expresamente que no se trata de invertir de inmediato en plataformas existentes, sino de empezar digitalizando, con omnicanalidad, ciberseguridad y cambio cultural."}]}]},
 {u:2,parcial:1,t:"La planificación y la dirección de la gestión",puntos:[
  {p:"1",n:"Planificación estratégica: visión, misión, valores",qs:[
   {q:"¿Cuál es el primer paso del planeamiento estratégico según la guía?",o:["Formular la visión de futuro","Analizar los escenarios para detectar oportunidades y anticipar riesgos","Asignar la misión","Preparar el plan de acción"],c:1,
@@ -482,6 +548,50 @@ const UNIDADES=[
    e:"Un buen cuadro de mando combina ambos: solo con indicadores de resultado uno se entera tarde, y solo con inductores no se sabe si la estrategia funcionó."},
   {q:"El primer paso para desarrollar e implementar un cuadro de mando integral es:",o:["Definir los indicadores clave de desempeño","Elaborar el mapa estratégico","Definir las perspectivas del cuadro de mando","Vincular los objetivos estratégicos"],c:2,
    e:"El orden es: definir perspectivas, vincular objetivos estratégicos, elaborar el mapa y recién entonces definir los KPI."}]}]}
+,
+{u:"L",parcial:3,t:"Análisis de la situación financiera de corto plazo",fuente:"Pérez, J. — Análisis de estados contables: un enfoque de gestión · Cap. II",puntos:[
+ {p:"1",n:"Liquidez corriente: concepto, distorsiones y límites",qs:[
+  {q:"¿Cuál es el objetivo de analizar la situación financiera de corto plazo?",o:["Determinar la rentabilidad del capital propio","Determinar la capacidad del ente para hacer frente a sus obligaciones en un lapso que comprende hasta un año","Establecer el valor de la empresa","Medir la eficiencia del proceso productivo"],c:1,
+   e:"El plazo de un año es convencional: se apoya en que las normas contables vigentes usan ese lapso para clasificar activos y pasivos como corrientes."},
+  {q:"Algunos autores sostienen que si el ciclo operativo supera el año:",o:["Debe ignorarse el análisis de corto plazo","Debe tomarse ese ciclo, y no el año, para identificar el corto plazo","Debe reducirse el plazo a seis meses","El análisis pierde toda validez"],c:1,
+   e:"El ciclo operativo es el tiempo que demora el proceso compra-producción-venta-cobranza. Si es más largo que el año, es la medida más representativa."},
+  {q:"Si la liquidez corriente da 1,5, ¿qué está indicando?",o:["Que la empresa gana 50 centavos por cada peso vendido","Que por cada peso que se adeuda en el corto plazo se cuenta con $ 1,50 de recursos para afrontarlo","Que el activo creció un 50%","Que la deuda representa el 150% del patrimonio"],c:1,
+   e:"Es una lectura por cada peso de pasivo corriente. Ahora bien, el autor advierte que el número solo, sin complementarlo con otras herramientas, aporta poco."},
+  {q:"Si se exponen mal los saldos —anticipos y crédito fiscal de IVA en el activo y el débito fiscal en el pasivo, sin compensar— y el cociente es mayor a 1, el resultado obtenido será:",o:["Superior al que corresponde","Inferior al que corresponde","Exactamente el mismo","Imposible de calcular"],c:1,
+   e:"En el ejemplo del libro el ratio mal expuesto da 1,37 y el correcto 2,40. Cuando el cociente es inferior a 1 ocurre lo inverso: desplegar la información lo hace parecer mejor."},
+  {q:"Entre las cosas que el ratio de liquidez corriente NO muestra, el autor menciona:",o:["La composición de los activos corrientes y los plazos de realización y exigibilidad","El total del activo corriente","El total del pasivo corriente","La existencia de bienes de cambio"],c:0,
+   e:"Tampoco toma en cuenta el margen de ganancia de los bienes de cambio, los acontecimientos futuros ni los gastos que la empresa hace habitualmente de contado."},
+  {q:"La liquidez seca se obtiene:",o:["Sumando los bienes de cambio al activo corriente","Detrayendo los bienes de cambio del activo corriente antes de dividir por el pasivo corriente","Dividiendo el activo total por el pasivo total","Restando el pasivo corriente del activo corriente"],c:1,
+   e:"Es más exigente porque deja solo los activos más líquidos. Pero si los bienes de cambio son cereales o hacienda, que se venden sin esfuerzo, excluirlos no aporta nada."},
+  {q:"Frente a los autores que fijan estándares del tipo 'la liquidez no debería ser inferior a 1' o 'no debería bajar de 2', la postura del libro es que:",o:["Son reglas de aplicación obligatoria","Hay que evaluar el comportamiento del ratio en el tiempo y sobre todo la velocidad de los flujos de ingresos y egresos","Solo valen para empresas industriales","Deben aplicarse siempre que la empresa cotice en bolsa"],c:1,
+   e:"Cita a Fowler Newton criticando el dogmatismo. Una empresa con 0,8 puede no tener problemas si cobra antes de lo que paga, y una con 2,1 puede estar complicada si sus vencimientos son inmediatos."}]},
+ {p:"2",n:"Antigüedades y ciclo operativo",qs:[
+  {q:"La rotación de mercaderías se calcula como:",o:["Ventas dividido el saldo promedio de mercaderías","Costo de ventas dividido el saldo promedio de mercaderías","Saldo promedio de mercaderías dividido las ventas","Compras dividido el stock final"],c:1,
+   e:"Se usa el costo de ventas porque el denominador está valuado a costo. Poner ventas arriba haría heterogénea la relación."},
+  {q:"La antigüedad de mercaderías se obtiene como:",o:["Rotación multiplicada por el período","Período multiplicado por el saldo promedio de mercaderías, dividido el costo de ventas","Costo de ventas dividido el período","Stock final menos stock inicial"],c:1,
+   e:"Equivale a dividir el período por la rotación. Si la rotación es 4 veces en 12 meses, la mercadería permanece en stock 3 meses en promedio."},
+  {q:"La relación entre rotación y antigüedad es que:",o:["A mayor rotación, mayor antigüedad","A mayor rotación, menor antigüedad","No están relacionadas","Ambas crecen con el nivel de ventas"],c:1,
+   e:"Son conceptos complementarios: la rotación da idea de velocidad y la antigüedad, del tiempo que demora en ocurrir el suceso."},
+  {q:"Al calcular la antigüedad de créditos por ventas hay que incluir el IVA en el numerador porque:",o:["Lo exigen las normas contables","El saldo de deudores contiene el IVA y la cifra de ventas no, con lo cual la relación resultaría heterogénea","Aumenta la precisión del promedio","El IVA forma parte del costo de ventas"],c:1,
+   e:"Para que el cociente sea homogéneo hay que considerar el impuesto en los dos términos de la relación."},
+  {q:"El ciclo operativo bruto se compone de:",o:["Antigüedad de bienes de cambio más plazo de cobranza de las ventas","Antigüedad de bienes de cambio menos antigüedad de proveedores","Plazo de pago de compras más antigüedad de créditos","Antigüedad de materia prima más antigüedad de proveedores"],c:0,
+   e:"Va desde que la mercadería o la materia prima entra al depósito hasta que se cobra la venta. En el ejemplo del libro: 192 + 16 = 208 días."},
+  {q:"¿Por qué se toma el plazo de cobranza de las ventas y no la antigüedad de los créditos por ventas para armar el ciclo operativo?",o:["Porque es más fácil de calcular","Porque si existen ventas de contado, la antigüedad de créditos reflejaría un ciclo mayor al real","Porque incluye el IVA","Porque lo exige la Resolución Técnica N° 8"],c:1,
+   e:"Se pretende conocer en cuánto tiempo la totalidad de los bienes de cambio se convierte en efectivo. Si todas las ventas fueran a crédito, ambos plazos coincidirían."},
+  {q:"El ciclo operativo neto se obtiene:",o:["Sumando el plazo de pago de compras al ciclo bruto","Restando el plazo de pago de las compras al ciclo operativo bruto","Dividiendo el ciclo bruto por la rotación","Restando la antigüedad de materia prima"],c:1,
+   e:"Esa brecha es la que debe cubrirse con capital corriente para que la empresa pueda operar financieramente. En el ejemplo: 208 − 26 = 182 días."},
+  {q:"Si una empresa decide aumentar los plazos que otorga a sus clientes, ¿qué efecto financiero produce y qué puede hacer?",o:["Aumenta el flujo de fondos; no hace falta hacer nada","Disminuye el flujo de fondos; puede acelerar la rotación del stock o negociar mayores plazos con proveedores","Reduce los costos fijos","Mejora automáticamente la liquidez corriente"],c:1,
+   e:"Si no hay excedente de capital corriente, esa decisión política puede empujar a una situación de iliquidez o estrechez financiera."}]},
+ {p:"3",n:"Liquidez necesaria",qs:[
+  {q:"Si la antigüedad de los créditos por ventas es de 30 días, ¿en cuántos días se cobrará en promedio el saldo de deudores existente al cierre?",o:["30 días","15,5 días","60 días","10 días"],c:1,
+   e:"Cada día se cobra una porción del saldo. Al ser una progresión aritmética de razón 1, se suman el primer y el último término y se divide por 2: (1+30)/2 = 15,5."},
+  {q:"La liquidez necesaria se define como el cociente entre:",o:["Activo corriente y pasivo corriente","El plazo promedio de realización del activo corriente y el plazo promedio de exigibilidad del pasivo corriente","Ventas y activo promedio","Ciclo operativo neto y capital corriente"],c:1,
+   e:"En el ejemplo del libro: 29,62 días de realización sobre 27,12 días de exigibilidad, lo que da 1,09."},
+  {q:"Si la liquidez necesaria de una empresa es 1,09 y su liquidez corriente es 1,65, la lectura correcta es que:",o:["La empresa tiene problemas financieros de corto plazo","La relación de liquidez supera con holgura la exigencia, con cierto excedente de capital corriente que puede estar generando un costo de oportunidad","Los ratios son incomparables","Debería endeudarse a corto plazo"],c:1,
+   e:"El autor aclara además que, aun con buenos indicadores, en el ínterin pueden producirse baches de caja momentáneos."},
+  {q:"Respecto del plazo promedio de realización del activo corriente, ¿qué es preferible?",o:["Que sea lo más alto posible","Que sea lo más bajo posible, porque significa que el activo se convierte antes en efectivo","Que coincida exactamente con el del pasivo","Es indiferente"],c:1,
+   e:"Y al revés con el pasivo: cuanto más alto el plazo de exigibilidad, más favorece la liquidez, porque hay más tiempo para pagar."}]}]}
+
 ];
 
 /* ================= DATOS: PRÁCTICA PASO A PASO ================= */
@@ -878,7 +988,8 @@ const LOGROS=[
 {n:"Mínimos cuadrados",c:"Pronósticos completo",f:()=>temaListo("pro","p")},
 {n:"Equilibrio",c:"Costo–volumen–utilidad completo",f:()=>temaListo("cvu","p")},
 {n:"Región factible",c:"Programación lineal completa",f:()=>temaListo("pl","p")},
-{n:"Teoría al día",c:"Cuarenta preguntas de teoría bien",f:()=>teoOK()>=40},
+{n:"Teoría al día",c:"Sesenta preguntas de teoría bien",f:()=>teoOK()>=60},
+{n:"Corto plazo",c:"El anexo de Pérez completo",f:()=>{const u=UNIDADES.find(x=>x.parcial===3);if(!u)return false;const[o,n]=uniQs(u);return o===n}},
 {n:"Primer parcial",c:"Teoría de las unidades 1 a 4 completa",f:()=>UNIDADES.filter(u=>u.parcial===1).every(u=>{const[o,n]=uniQs(u);return o===n})},
 {n:"Paso a paso",c:"Todos los pasos de práctica resueltos",f:()=>praOK()>=TOTAL_S},
 {n:"Guía cerrada",c:"Los cincuenta ejercicios",f:()=>cont("hecho")===EJ.length}];
@@ -892,15 +1003,17 @@ function pintarSeg(){pintarSiguiente();pintarMatriz();pintarFiltros();pintarList
 /* ================= TEORÍA ================= */
 function pintarTeoria(){
   const c=document.getElementById("teo-lista");c.innerHTML="";
-  [1,2].forEach(par=>{
-    const h=document.createElement("div");h.className="parcial-tit";
-    h.textContent=par===1?"Primer parcial · Unidades 1 a 4":"Segundo parcial · Unidades 5 a 8";
+  [1,2,3].forEach(par=>{
+    if(!UNIDADES.some(u=>u.parcial===par))return;
+    const h=document.createElement("div");h.className="parcial-tit"+(par===2?" p2":par===3?" p3":"");
+    h.textContent=par===1?"Primer parcial · Unidades 1 a 4":par===2?"Segundo parcial · Unidades 5 a 8":"Anexo · Libro de Pérez";
     c.appendChild(h);
     const g=document.createElement("div");g.className="uni-grid";
     UNIDADES.filter(u=>u.parcial===par).forEach(u=>{
       const[ok,n]=uniQs(u);
       const b=document.createElement("button");b.className="uni";
-      b.innerHTML='<div class="n">Unidad '+u.u+'</div><div class="t">'+u.t+'</div>'+
+      b.innerHTML='<div class="n">'+(u.parcial===3?"Anexo":"Unidad "+u.u)+'</div><div class="t">'+u.t+'</div>'+
+        (u.fuente?'<div class="m" style="margin-bottom:5px;color:var(--tenue)">'+u.fuente+'</div>':'')+
         '<div class="m">'+u.puntos.length+' punto'+(u.puntos.length>1?'s':'')+' · '+ok+' de '+n+' preguntas</div>'+
         '<div class="mini"><i style="width:'+(n?ok/n*100:0)+'%"></i></div>';
       b.onclick=()=>iniciarTeoria(u);g.appendChild(b);
@@ -911,7 +1024,7 @@ function pintarTeoria(){
 function iniciarTeoria(u){
   const qs=[];
   u.puntos.forEach(p=>p.qs.forEach((q,i)=>qs.push({...q,pid:p.p,pn:p.n,id:"u"+u.u+"-"+p.p+"-"+i})));
-  quiz={tipo:"teo",titulo:"Unidad "+u.u+" · "+u.t,sub:"Teoría",qs,i:0,ok:0,mal:0,resp:null,datos:null};
+  quiz={tipo:"teo",titulo:(u.parcial===3?"Anexo · ":"Unidad "+u.u+" · ")+u.t,sub:u.fuente||"Teoría",qs,i:0,ok:0,mal:0,resp:null,datos:null};
   document.getElementById("teo-menu").style.display="none";
   const z=document.getElementById("teo-quiz");z.style.display="block";
   render(z);window.scrollTo({top:0,behavior:"smooth"});
