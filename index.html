@@ -259,7 +259,7 @@ table.m tr.calc td.win{background:var(--verde-op);color:var(--verde)}
     <section class="seccion">
       <h2>Ejercicios</h2>
       <p class="desc">Marcá el estado y anotá por dónde lo dejaste. Se guarda solo.</p>
-      <div class="aviso">Faltan diez enunciados que no pude leer del PDF. Pasámelos y te actualizo los títulos.</div>
+      
       <div class="filtros" id="filtros"></div>
       <div id="lista"></div>
     </section>
@@ -284,7 +284,7 @@ table.m tr.calc td.win{background:var(--verde-op);color:var(--verde)}
   <div class="panel" id="p-pra">
     <div id="pra-menu">
       <h2>Práctica paso a paso</h2>
-      <p class="desc">Primero leé la solución explicada, un paso por vez. Cuando la tengas clara, ponete a prueba con las mismas preguntas sin la respuesta a la vista.</p>
+      <p class="desc">Leé el planteo, después resolvé un paso por vez. Cada vez que respondés, el cuadro se completa con la fila que corresponde.</p>
       <div id="pra-lista"></div>
     </div>
     <div id="pra-quiz" style="display:none"></div>
@@ -299,58 +299,67 @@ table.m tr.calc td.win{background:var(--verde-op);color:var(--verde)}
 <script>
 /* ================= DATOS: GUÍA PRÁCTICA (seguimiento) ================= */
 const TEMAS=[{id:"dec",n:"Modelos de decisión"},{id:"sim",n:"Simulación"},{id:"pro",n:"Pronósticos"},
-{id:"cvu",n:"Costo–volumen–utilidad"},{id:"cos",n:"Costos e inversión"},{id:"pl",n:"Programación lineal"},{id:"otr",n:"Otros temas"}];
+{id:"cvu",n:"Costo–volumen–ganancia"},{id:"cos",n:"Costos e inversión"},{id:"pl",n:"Programación lineal"},
+{id:"stk",n:"Gestión de stock"},{id:"inf",n:"Informes contables"}];
 const EJ=[
-{id:"1",g:"p",t:"dec",n:"Matriz de pagos E1–E4 / N1–N4",d:"Los cinco criterios, primero como ganancias y después como costos."},
-{id:"2",g:"p",t:"dec",n:"Cerro Catedral Ski Resort",d:"Armar las matrices hasta la de resultados; aflicción y valor esperado."},
-{id:"3",g:"p",t:"dec",n:"Concierto: polideportivo o cancha",d:"Criterios de incertidumbre y probabilidades posteriores (Bayes)."},
-{id:"4",g:"p",t:"dec",n:"Juan Price S.A.: opciones de alquiler",d:"Matriz, criterios, árbol, sensibilidad y valor esperado de la información perfecta."},
-{id:"5",g:"p",t:"dec",n:"Proveedores A y B",d:"Árbol de decisión con piezas defectuosas."},
-{id:"6",g:"p",t:"dec",n:"Ejercicio 6",d:"Falta el enunciado: contame de qué va y lo completo."},
-{id:"7",g:"p",t:"dec",n:"Martín: barredora o cuchilla",d:"Árbol, valor esperado y probabilidades a posteriori según un mayo frío."},
-{id:"8",g:"p",t:"sim",n:"Ventas de un comercio minorista",d:"Intervalos de números aleatorios y simulación de 10 días."},
-{id:"9",g:"p",t:"sim",n:"Precio de la tonelada de soja",d:"Simular la evolución del precio durante 5 meses."},
-{id:"10",g:"p",t:"pro",n:"Restaurante Vintage",d:"Pronóstico de ventas trimestrales sobre tres años de datos."},
-{id:"11",g:"p",t:"pro",n:"Ejercicio 11",d:"Falta el enunciado: contame de qué va y lo completo."},
-{id:"12",g:"p",t:"pro",n:"Ejercicio 12",d:"Falta el enunciado: contame de qué va y lo completo."},
-{id:"13",g:"p",t:"cvu",n:"Los costos del competidor",d:"Deducir costos fijos y variables a partir de dos períodos."},
-{id:"14",g:"p",t:"cvu",n:"Jugo concentrado de naranja",d:"Punto de equilibrio físico y monetario, más cuatro variantes."},
-{id:"15",g:"p",t:"cvu",n:"ARIES S.A.U.",d:"Equilibrio económico y financiero con impuestos, mermas y depreciaciones."},
-{id:"16",g:"p",t:"cvu",n:"Ejercicio 16",d:"Falta el enunciado: contame de qué va y lo completo."},
-{id:"17",g:"p",t:"cvu",n:"Líneas A, B, C y D",d:"Equilibrio multiproducto con contribución marginal ponderada."},
-{id:"18",g:"p",t:"cos",n:"Reemplazo de equipo",d:"Flujo de fondos de las dos alternativas y decisión al 10%."},
-{id:"19",g:"p",t:"cos",n:"Heladeras: hacer o comprar",d:"Decisión basada exclusivamente en costos."},
-{id:"20",g:"p",t:"cos",n:"Técnica ABC",d:"Clasificar 30 ítems y definir el control de inventario para A y B."},
-{id:"21",g:"p",t:"pl",n:"Minas A y B",d:"Minimizar costo con restricciones de metal I y II."},
-{id:"22",g:"p",t:"pl",n:"Acciones EG y SH",d:"Maximizar beneficio con restricciones de composición del portafolio."},
-{id:"23",g:"p",t:"pl",n:"Taller de automóviles",d:"Electricistas y mecánicos: maximizar el beneficio por jornada."},
-{id:"24",g:"p",t:"pl",n:"Programación de metas",d:"Portafolio U.S. / H.P. con criterios múltiples."},
-{id:"1C",g:"c",t:"cvu",n:"Costeo absorbente y directo",d:"Utilidad e inventario final según distintos niveles de producción."},
-{id:"2C",g:"c",t:"dec",n:"J.J. y la chipa",d:"Matriz de pagos, criterio de aflicción y resultado esperado."},
-{id:"3C",g:"c",t:"dec",n:"Explotación ganadera",d:"Matriz de resultados con mortandad de terneros y decisión bajo riesgo."},
-{id:"4C",g:"c",t:"dec",n:"Contenedores según el clima",d:"Matrices de ingresos, costos y resultados por alternativa de compra."},
-{id:"5C",g:"c",t:"dec",n:"Ejercicio 5C",d:"Falta el enunciado: contame de qué va y lo completo."},
-{id:"6C",g:"c",t:"dec",n:"Recorrido entre oficinas",d:"Matriz de minutos entre destinos."},
-{id:"7C",g:"c",t:"dec",n:"Ejercicio 7C",d:"Falta el enunciado: contame de qué va y lo completo."},
-{id:"8C",g:"c",t:"dec",n:"Estudio de mercado",d:"Árbol de decisión con probabilidades condicionales y lanzamiento de producto."},
-{id:"9C",g:"c",t:"sim",n:"Siniestros de automóviles",d:"Simular pagos de siniestros para diez asegurados."},
-{id:"10C",g:"c",t:"sim",n:"Precio de una acción",d:"Simular la cotización a lo largo de cuatro trimestres."},
-{id:"11C",g:"c",t:"pro",n:"Costo unitario en ocho años",d:"Identificar la tendencia y hallar la ecuación por mínimos cuadrados."},
-{id:"12C",g:"c",t:"pro",n:"Ventas de órganos electrónicos",d:"Tendencia lineal y pronóstico hacia adelante."},
-{id:"13C",g:"c",t:"pro",n:"Ejercicio 13C",d:"Falta el enunciado: contame de qué va y lo completo."},
-{id:"14C",g:"c",t:"pro",n:"Musik Kompany",d:"Índices estacionales: cuándo pega más la estacionalidad."},
-{id:"15C",g:"c",t:"pro",n:"Eddie's Restaurants",d:"Regresión de publicidad contra ventas y pronóstico."},
-{id:"16C",g:"c",t:"cvu",n:"Equilibrio y estados de resultados",d:"Punto de equilibrio más estado de resultados por costeo absorbente y directo."},
-{id:"17C",g:"c",t:"cvu",n:"Harina de soja",d:"Costo–volumen–beneficio con merma en expedición."},
-{id:"18C",g:"c",t:"cvu",n:"El Súper-Chori",d:"Costo–volumen–beneficio del combo con rendimientos de materia prima."},
-{id:"19C",g:"c",t:"cvu",n:"Ejercicio 19C",d:"Falta el enunciado: contame de qué va y lo completo."},
-{id:"20C",g:"c",t:"pl",n:"LA MUNDIAL S.A.",d:"Mesas y sillas: función objetivo, restricciones y combinación óptima."},
-{id:"21C",g:"c",t:"pl",n:"Veterinaria: Bark Bits y Canine Chow",d:"Mezcla de costo mínimo con requisitos de proteína y grasa."},
-{id:"22C",g:"c",t:"pl",n:"Ejercicio 22C",d:"Falta el enunciado: contame de qué va y lo completo."},
-{id:"23C",g:"c",t:"pl",n:"Ejercicio 23C",d:"Falta el enunciado: contame de qué va y lo completo."},
-{id:"24C",g:"c",t:"otr",n:"Lote económico sin abastecimiento instantáneo",d:"Q óptimo cuando el inventario se acumula a lo largo del período."},
-{id:"25C",g:"c",t:"otr",n:"Lote óptimo de producción",d:"Corridas de producción, costo total y días entre corridas."},
-{id:"26C",g:"c",t:"otr",n:"Análisis de estados contables",d:"Rentabilidad del activo, del patrimonio neto y efecto palanca."}];
+{id:"1",g:"p",t:"dec",n:"Matriz de pagos E1–E4 / N1–N4",d:"Los cinco criterios de incertidumbre y riesgo, primero como resultados y después como costos."},
+{id:"2",g:"p",t:"dec",n:"Cerro Catedral Ski Resort",d:"Instalación de ascensores: armar las matrices y decidir por los criterios de incertidumbre y riesgo."},
+{id:"3",g:"p",t:"dec",n:"Concierto: polideportivo o campo de fútbol",d:"Criterios de incertidumbre más probabilidades posteriores por el teorema de Bayes."},
+{id:"4",g:"p",t:"dec",n:"Construcción de matrices y sensibilidad",d:"Matrices, criterios, árbol de decisión y sensibilidad de la decisión ante cambios."},
+{id:"5",g:"p",t:"dec",n:"Proveedores A y B",d:"Piezas defectuosas a $ 200 de reparación: árbol de decisión y valor esperado."},
+{id:"6",g:"p",t:"dec",n:"¿Una máquina o dos?",d:"Árbol con decisión posterior: subcontratar, no hacer nada o comprar la segunda máquina."},
+{id:"7",g:"p",t:"dec",n:"Servicios Martín: barredora o cuchilla",d:"Árbol, probabilidad a posteriori y decisión revisada con la nueva información."},
+{id:"8",g:"p",t:"sim",n:"Ventas de un comercio minorista",d:"Intervalos de números aleatorios y simulación de diez días."},
+{id:"9",g:"p",t:"sim",n:"Precio de la tonelada de soja",d:"Simular la evolución del precio para estimar el resultado económico."},
+{id:"10",g:"p",t:"pro",n:"Restaurante Vintage",d:"Serie de tiempo, índices estacionales, ecuación de tendencia y error de pronóstico."},
+{id:"11",g:"p",t:"pro",n:"Acciones de SanDisk",d:"Promedios móviles, promedios ponderados y suavización exponencial con α = 0,7."},
+{id:"12",g:"p",t:"pro",n:"Frutillas S.A.",d:"Ventas cuatrimestrales: índices estacionales, tendencia y pronóstico con estacionalidad."},
+{id:"13",g:"p",t:"cvu",n:"Los costos del competidor",d:"Deducir la composición de costos fijos y variables a partir de dos períodos."},
+{id:"14",g:"p",t:"cvu",n:"Jugos concentrados de naranja",d:"Punto de equilibrio económico y sus variantes."},
+{id:"15",g:"p",t:"cvu",n:"ARIES S.A.U.",d:"Juntas mecánicas: equilibrio económico y financiero."},
+{id:"16",g:"p",t:"cvu",n:"Las medialunas del Abuelo",d:"Rendimiento por kilo, 5% de rechazo y beneficio del 25% sobre costos totales."},
+{id:"17",g:"p",t:"cvu",n:"Cuatro líneas de producto",d:"Equilibrio multiproducto con contribución marginal ponderada."},
+{id:"18",g:"p",t:"cos",n:"Reemplazo de equipo de producción",d:"Flujo de fondos para evaluar la conveniencia del reemplazo."},
+{id:"19",g:"p",t:"cos",n:"Heladeras: hacer o comprar",d:"Cantidad de indiferencia, analítica y gráfica, más utilidad por costeo directo."},
+{id:"20",g:"p",t:"cos",n:"Técnica ABC",d:"Clasificar los materiales almacenados y definir el control de cada clase."},
+{id:"21",g:"p",t:"pl",n:"Minas de mineral",d:"Programación lineal con función objetivo de minimización."},
+{id:"22",g:"p",t:"pl",n:"Inversión de $ 690.000",d:"Portafolio de acciones: maximización con restricciones de composición."},
+{id:"23",g:"p",t:"pl",n:"Taller de automóviles",d:"Electricistas y mecánicos: maximización del beneficio por jornada."},
+{id:"24",g:"p",t:"pl",n:"Programación de metas",d:"Decisión multicriterio: índice de riesgo máximo 700 y ganancia mínima de $ 9.000."},
+{id:"25",g:"p",t:"stk",n:"Lote óptimo de compra del producto A",d:"Q óptimo, costo total mínimo, número de pedidos y tiempo entre pedidos."},
+{id:"26",g:"p",t:"stk",n:"Metropolitana Computer y Arma Tuti",d:"Lote óptimo de producción con abastecimiento no instantáneo."},
+{id:"27",g:"p",t:"stk",n:"HARD y los mouses QuickMouse",d:"Lote óptimo cuando hay bonificaciones por volumen de compra."},
+{id:"28",g:"p",t:"stk",n:"Lady Shoes",d:"Lote óptimo con descuentos por cantidad: análisis de costos y decisión."},
+{id:"29",g:"p",t:"inf",n:"Análisis de balance",d:"Análisis horizontal y vertical más doce índices, de liquidez a leverage."},
+{id:"1C",g:"c",t:"cvu",n:"Compañía Granja del Sol",d:"Efecto del nivel de producción sobre los costos en costeo por absorción."},
+{id:"2C",g:"c",t:"dec",n:"J.J. y la chipa",d:"Matriz de pagos, aflicción y resultado esperado sobre un producto perecedero."},
+{id:"3C",g:"c",t:"dec",n:"Explotación ganadera",d:"Matriz de resultados y criterios de decisión en situación de riesgo."},
+{id:"4C",g:"c",t:"dec",n:"Veterinaria: oferta del laboratorio",d:"Matriz de resultados por costeo directo y criterios de decisión."},
+{id:"5C",g:"c",t:"dec",n:"Chic Air: vuelo a Camboriú",d:"Análisis de sensibilidad para el caso de dos eventos futuros."},
+{id:"6C",g:"c",t:"dec",n:"La coordinadora olvidadiza",d:"Tres oficinas a 4, 6 y 7 minutos: árbol de decisión."},
+{id:"7C",g:"c",t:"dec",n:"Carlos y Marita",d:"Árbol de decisión, probabilidad a posteriori y decisión revisada."},
+{id:"8C",g:"c",t:"dec",n:"La fábrica de 150 millones",d:"Tres estrategias de lanzamiento: árbol y valor esperado."},
+{id:"9C",g:"c",t:"sim",n:"Siniestros por colisión",d:"Simular los pagos futuros de una compañía de seguros."},
+{id:"10C",g:"c",t:"sim",n:"Precio de una acción",d:"Simular la cotización trimestre a trimestre desde $ 39."},
+{id:"11C",g:"c",t:"pro",n:"Costos de manufactura en ocho años",d:"Identificar el tipo de tendencia y hallar su ecuación."},
+{id:"12C",g:"c",t:"pro",n:"Musik Kompany: órganos eléctricos",d:"Crecimiento en cinco años: tipo de tendencia y ecuación."},
+{id:"13C",g:"c",t:"pro",n:"Utilización de la capacidad",d:"Quince trimestres: elegir el método de suavización más conveniente."},
+{id:"14C",g:"c",t:"pro",n:"Musik Kompany: ventas trimestrales",d:"Cálculo e interpretación de los índices estacionales."},
+{id:"15C",g:"c",t:"pro",n:"Eddie's Restaurants",d:"Relación publicidad–ventas por mínimos cuadrados."},
+{id:"16C",g:"c",t:"cvu",n:"Equilibrio y estados de resultados",d:"Con y sin utilidad pretendida, más el resultado por ambos métodos de costeo."},
+{id:"17C",g:"c",t:"cvu",n:"Harina de soja",d:"Rendimiento de 650 kg por tonelada: costo–volumen–beneficio."},
+{id:"18C",g:"c",t:"cvu",n:"El Súper-Chori",d:"Choripanes y papas fritas con mermas de materia prima."},
+{id:"19C",g:"c",t:"cvu",n:"ESNOR: mangos de pincel",d:"Costo–volumen–beneficio con rendimiento de la madera."},
+{id:"20C",g:"c",t:"pl",n:"LA MUNDIAL S.A.",d:"Mesas y sillas de madera: maximización."},
+{id:"21C",g:"c",t:"pl",n:"Veterinaria: alojamiento de perros",d:"Mezcla de alimento de costo mínimo."},
+{id:"22C",g:"c",t:"pl",n:"Agrofert S.A.",d:"Dos tipos de fertilizante: maximización."},
+{id:"23C",g:"c",t:"pl",n:"Hojas de papel para dibujo técnico",d:"Tamaño carta y tamaño oficio: maximización."},
+{id:"24C",g:"c",t:"stk",n:"Bar El Imperio",d:"Barriles de cerveza con demanda normal: lote óptimo de compra."},
+{id:"25C",g:"c",t:"stk",n:"Pizzas del supermercado",d:"Estante refrigerado con demanda normal: lote óptimo."},
+{id:"26C",g:"c",t:"stk",n:"Ford Argentina y Autopartes Aliar",d:"Cojinetes de rueda: lote óptimo de producción."},
+{id:"27C",g:"c",t:"stk",n:"Compañía A: 10.000 unidades anuales",d:"Lote óptimo de producción de materia prima propia."},
+{id:"28C",g:"c",t:"inf",n:"Análisis de estados contables",d:"Estados ajustados por inflación: índices y su interpretación."},
+{id:"29C",g:"c",t:"inf",n:"NLHORNO S.A.",d:"Modelo de crecimiento autofinanciado y tasa de equilibrio financiero."}];
 
 /* ================= DATOS: TEORÍA ================= */
 const UNIDADES=[
@@ -661,11 +670,11 @@ const PRACTICA=[
  {q:"Hurwicz con α = 0,70 sobre ganancias. ¿Cuánto da E4?",o:["11,30","10,40","11,50","9,80"],c:2,
   t:{c:M1C,f:M1F,x:[MAX1,MIN1,{n:"Hurwicz 0,70",v:HUR1,hl:[3]}],win:3},
   e:"Con las dos filas anteriores ya cargadas, cada valor sale de ponderar el máximo por α y el mínimo por (1−α). Para E4: 0,70 × 13 + 0,30 × 8 = 9,10 + 2,40 = 11,50."},
- {q:"Con los cuatro valores de Hurwicz cargados, ¿qué alternativa se elige en ganancias?",o:["E1","E2","E3","E4"],c:3,
+ {q:"Con los cuatro valores de Hurwicz cargados, ¿qué alternativa se elige en ganancias?",o:["E1","E2","E3","E4"],c:3,misma:true,
   t:{c:M1C,f:M1F,x:[MAX1,MIN1,{n:"Hurwicz 0,70",v:HUR1,hl:[3]}],win:3},
   e:"En ganancias se busca el mayor de la fila de Hurwicz: 11,50, que es E4. Fijate que el criterio no coincide ni con el optimista (E1) ni con el pesimista (E3): es una postura intermedia."},
  {q:"Matriz de aflicción sobre ganancias. En la fila N4, cuyo máximo es 13, ¿cuánto vale la celda de E1?",o:["0","5","8","13"],c:2,
-  t:{c:M1C,f:A1F,win:0},
+  tp:{c:M1C,f:M1F}, t:{c:M1C,f:A1F,win:0},
   e:"Se construye una matriz nueva. Cada celda es máximo de la fila menos valor de la celda: para N4/E1 es 13 − 5 = 8. Representa lo que dejás de ganar por haber elegido E1 cuando ocurrió N4."},
  {q:"Con la matriz de aflicción armada, ¿qué alternativa se elige?",o:["E1","E2","E3","E4"],c:2,
   t:{c:M1C,f:A1F,x:[{n:"Máx. aflicción",v:[8,6,5,6],hl:[2]}],win:2},
@@ -679,16 +688,16 @@ const PRACTICA=[
  {q:"Matriz de COSTOS. Criterio pesimista (Mini-Max): ¿qué se elige?",o:["Solo E1","E2 o E3, empatadas","Solo E4","Solo E3"],c:1,
   t:{c:M1C,f:M1F,x:[{n:"Mínimo",v:MIN1.v},{n:"Máximo",v:MAX1.v,hl:[1,2]}],win:null},
   e:"El peor caso en costos es el costo máximo: 14, 11, 11 y 13. Se elige el menor de esos máximos, que es 11 y aparece dos veces. Hay empate entre E2 y E3."},
- {q:"Hurwicz con α = 0,30 sobre costos. ¿Qué alternativa se elige?",o:["E1","E2","E3","E4"],c:1,
+ {q:"Hurwicz con α = 0,30 sobre costos. ¿Qué alternativa se elige?",o:["E1","E2","E3","E4"],c:1,misma:true,
   t:{c:M1C,f:M1F,x:[{n:"Mínimo",v:MIN1.v},{n:"Máximo",v:MAX1.v},{n:"Hurwicz 0,30",v:HUR1,hl:[1]}],win:1},
   e:"El coeficiente de optimismo sigue pesando el mejor resultado, que en costos es el mínimo: 0,30 × mínimo + 0,70 × máximo. Los cuatro valores dan idénticos a los de ganancias, pero ahora se busca el menor: 9,80, es decir E2."},
  {q:"Aflicción sobre COSTOS. En la fila N1, cuyo mínimo es 8, ¿cuánto vale la celda de E1?",o:["0","1","6","14"],c:2,
-  t:{c:M1C,f:A1CF,win:0},
+  tp:{c:M1C,f:M1F}, t:{c:M1C,f:A1CF,win:0},
   e:"En costos la resta se invierte: valor de la celda menos mínimo de la fila. Para N1/E1 es 14 − 8 = 6. Representa lo que pagaste de más por haber elegido E1 cuando ocurrió N1."},
  {q:"Con la matriz de aflicción de costos armada, ¿qué alternativa se elige?",o:["E1","E2","E3","E4"],c:1,
   t:{c:M1C,f:A1CF,x:[{n:"Máx. aflicción",v:[6,3,6,8],hl:[1]}],win:1},
   e:"Las peores aflicciones por columna son 6, 3, 6 y 8; se elige la menor, 3, que es E2. La matriz de aflicción se minimiza siempre, sea de costos o de ganancias: ese criterio no se da vuelta."},
- {q:"Valor esperado sobre COSTOS. ¿Qué alternativa se elige?",o:["E1","E2","E3","E4"],c:1,
+ {q:"Valor esperado sobre COSTOS. ¿Qué alternativa se elige?",o:["E1","E2","E3","E4"],c:1,misma:true,
   t:{c:M1C,f:M1F,pc:PROB1,pn:"P",x:[{n:"Valor esperado",v:VE1,hl:[1]}],win:1},
   e:"Los cálculos son exactamente los mismos que en ganancias, pero el criterio se invierte: ahora se busca el menor costo esperado, 8,70, que corresponde a E2."}]},
 
@@ -709,16 +718,18 @@ const PRACTICA=[
  {q:"¿Y el valor esperado de la cuchilla?",o:["$ 700","$ 1.250","$ 1.400","$ 2.346"],c:1,
   t:{c:["Barredora","Cuchilla"],f:[["Severa","7.000","3.500"],["Moderada","2.000","1.000"],["Ligera","−9.000","−1.500"]],pc:["0,40","0,30","0,30"],pn:"P",x:[{n:"Valor esperado",v:["700","1.250"],hl:[1]}],win:1},
   e:"Mismo procedimiento: 0,40(3.500) + 0,30(1.000) + 0,30(−1.500) = 1.400 + 300 − 450 = 1.250. Con la fila completa ya se pueden comparar las dos alternativas."},
- {q:"Sin información adicional, ¿qué le recomendarías a Martín?",o:["La barredora, porque tiene el mayor resultado posible","La cuchilla, porque su valor esperado es mayor","Le da igual, los valores esperados coinciden","No invertir"],c:1,
+ {q:"Sin información adicional, ¿qué le recomendarías a Martín?",o:["La barredora, porque tiene el mayor resultado posible","La cuchilla, porque su valor esperado es mayor","Le da igual, los valores esperados coinciden","No invertir"],c:1,misma:true,
   t:{c:["Barredora","Cuchilla"],f:[["Severa","7.000","3.500"],["Moderada","2.000","1.000"],["Ligera","−9.000","−1.500"]],pc:["0,40","0,30","0,30"],pn:"P",x:[{n:"Valor esperado",v:["700","1.250"],hl:[1]}],win:1},
   e:"El criterio del valor esperado elige el mayor: 1.250 contra 700. La barredora tiene el mejor techo pero también el peor piso, y esa pérdida de 9.000 le hunde el promedio."},
  {q:"Bayes. ¿Cuál es la probabilidad conjunta de que la nevada sea severa y además mayo sea frío?",o:["0,30","0,12","0,40","0,195"],c:1,
+  tp:{c:["P(estado)","P(frío | estado)"],f:[["Severa","0,40","0,30"],["Moderada","0,30","0,20"],["Ligera","0,30","0,05"]]},
   t:{c:["P(estado)","P(frío | estado)","Conjunta"],f:[["Severa","0,40","0,30","0,12"],["Moderada","0,30","0,20","0,06"],["Ligera","0,30","0,05","0,015"]],x:[{n:"P(mayo frío)",v:["","","0,195"],hl:[2]}],win:2},
   e:"La conjunta es la probabilidad a priori multiplicada por la condicional: 0,40 × 0,30 = 0,12. Sumando las tres conjuntas se obtiene 0,195, que es la probabilidad total de que mayo sea frío."},
  {q:"¿Cuál es la probabilidad a posteriori de nevada severa, dado que mayo fue frío?",o:["0,308","0,077","0,615","0,400"],c:2,
+  tp:{c:["P(estado)","P(frío | estado)","Conjunta"],f:[["Severa","0,40","0,30","0,12"],["Moderada","0,30","0,20","0,06"],["Ligera","0,30","0,05","0,015"]],x:[{n:"P(mayo frío)",v:["","","0,195"]}]},
   t:{c:["P(estado)","P(frío | estado)","Conjunta","A posteriori"],f:[["Severa","0,40","0,30","0,12","0,615"],["Moderada","0,30","0,20","0,06","0,308"],["Ligera","0,30","0,05","0,015","0,077"]],x:[{n:"Total",v:["","","0,195","1,000"]}],win:3},
   e:"Cada conjunta se divide por el total: 0,12 ÷ 0,195 = 0,615. Observar un mayo frío hace subir la probabilidad de nevada severa del 0,40 original al 0,615. Las tres posteriores suman 1."},
- {q:"Con las probabilidades a posteriori, ¿qué conviene si mayo resulta extraordinariamente frío?",o:["La barredora, con VE de $ 4.230","La cuchilla, con VE de $ 2.346","La barredora, con VE de $ 700","La cuchilla, con VE de $ 1.250"],c:0,
+ {q:"Con las probabilidades a posteriori, ¿qué conviene si mayo resulta extraordinariamente frío?",o:["La barredora, con VE de $ 4.230","La cuchilla, con VE de $ 2.346","La barredora, con VE de $ 700","La cuchilla, con VE de $ 1.250"],c:0,misma:true,
   t:{c:["Barredora","Cuchilla"],f:[["Severa","7.000","3.500"],["Moderada","2.000","1.000"],["Ligera","−9.000","−1.500"]],pc:["0,615","0,308","0,077"],pn:"P nueva",x:[{n:"Valor esperado",v:["4.230,77","2.346,15"],hl:[0]}],win:0},
   e:"Se reemplaza la columna de probabilidades por las posteriores y se recalcula: la barredora pasa a 4.230,77 y la cuchilla a 2.346,15. La información nueva da vuelta la decisión, porque el escenario que favorecía a la barredora ahora es el más probable."}]},
 
@@ -735,9 +746,10 @@ const PRACTICA=[
   t:{c:["0","1","2","3","4","5","6"],f:[["Probabilidad","0,08","0,12","0,28","0,24","0,14","0,10","0,04"]],x:[{n:"Acumulada",v:["0,08","0,20","0,48","0,72","0,86","0,96","1,00"]}]},
   e:"Se agrega la fila de acumulada sumando cada probabilidad a las anteriores. Esa fila es la que define dónde termina el tramo de cada valor. La última celda tiene que dar 1,00; si no, hay un error en los datos."},
  {q:"¿Qué intervalo de números aleatorios le corresponde a una venta de 2 unidades?",o:["0,08 – 0,20","0,20 – 0,48","0,48 – 0,72","0,72 – 0,86"],c:1,
+  tp:{c:["0","1","2","3","4","5","6"],f:[["Probabilidad","0,08","0,12","0,28","0,24","0,14","0,10","0,04"]],x:[{n:"Acumulada",v:["0,08","0,20","0,48","0,72","0,86","0,96","1,00"]}]},
   t:{c:["0","1","2","3","4","5","6"],f:[["Probabilidad","0,08","0,12","0,28","0,24","0,14","0,10","0,04"]],x:[{n:"Acumulada",v:["0,08","0,20","0,48","0,72","0,86","0,96","1,00"]},{n:"Desde",v:["0,00","0,08","0,20","0,48","0,72","0,86","0,96"],hl:[2]},{n:"Hasta",v:["0,08","0,20","0,48","0,72","0,86","0,96","1,00"],hl:[2]}],win:2},
   e:"Cada tramo arranca donde terminó el anterior. Para 2 unidades va de 0,20 a 0,48: es el más ancho de todos porque 2 es el valor más probable, con 0,28. Así, cuanto más probable un resultado, más chances tiene de salir sorteado."},
- {q:"El primer número aleatorio es 0,4627. ¿Qué venta genera?",o:["1 unidad","2 unidades","3 unidades","4 unidades"],c:1,
+ {q:"El primer número aleatorio es 0,4627. ¿Qué venta genera?",o:["1 unidad","2 unidades","3 unidades","4 unidades"],c:1,misma:true,
   t:{c:["0","1","2","3","4","5","6"],f:[["Probabilidad","0,08","0,12","0,28","0,24","0,14","0,10","0,04"]],x:[{n:"Desde",v:["0,00","0,08","0,20","0,48","0,72","0,86","0,96"],hl:[2]},{n:"Hasta",v:["0,08","0,20","0,48","0,72","0,86","0,96","1,00"],hl:[2]}],win:2},
   e:"Se busca en qué tramo cae: 0,4627 está entre 0,20 y 0,48, así que corresponde a 2 unidades. Con cada uno de los diez números se repite exactamente esta lectura."},
  {q:"Sumando los diez días simulados, ¿cuál es la venta total del período?",o:["20 unidades","24 unidades","28 unidades","30 unidades"],c:1,
@@ -753,13 +765,15 @@ const PRACTICA=[
  pedido:`<p>Simular la cotización a lo largo de cuatro trimestres con estos números aleatorios, en orden:</p>
  <p style="font-family:var(--mono);font-size:12.5px">0,1091 · 0,9407 · 0,1941 · 0,8083</p>`,
  pasos:[
- {q:"Armados los intervalos, el primer aleatorio es 0,1091 y cae en 0,051 – 0,150. ¿Qué cambio genera y a qué precio lleva?",o:["−2, precio $ 37","−1, precio $ 38","0, precio $ 39","+1, precio $ 40"],c:1,
+ {q:"Armados los intervalos, el primer aleatorio es 0,1091 y cae en 0,051 – 0,150. ¿Qué cambio genera y a qué precio lleva?",o:["−2, precio $ 37","−1, precio $ 38","0, precio $ 39","+1, precio $ 40"],c:1,misma:true,
   t:{c:["−2","−1","0","+1","+2","+3","+4"],f:[["Probabilidad","0,05","0,10","0,25","0,20","0,20","0,10","0,10"]],x:[{n:"Desde",v:["0,000","0,051","0,151","0,401","0,601","0,801","0,901"],hl:[1]},{n:"Hasta",v:["0,050","0,150","0,400","0,600","0,800","0,900","1,000"],hl:[1]}],win:1},
   e:"Ese tramo corresponde a una baja de $ 1. El precio pasa de 39 a 38. Igual que en el ejercicio 8, cada tramo tiene un ancho proporcional a su probabilidad."},
  {q:"El segundo aleatorio es 0,9407, que cae en 0,901 – 1,000. ¿A cuánto llega el precio?",o:["$ 40","$ 41","$ 42","$ 45"],c:2,
+  tp:{c:["Aleatorio","Cambio","Precio"],f:[["Inicio","—","—","39"],["Trim. 1","0,1091","−1","38"]]},
   t:{c:["Aleatorio","Cambio","Precio"],f:[["Inicio","—","—","39"],["Trim. 1","0,1091","−1","38"],["Trim. 2","0,9407","+4","42"]],win:2},
   e:"Ese tramo es un alza de $ 4, y se aplica sobre 38, no sobre 39: 38 + 4 = 42. Este es el punto donde más se equivoca la gente, porque arrastrar mal un período desalinea toda la serie."},
  {q:"Con los cuatro aleatorios aplicados, ¿cuál es el precio simulado final?",o:["$ 42","$ 43","$ 45","$ 47"],c:2,
+  tp:{c:["Aleatorio","Cambio","Precio"],f:[["Inicio","—","—","39"],["Trim. 1","0,1091","−1","38"],["Trim. 2","0,9407","+4","42"],["Trim. 3","0,1941","0","42"],["Trim. 4","0,8083","+3","?"]]},
   t:{c:["Aleatorio","Cambio","Precio"],f:[["Inicio","—","—","39"],["Trim. 1","0,1091","−1","38"],["Trim. 2","0,9407","+4","42"],["Trim. 3","0,1941","0","42"],["Trim. 4","0,8083","+3","45"]],x:[{n:"Precio final",v:["","","45"],hl:[2]}],win:2},
   e:"La secuencia completa es 39 → 38 → 42 → 42 → 45. El tercer trimestre no mueve el precio porque el aleatorio cayó en el tramo del cambio cero, que es el más probable de todos con 0,25."}]},
 
@@ -775,13 +789,13 @@ const PRACTICA=[
   t:{c:["Y","t·Y","t²"],f:[["t = 1","20,00","20,00","1"],["t = 2","24,50","49,00","4"],["t = 3","28,20","84,60","9"],["t = 4","27,50","110,00","16"],["t = 5","26,60","133,00","25"],["t = 6","30,00","180,00","36"],["t = 7","31,00","217,00","49"],["t = 8","36,00","288,00","64"]],x:[{n:"Σ",v:["223,80","1.081,60","204"]}]},
   e:"Primero se arma la tabla auxiliar con las columnas t·Y y t², y se suman. b₁ es la pendiente de la recta y a₁ la ordenada al origen, es decir el valor de Y cuando t vale cero. Con Σt = 36, la media de t es 4,50 y la de Y es 27,975."},
  {q:"El numerador de b₁ es Σt·Y − n·t̄·Ȳ. ¿Cuánto da?",o:["74,50","150,00","1.007,10","42,00"],c:0,
-  t:{c:["Valor"],f:[["Σ t·Y","1.081,60"],["n · t̄ · Ȳ","1.007,10"],["Numerador","74,50"]],win:0},
+  t:{c:["Valor"],f:[["Σ t·Y","1.081,60"],["n · t̄ · Ȳ","1.007,10"]],x:[{n:"Numerador",v:["74,50"],hl:[0]}],win:0},
   e:"1.081,60 − (8 × 4,50 × 27,975) = 1.081,60 − 1.007,10 = 74,50. Este numerador mide cuánto se mueven juntas las dos variables por encima de lo que se movería el puro azar."},
  {q:"El denominador es Σt² − n·t̄². ¿Cuánto vale entonces b₁?",o:["1,55","1,77","2,10","0,57"],c:1,
-  t:{c:["Valor"],f:[["Numerador","74,50"],["Σ t²","204"],["n · t̄²","162"],["Denominador","42"],["b₁","1,7738"]],win:0},
+  t:{c:["Valor"],f:[["Numerador","74,50"],["Σ t²","204"],["n · t̄²","162"]],x:[{n:"Denominador",v:["42"]},{n:"b₁ = 74,50 ÷ 42",v:["1,7738"],hl:[0]}],win:0},
   e:"Denominador: 204 − (8 × 4,50²) = 204 − 162 = 42. Entonces b₁ = 74,50 ÷ 42 = 1,7738. El denominador mide la dispersión de t: siempre es positivo, así que el signo de la pendiente lo define el numerador."},
  {q:"¿Cuál es la ecuación de tendencia?",o:["Y = 1,77t + 27,98","Y = 1,77t + 19,99","Y = 19,99t + 1,77","Y = 27,98t − 1,77"],c:1,
-  t:{c:["Valor"],f:[["b₁","1,7738"],["Ȳ","27,975"],["t̄","4,50"],["a₁ = Ȳ − b₁·t̄","19,993"]],x:[{n:"Ecuación",v:["Y = 1,7738 t + 19,993"],hl:[0]}],win:0},
+  t:{c:["Valor"],f:[["b₁","1,7738"],["Ȳ","27,975"],["t̄","4,50"]],x:[{n:"a₁ = Ȳ − b₁·t̄",v:["19,993"]},{n:"Ecuación",v:["Y = 1,7738 t + 19,993"],hl:[0]}],win:0},
   e:"a₁ = 27,975 − 1,7738 × 4,50 = 19,993. La lectura práctica: el costo unitario crece alrededor de $ 1,77 por año. Para pronosticar el año 9 se reemplaza t = 9 y da unos $ 35,95."}]},
 
 {id:"p17",ej:"17",parcial:1,tema:"Costo–volumen–utilidad",t:"Equilibrio con cuatro líneas de producto",
@@ -799,13 +813,13 @@ const PRACTICA=[
   t:{c:["A","B","C","D"],f:[["Contribución marginal","20","10","15","10"],["Participación","0,30","0,40","0,20","0,10"]],x:[{n:"CM ponderada",v:["6,00","4,00","3,00","1,00"]},{n:"Total del mix",v:["","","","14,00"],hl:[3]}],win:null},
   e:"Se multiplica cada contribución por su participación y se suman: 6 + 4 + 3 + 1 = 14. Ese es el aporte promedio de cada unidad vendida del mix. Si cambiara la mezcla, cambiaría este número aunque no se moviera ningún precio."},
  {q:"¿Cuál es la cantidad de equilibrio total del mercado?",o:["10.000 unidades","12.500 unidades","14.000 unidades","8.750 unidades"],c:0,
-  t:{c:["Valor"],f:[["Costos fijos","140.000"],["CM ponderada","14,00"],["Cantidad de equilibrio","10.000"]],win:0},
+  t:{c:["Valor"],f:[["Costos fijos","140.000"],["CM ponderada","14,00"]],x:[{n:"Cantidad de equilibrio",v:["10.000"],hl:[0]}],win:0},
   e:"140.000 ÷ 14 = 10.000 unidades en total. Es la misma fórmula del caso de un solo producto, pero con la contribución del mix en el denominador."},
  {q:"¿Cuántas unidades corresponden a la línea B en el equilibrio?",o:["2.000","3.000","4.000","5.000"],c:2,
   t:{c:["A","B","C","D"],f:[["Participación","30%","40%","20%","10%"]],x:[{n:"Unidades en equilibrio",v:["3.000","4.000","2.000","1.000"],hl:[1]}],win:1},
   e:"Las 10.000 unidades se reparten según la participación de cada línea: el 40% de 10.000 son 4.000 unidades de B. La suma de las cuatro tiene que dar de nuevo 10.000."},
  {q:"Si se quiere una utilidad de $ 35.000 antes de impuestos, ¿cuántas unidades hay que vender?",o:["10.000","11.250","12.500","13.750"],c:2,
-  t:{c:["Valor"],f:[["Costos fijos","140.000"],["Utilidad pretendida","35.000"],["Numerador","175.000"],["CM ponderada","14,00"],["Cantidad necesaria","12.500"]],win:0},
+  t:{c:["Valor"],f:[["Costos fijos","140.000"],["Utilidad pretendida","35.000"],["CM ponderada","14,00"]],x:[{n:"Numerador",v:["175.000"]},{n:"Cantidad necesaria",v:["12.500"],hl:[0]}],win:0},
   e:"La utilidad pretendida se suma a los costos fijos en el numerador: (140.000 + 35.000) ÷ 14 = 12.500 unidades. Son 2.500 más que en el equilibrio, justo las que hacen falta para generar los 35.000 a razón de $ 14 cada una."}]},
 
 {id:"p20",ej:"20",parcial:2,tema:"Producción e inventarios",t:"Clasificación ABC del inventario",
@@ -816,12 +830,14 @@ const PRACTICA=[
  pedido:`<p>Se pide clasificar los artículos en las clases A, B y C, y definir qué sistema de control corresponde a cada una.</p>`,
  pasos:[
  {q:"¿Cuál es el primer paso del análisis?",o:["Ordenar los ítems por costo unitario, de mayor a menor","Multiplicar la demanda anual por el costo unitario de cada ítem","Ordenar por demanda anual en unidades","Calcular el lote óptimo de cada ítem"],c:1,
+  tp:{c:["Demanda anual","Costo unitario"],f:[["Ejemplo ítem 1","1.000","90,00"],["Ejemplo ítem 2","2.500","1,50"]]},
   t:{c:["Demanda anual","Costo unitario","Valor anual"],f:[["Ejemplo ítem 1","1.000","90,00","90.000"],["Ejemplo ítem 2","2.500","1,50","3.750"]],win:2},
   e:"Ese producto es la valuación: el volumen anual en pesos. El ejemplo muestra por qué ni la demanda ni el precio sirven por separado: el segundo ítem se mueve mucho más, pero el primero inmoviliza veinticuatro veces más plata."},
  {q:"Ordenados de mayor a menor y acumulando, ¿qué porcentajes arrojan las tres clases?",o:["A: 13,19% de ítems y 75,87% del valor","A: 34,91% de ítems y 17,63% del valor","A: 51,91% de ítems y 6,50% del valor","Las tres clases reparten 33% cada una"],c:0,
+  tp:{c:["% de ítems","% del valor"],f:[["Clase A","?","?"],["Clase B","?","?"],["Clase C","?","?"]]},
   t:{c:["% de ítems","% del valor"],f:[["Clase A","13,19%","75,87%"],["Clase B","34,91%","17,63%"],["Clase C","51,91%","6,50%"]],x:[{n:"Total","v":["100%","100%"]}],win:1},
   e:"Se ordena por valor anual descendente y se acumula hasta llegar a los cortes. El resultado es la curva típica de Pareto: la clase C tiene la mitad de los artículos y explica apenas un 6,50% del valor."},
- {q:"¿Qué sistema de control corresponde aplicar a los artículos de clase A?",o:["El mismo que a B y C, para simplificar","Control físico más estricto, resguardo más seguro y comprobación más frecuente de los registros","Ningún control, porque son pocos","Solo control anual por muestreo"],c:1,
+ {q:"¿Qué sistema de control corresponde aplicar a los artículos de clase A?",o:["El mismo que a B y C, para simplificar","Control físico más estricto, resguardo más seguro y comprobación más frecuente de los registros","Ningún control, porque son pocos","Solo control anual por muestreo"],c:1,tp:false,
   t:{c:["Control"],f:[["Clase A","Estricto, resguardo seguro, verificación frecuente"],["Clase B","Intermedio, revisiones periódicas"],["Clase C","Simple, lotes grandes, verificación esporádica"]],win:0},
   e:"No es realista seguir a los artículos baratos con la misma intensidad que a los caros. El esfuerzo de control se concentra donde está el valor: si te equivocás en un ítem de clase C, el impacto económico es marginal."}]},
 
@@ -834,14 +850,501 @@ const PRACTICA=[
  pedido:`<p>Se pide determinar el costo variable unitario del combo, su contribución marginal y la cantidad de combos semanales necesaria para alcanzar el punto de equilibrio.</p>`,
  pasos:[
  {q:"¿Cuál es el costo unitario del chorizo por combo, ya considerando la merma?",o:["$ 0,225","$ 0,2394","$ 0,2500","$ 0,1800"],c:1,
-  t:{c:["Cálculo","Importe"],f:[["Kilo de chorizos","$ 1,80 ÷ 8","0,2250"],["Ajuste por rendimiento","0,2250 ÷ 0,94","0,2394"]],win:1},
+  t:{c:["Cálculo","Importe"],f:[["Kilo de chorizos","$ 1,80 ÷ 8","0,2250"]],x:[{n:"Ajuste por 94%",v:["0,2250 ÷ 0,94","0,2394"],hl:[1]}],win:1},
   e:"Primero el costo nominal: 1,80 ÷ 8 = 0,225 por chorizo. Después se divide por el rendimiento del 94%, no se le resta el 6%. La merma encarece el insumo, porque hay que comprar más de lo que efectivamente se sirve."},
  {q:"Sumando los tres componentes, ¿cuál es la contribución marginal del combo?",o:["$ 0,6276","$ 1,3724","$ 2,0000","$ 0,8724"],c:1,
   t:{c:["Importe"],f:[["Chorizo","0,2394"],["Papa (0,30 ÷ 4 ÷ 0,85)","0,0882"],["Carbón, aceite, pan y aderezos","0,3000"],["Costo variable unitario","0,6276"],["Precio de venta","2,0000"]],x:[{n:"Contribución marginal",v:["1,3724"],hl:[0]}],win:0},
   e:"La papa sigue la misma lógica que el chorizo: 0,30 ÷ 4 = 0,075 y después ÷ 0,85 = 0,0882. Costo variable total 0,6276, y la contribución es 2 − 0,6276 = 1,3724 por combo."},
  {q:"¿Cuántos combos hay que vender por semana para llegar al equilibrio?",o:["109 combos","150 combos","239 combos","400 combos"],c:0,
-  t:{c:["Valor"],f:[["Costos fijos semanales","150,00"],["Contribución marginal unitaria","1,3724"],["Cantidad de equilibrio","109,3"]],win:0},
-  e:"150 ÷ 1,3724 = 109,3 combos por semana, unos 16 por día. Como no se venden fracciones de combo, en la práctica hay que redondear hacia arriba: 110."}]}
+  t:{c:["Valor"],f:[["Costos fijos semanales","150,00"],["Contribución marginal unitaria","1,3724"]],x:[{n:"Cantidad de equilibrio",v:["109,3"],hl:[0]}],win:0},
+  e:"150 ÷ 1,3724 = 109,3 combos por semana, unos 16 por día. Como no se venden fracciones de combo, en la práctica hay que redondear hacia arriba: 110."}]},
+{id:"p2",ej:"2",parcial:1,tema:"Modelos de decisión",t:"Cerro Catedral Ski Resort",
+ enunciado:`<h4>Planteo</h4>
+ <p>El centro de esquí evalúa instalar <b>uno o dos ascensores</b>. Cada uno transporta 250 personas por día, la temporada dura 14 semanas y funciona los 7 días.</p>
+ <p>Con condiciones económicas <b>adversas</b> el primer ascensor trabaja al 90% de su capacidad; en condiciones <b>normales</b> el segundo trabajaría al 50%, y en <b>buenas</b> al 90%.</p>
+ <p>Este ejercicio no te da la matriz hecha: hay que construirla desde los datos de costos e ingresos.</p>`,
+ datos:`<p><b>Ejercicio 2.</b> Datos de costos e ingresos.</p>`,
+ tabla:{c:["1 ascensor","2 ascensores"],f:[["Instalación","$ 40.000","$ 75.000"],["Empleados","5","10"],["Sueldo semanal c/u","$ 375","$ 375"],["Operación por ascensor","$ 150.000","$ 150.000"],["Costo variable por cliente","$ 10","$ 10"],["Precio del pasaje","$ 25","$ 25"]]},
+ pedido:`<p>Se pide:</p><ul>
+ <li>Confeccionar las matrices necesarias hasta llegar a la de resultados.</li>
+ <li>Decidir según el criterio de aflicción.</li>
+ <li>Decidir según el valor esperado, con P(adversas)=0,35 · P(normales)=0,25 · P(buenas)=0,40.</li></ul>`,
+ pasos:[
+ {q:"¿Cuál es la capacidad máxima de un ascensor para toda la temporada?",o:["17.500 personas","22.050 personas","24.500 personas","46.550 personas"],c:2,
+  t:{c:["Cálculo"],f:[["Personas por día","250"],["Días por semana","7"],["Semanas de temporada","14"]],x:[{n:"Capacidad por ascensor",v:["24.500"],hl:[0]}],win:0},
+  e:"250 × 7 × 14 = 24.500 personas. Al 90% da 22.050 y al 50% da 12.250: esos tres números son los que después arman toda la matriz de demanda."},
+ {q:"¿Cuánto suman los costos fijos de la alternativa de dos ascensores?",o:["$ 216.250","$ 375.000","$ 427.500","$ 465.500"],c:2,
+  t:{c:["1 ascensor","2 ascensores"],f:[["Instalación","40.000","75.000"],["Empleados (375 × 14 semanas)","26.250","52.500"],["Operación","150.000","300.000"]],x:[{n:"Costos fijos totales",v:["216.250","427.500"],hl:[1]}],win:1},
+  e:"75.000 + 52.500 + 300.000 = 427.500. Ojo con los empleados: son 10 × $375 × 14 semanas = 52.500, y la operación se paga por cada ascensor, así que se duplica."},
+ {q:"Con dos ascensores y demanda adversa (22.050 personas), ¿cuál es el resultado?",o:["$ 114.500","−$ 96.750","$ 123.750","$ 270.750"],c:1,
+  t:{c:["adversas","normales","buenas"],f:[["Demanda 2 asc.","22.050","36.750","46.550"],["Ingresos (× 25)","551.250","918.750","1.163.750"],["Costo variable (× 10)","220.500","367.500","465.500"],["Costos fijos","427.500","427.500","427.500"]],x:[{n:"Resultado",v:["−96.750","123.750","270.750"],hl:[0]}],win:0},
+  e:"551.250 − 220.500 − 427.500 = −96.750. Con demanda adversa los dos ascensores dan pérdida, porque el segundo no suma un solo pasajero pero arrastra todos sus costos fijos."},
+ {q:"Ya con la matriz de resultados armada, ¿qué conviene según el criterio pesimista de Wald?",o:["Un ascensor","Dos ascensores","Da lo mismo","No instalar ninguno"],c:0,
+  t:{c:["adversas","normales","buenas"],f:[["1 ascensor","114.500","151.250","151.250"],["2 ascensores","−96.750","123.750","270.750"]],x:[{n:"Peor caso",v:["114.500","−96.750"],hl:[0]}],win:null,
+    },misma:false,
+  e:"Los peores casos son 114.500 con uno y −96.750 con dos. El mayor de los peores es 114.500, así que el pesimista instala un solo ascensor. Con el criterio optimista, en cambio, ganaría la opción de dos por sus 270.750."},
+ {q:"Aplicando el criterio de aflicción sobre la matriz de resultados, ¿qué conviene?",o:["Un ascensor","Dos ascensores","Da lo mismo","No alcanza la información"],c:0,
+  t:{c:["adversas","normales","buenas"],f:[["1 ascensor","0","0","119.500"],["2 ascensores","211.250","27.500","0"]],x:[{n:"Máx. aflicción",v:["119.500","211.250"],hl:[0]}],win:null},
+  e:"Los máximos por estado son 114.500, 151.250 y 270.750. Las aflicciones más altas dan 119.500 con uno y 211.250 con dos; se elige la menor, o sea un ascensor."},
+ {q:"Con P(adversas)=0,35 · P(normales)=0,25 · P(buenas)=0,40, ¿qué conviene según el valor esperado?",o:["Un ascensor, con VE de $ 138.388","Dos ascensores, con VE de $ 160.500","Dos ascensores, con VE de $ 105.375","Un ascensor, con VE de $ 114.500"],c:0,
+  t:{c:["adversas 0,35","normales 0,25","buenas 0,40"],f:[["1 ascensor","40.075","37.813","60.500"],["2 ascensores","−33.863","30.938","108.300"]],x:[{n:"Valor esperado",v:["138.388","105.375"],hl:[0]}],win:null},
+  e:"Se pondera cada resultado y se suma la fila: 138.388 contra 105.375. Coincide con la aflicción y con Wald. El único criterio que elegía dos ascensores era el optimista, y Hurwicz con α = 0,70, que da 160.500 contra 140.225."}]},
+
+{id:"p3",ej:"3",parcial:1,tema:"Modelos de decisión",t:"Concierto: polideportivo o campo de fútbol",
+ enunciado:`<h4>Planteo</h4>
+ <p>Una organizadora de conciertos duda entre un <b>polideportivo cubierto</b> y un <b>campo de fútbol al aire libre</b>. El beneficio depende del clima.</p>
+ <p>El polideportivo es la opción protegida: gana menos si hace calor pero nunca pierde. El campo es la apuesta: pierde fuerte con frío y gana mucho con calor.</p>`,
+ datos:`<p><b>Ejercicio 3.</b> Beneficios según ubicación y clima.</p>`,
+ tabla:{c:["Polideportivo","Campo de fútbol"],f:[["Frío","30.000","−12.000"],["Templado","20.000","1.000"],["Caluroso","10.000","43.000"]]},
+ pedido:`<p>Se pide decidir según: optimista, pesimista, Hurwicz con α = 0,4, Savage, y valor esperado con P(frío)=0,10 · P(templado)=0,30 · P(caluroso)=0,60.</p>
+ <p>Además, una consultora ofrece por <b>$ 1.200</b> información sobre la afluencia de público según el clima: con mucho público, 20% frío, 90% templado y 70% caluroso. Hay que decidir si esa información vale lo que cuesta.</p>`,
+ pasos:[
+ {q:"Criterio optimista: ¿qué ubicación se elige?",o:["Polideportivo","Campo de fútbol","Empatan","Ninguna"],c:1,
+  t:{c:["Polideportivo","Campo de fútbol"],f:[["Frío","30.000","−12.000"],["Templado","20.000","1.000"],["Caluroso","10.000","43.000"]],x:[{n:"Mejor caso",v:["30.000","43.000"],hl:[1]}],win:1},
+  e:"Los mejores casos son 30.000 y 43.000. El optimista se queda con el campo de fútbol. Es el único criterio de los cinco que va a elegir esa opción en situación de incertidumbre."},
+ {q:"Criterio pesimista de Wald: ¿qué ubicación se elige?",o:["Polideportivo","Campo de fútbol","Empatan","Ninguna"],c:0,
+  t:{c:["Polideportivo","Campo de fútbol"],f:[["Frío","30.000","−12.000"],["Templado","20.000","1.000"],["Caluroso","10.000","43.000"]],x:[{n:"Mejor caso",v:["30.000","43.000"]},{n:"Peor caso",v:["10.000","−12.000"],hl:[0]}],win:0},
+  e:"Los peores casos son 10.000 y −12.000. El mayor de los dos es 10.000, así que el pesimista arma el concierto en el polideportivo, donde ni en el peor escenario se pierde plata."},
+ {q:"Hurwicz con coeficiente de optimismo 0,4: ¿qué ubicación se elige?",o:["Polideportivo, con 18.000","Campo de fútbol, con 10.000","Polideportivo, con 20.000","Campo de fútbol, con 17.200"],c:0,
+  t:{c:["Polideportivo","Campo de fútbol"],f:[["Mejor caso","30.000","43.000"],["Peor caso","10.000","−12.000"]],x:[{n:"Hurwicz 0,40",v:["18.000","10.000"],hl:[0]}],win:0},
+  e:"Polideportivo: 0,40(30.000) + 0,60(10.000) = 12.000 + 6.000 = 18.000. Campo: 0,40(43.000) + 0,60(−12.000) = 17.200 − 7.200 = 10.000. Con un coeficiente bajo pesa más el peor caso, y ahí el campo se hunde."},
+ {q:"Criterio de Savage o de aflicción: ¿qué ubicación se elige?",o:["Polideportivo","Campo de fútbol","Empatan","Depende del clima"],c:0,
+  t:{c:["Polideportivo","Campo de fútbol"],f:[["Frío","0","42.000"],["Templado","0","19.000"],["Caluroso","33.000","0"]],x:[{n:"Máx. aflicción",v:["33.000","42.000"],hl:[0]}],win:0},
+  e:"Los máximos por fila son 30.000, 20.000 y 43.000. Las aflicciones más altas dan 33.000 y 42.000; la menor corresponde al polideportivo."},
+ {q:"Con P(frío)=0,10 · P(templado)=0,30 · P(caluroso)=0,60, ¿qué conviene?",o:["Polideportivo, con $ 15.000","Campo de fútbol, con $ 24.900","Polideportivo, con $ 20.000","Campo de fútbol, con $ 10.667"],c:1,
+  t:{c:["Polideportivo","Campo de fútbol"],f:[["Frío","3.000","−1.200"],["Templado","6.000","300"],["Caluroso","6.000","25.800"]],pc:["0,10","0,30","0,60"],pn:"P",x:[{n:"Valor esperado",v:["15.000","24.900"],hl:[1]}],win:1},
+  e:"Campo: −1.200 + 300 + 25.800 = 24.900, contra 15.000 del polideportivo. Acá se da vuelta todo: como el escenario caluroso tiene un 60% de probabilidad, el riesgo del campo deja de ser tan grave."},
+ {q:"Bayes. ¿Cuál es la probabilidad total de que haya mucho público?",o:["0,29","0,42","0,71","0,90"],c:2,
+  t:{c:["P(clima)","P(mucho púb.)","Conjunta"],f:[["Frío","0,10","0,20","0,02"],["Templado","0,30","0,90","0,27"],["Caluroso","0,60","0,70","0,42"]],x:[{n:"P(mucho público)",v:["","","0,71"],hl:[2]}],win:2},
+  e:"Se multiplica cada probabilidad a priori por su condicional y se suman las conjuntas: 0,02 + 0,27 + 0,42 = 0,71. La probabilidad de poco público es el complemento, 0,29."},
+ {q:"La utilidad de Bayes con la información extra da $ 24.918. ¿Conviene pagar los $ 1.200 que cuesta?",o:["Sí, porque supera los $ 24.900 sin información","No, porque para justificarse debería superar los $ 26.100","Sí, porque cambia la decisión a polideportivo","No se puede determinar"],c:1,
+  t:{c:["Importe"],f:[["Utilidad esperada sin información","24.900"],["Costo de la consultora","1.200"],["Piso que debería superar","26.100"],["Utilidad de Bayes con información","24.918"]],x:[{n:"Diferencia",v:["−1.182"],hl:[0]}],win:0},
+  e:"La información mejora la utilidad en apenas $ 18, de 24.900 a 24.918, pero cuesta $ 1.200. Para que valiera la pena tendría que llegar a 26.100. Además la decisión no cambia: sigue conviniendo el campo de fútbol."}]},
+
+{id:"p4",ej:"4",parcial:1,tema:"Modelos de decisión",t:"Juan Price S.A.: alquiler del automóvil",
+ enunciado:`<h4>Planteo</h4>
+ <p>La empresa alquila un auto por 12 meses y tiene <b>cuatro ofertas</b>. Cada una combina un cargo mensual fijo, una cantidad de kilómetros libres por año y un costo por kilómetro excedente.</p>
+ <p>La incógnita es cuánto va a recorrer: se estiman <b>17.000 o 21.000 km</b>. Como todo son costos, los criterios se aplican al revés que en una matriz de ganancias.</p>`,
+ datos:`<p><b>Ejercicio 4.</b> Ofertas de los cuatro distribuidores.</p>`,
+ tabla:{c:["Costo mensual","Km libres","Costo por km extra"],f:[["Fine Saab","$ 300","12.000","$ 0,25"],["Midtown Motors","$ 350","15.000","$ 0,20"],["Hopkins Car","$ 430","20.000","$ 0,12"],["Saab Automotors","$ 420","18.000","$ 0,15"]]},
+ pedido:`<p>Se pide construir la matriz de costos, aplicar los criterios de incertidumbre, decidir por valor esperado con P(17.000 km)=0,55 y P(21.000 km)=0,45, analizar la sensibilidad y calcular el valor esperado de la información perfecta.</p>`,
+ pasos:[
+ {q:"¿Cuál es el costo anual de Fine Saab si se recorren 17.000 km?",o:["$ 3.600","$ 4.850","$ 5.850","$ 4.250"],c:1,
+  t:{c:["Cálculo","Importe"],f:[["Cargo fijo","300 × 12","3.600"],["Km excedentes","17.000 − 12.000","5.000"],["Cargo por exceso","5.000 × 0,25","1.250"]],x:[{n:"Costo total",v:["","4.850"],hl:[1]}],win:1},
+  e:"3.600 + 1.250 = 4.850. Fine Saab tiene el cargo fijo más barato pero el kilómetro extra más caro, y encima los km libres más bajos: se le dispara el costo cuando se recorre mucho."},
+ {q:"Con la matriz de costos completa, ¿qué distribuidor elige el criterio optimista?",o:["Fine Saab","Midtown Motors","Hopkins Car","Saab Automotors"],c:1,
+  t:{c:["17.000 km","21.000 km"],f:[["Fine Saab","4.850","5.850"],["Midtown Motors","4.600","5.400"],["Hopkins Car","5.160","5.280"],["Saab Automotors","5.040","5.490"]],x:[{n:"Mejor caso (mínimo)",v:["4.600",""],hl:[0]}],win:0},
+  e:"En costos el optimista es Mini-Min: busca el menor de los costos mínimos. El mínimo global de toda la matriz es 4.600, de Midtown Motors con 17.000 km."},
+ {q:"¿Y qué distribuidor elige el criterio pesimista?",o:["Fine Saab","Midtown Motors","Hopkins Car","Saab Automotors"],c:2,
+  t:{c:["17.000 km","21.000 km"],f:[["Fine Saab","4.850","5.850"],["Midtown Motors","4.600","5.400"],["Hopkins Car","5.160","5.280"],["Saab Automotors","5.040","5.490"]],x:[{n:"Peor caso (máximo)",v:["","5.280"],hl:[1]}],win:1},
+  e:"En costos el pesimista es Mini-Max: de los peores casos de cada fila (5.850 · 5.400 · 5.280 · 5.490) se elige el más chico, 5.280, que es Hopkins Car. Hopkins tiene el cargo fijo más caro pero 20.000 km libres, así que casi no se le mueve el costo."},
+ {q:"Aplicando el criterio de aflicción, ¿qué distribuidor conviene?",o:["Fine Saab","Midtown Motors","Hopkins Car","Saab Automotors"],c:1,
+  t:{c:["17.000 km","21.000 km"],f:[["Fine Saab","250","570"],["Midtown Motors","0","120"],["Hopkins Car","560","0"],["Saab Automotors","440","210"]],x:[{n:"Máx. aflicción",v:["570 · 120 · 560 · 440",""],hl:[]}],win:null},
+  e:"En costos la aflicción es valor de la celda menos el mínimo de la columna: 4.600 en la primera y 5.280 en la segunda. Las máximas por fila son 570, 120, 560 y 440; la menor es 120, de Midtown Motors."},
+ {q:"Con P(17.000 km)=0,55 y P(21.000 km)=0,45, ¿qué distribuidor conviene?",o:["Fine Saab, con $ 5.300","Midtown Motors, con $ 4.960","Hopkins Car, con $ 5.214","Saab Automotors, con $ 5.242,50"],c:1,
+  t:{c:["17.000 km · 0,55","21.000 km · 0,45"],f:[["Fine Saab","4.850","5.850"],["Midtown Motors","4.600","5.400"],["Hopkins Car","5.160","5.280"],["Saab Automotors","5.040","5.490"]],x:[{n:"Valor esperado",v:["5.300 · 4.960 · 5.214 · 5.242,50",""],hl:[]}],win:null},
+  e:"Midtown Motors: 4.600(0,55) + 5.400(0,45) = 2.530 + 2.430 = 4.960, el menor de los cuatro. Coincide con el criterio de aflicción."},
+ {q:"En el análisis de sensibilidad, ¿a partir de qué probabilidad de recorrer 17.000 km conviene Midtown en lugar de Hopkins?",o:["p = 0,1765","p = 0,45","p = 0,55","p = 0,80"],c:0,
+  t:{c:["Recta del valor esperado"],f:[["Fine Saab","−1.000 p + 5.850"],["Midtown Motors","−800 p + 5.400"],["Hopkins Car","−120 p + 5.280"],["Saab Automotors","−450 p + 5.490"]],x:[{n:"Igualando Midtown y Hopkins",v:["680 p = 120 → p = 0,1765"],hl:[0]}],win:0},
+  e:"Se escribe el VE de cada uno en función de p y se igualan las dos rectas relevantes: −800p + 5.400 = −120p + 5.280. Con p menor a 0,1765 conviene Hopkins; de ahí en adelante, Midtown. Como la probabilidad real es 0,55, la decisión está lejos del punto de corte: es robusta."},
+ {q:"¿Cuál es el valor esperado de la información perfecta?",o:["$ 54","$ 4.906","$ 4.960","$ 120"],c:0,
+  t:{c:["Importe"],f:[["Mejor costo si se supiera 17.000 km","4.600"],["Mejor costo si se supiera 21.000 km","5.280"],["Valor esperado con información perfecta","4.906"],["Valor esperado sin información","4.960"]],x:[{n:"VEIP",v:["54"],hl:[0]}],win:0},
+  e:"Con información perfecta uno elegiría el mejor de cada columna: 4.600(0,55) + 5.280(0,45) = 4.906. La diferencia contra los 4.960 sin información es de apenas $ 54, y ese es el máximo que convendría pagar por un estudio."}]},
+
+{id:"p5",ej:"5",parcial:1,tema:"Modelos de decisión",t:"Proveedores A y B",
+ enunciado:`<h4>Planteo</h4>
+ <p>Una empresa compra <b>1.000 piezas</b> y elige entre dos proveedores. El B tiene peor calidad, pero vende el lote <b>$ 1.500 más barato</b>.</p>
+ <p>Cada pieza defectuosa cuesta <b>$ 200</b> repararla. La pregunta es si el descuento alcanza para compensar los defectos extra.</p>`,
+ datos:`<p><b>Ejercicio 5.</b> Calidad de cada proveedor.</p>`,
+ tabla:{c:["Proveedor A","Proveedor B"],f:[["1% defectuosas","0,80","0,20"],["2% defectuosas","0,10","0,60"],["3% defectuosas","0,10","0,20"]]},
+ pedido:`<p>Se pide confeccionar el árbol de decisión y elegir proveedor según el enfoque del valor esperado.</p>`,
+ pasos:[
+ {q:"Si sale un 1% de piezas defectuosas, ¿cuánto cuesta repararlas?",o:["$ 200","$ 2.000","$ 1.000","$ 20.000"],c:1,
+  t:{c:["Piezas fallas","Costo de reparación"],f:[["1%","10","2.000"],["2%","20","4.000"],["3%","30","6.000"]],win:1},
+  e:"El 1% de 1.000 piezas son 10 unidades, y a $ 200 cada una da $ 2.000. Con 2% son 4.000 y con 3%, 6.000. Esta columna es la base del árbol."},
+ {q:"Sumándole al proveedor A los $ 1.500 que cobra de más, ¿cuál es su costo esperado?",o:["$ 2.600","$ 4.000","$ 4.100","$ 5.500"],c:2,
+  t:{c:["Reparación","+ $ 1.500","Prob. A"],f:[["1%","2.000","3.500","0,80"],["2%","4.000","5.500","0,10"],["3%","6.000","7.500","0,10"]],x:[{n:"Valor esperado A",v:["","4.100",""],hl:[1]}],win:1},
+  e:"0,80(3.500) + 0,10(5.500) + 0,10(7.500) = 2.800 + 550 + 750 = 4.100. El diferencial de precio se le carga a A porque es el que cobra más caro; también se podría restar a B y el resultado relativo sería el mismo."},
+ {q:"¿Cuál es el costo esperado del proveedor B?",o:["$ 2.500","$ 4.000","$ 4.100","$ 6.000"],c:1,
+  t:{c:["Costo","Prob. B"],f:[["1%","2.000","0,20"],["2%","4.000","0,60"],["3%","6.000","0,20"]],x:[{n:"Valor esperado B",v:["4.000",""],hl:[0]}],win:0},
+  e:"0,20(2.000) + 0,60(4.000) + 0,20(6.000) = 400 + 2.400 + 1.200 = 4.000. B falla más seguido, pero no paga el sobreprecio."},
+ {q:"¿Qué proveedor conviene?",o:["A, porque tiene mejor calidad","B, porque su costo esperado es menor","Da lo mismo, empatan","Faltan datos para decidir"],c:1,
+  t:{c:["Valor esperado"],f:[["Proveedor A","4.100"],["Proveedor B","4.000"]],x:[{n:"Diferencia a favor de B",v:["100"],hl:[0]}],win:0},
+  e:"B gana por apenas $ 100 sobre un costo de $ 4.000: un 2,5%. Es una diferencia tan chica que conviene decirlo en la respuesta, porque cualquier cambio en las probabilidades o en el costo de reparación daría vuelta la decisión."}]},
+
+{id:"p6",ej:"6",parcial:1,tema:"Modelos de decisión",t:"¿Una máquina o dos?",
+ enunciado:`<h4>Planteo</h4>
+ <p>Un gerente decide si compra <b>una máquina o dos</b>. Si compra una y la demanda resulta alta, después puede reaccionar; pero fabricar una máquina lleva seis meses y en el medio pierde ventas. Comprando las dos juntas el costo por máquina baja.</p>
+ <p>Lo que distingue a este ejercicio es que <b>hay una segunda decisión dentro del árbol</b>: si compró una y la demanda es alta, todavía puede elegir entre tres caminos. Por eso el árbol se resuelve de derecha a izquierda.</p>`,
+ datos:`<p><b>Ejercicio 6.</b> Valores presentes netos después de impuestos. P(demanda baja) = 0,30.</p>`,
+ tabla:{c:["Demanda baja","Demanda alta"],f:[["Comprar dos máquinas","90.000","170.000"],["Comprar una máquina","120.000","ver ramas"]],x:[{n:"Si compró una y la demanda es alta",v:["No hacer nada: 120.000 · Subcontratar: 140.000 · Comprar la segunda: 130.000",""],hl:[]}]},
+ pedido:`<p>Se pide dibujar el árbol de decisión, indicar cuántas máquinas conviene comprar inicialmente y cuál es el beneficio esperado de esa alternativa.</p>`,
+ pasos:[
+ {q:"En el nodo de decisión que aparece si compró una máquina y la demanda es alta, ¿qué opción se elige?",o:["No hacer nada, $ 120.000","Subcontratar, $ 140.000","Comprar la segunda máquina, $ 130.000","Se promedian las tres"],c:1,
+  t:{c:["Valor presente neto"],f:[["No hacer nada","120.000"],["Subcontratar","140.000"],["Comprar la segunda máquina","130.000"]],x:[{n:"Valor del nodo",v:["140.000"],hl:[0]}],win:0},
+  e:"En un nodo de decisión no se promedia: se elige la mejor rama y ese valor sube al nodo. Subcontratar con 140.000 le gana a comprar la segunda máquina, porque los seis meses de fabricación cuestan ventas."},
+ {q:"¿Cuál es el valor esperado de comprar una sola máquina?",o:["$ 120.000","$ 130.000","$ 134.000","$ 140.000"],c:2,
+  t:{c:["Resultado","Prob."],f:[["Demanda baja","120.000","0,30"],["Demanda alta (subcontratando)","140.000","0,70"]],x:[{n:"Valor esperado",v:["134.000",""],hl:[0]}],win:0},
+  e:"0,30(120.000) + 0,70(140.000) = 36.000 + 98.000 = 134.000. En la rama de demanda alta se usa el 140.000 que quedó del paso anterior, no los tres valores por separado."},
+ {q:"¿Cuál es el valor esperado de comprar las dos máquinas de entrada?",o:["$ 134.000","$ 146.000","$ 170.000","$ 130.000"],c:1,
+  t:{c:["Resultado","Prob."],f:[["Demanda baja","90.000","0,30"],["Demanda alta","170.000","0,70"]],x:[{n:"Valor esperado",v:["146.000",""],hl:[0]}],win:0},
+  e:"0,30(90.000) + 0,70(170.000) = 27.000 + 119.000 = 146.000. Acá no hay decisión posterior: comprar las dos cierra el camino."},
+ {q:"¿Qué debe hacer el gerente?",o:["Comprar una máquina, con VE de $ 134.000","Comprar dos máquinas, con VE de $ 146.000","Comprar una y subcontratar siempre","Esperar a conocer la demanda"],c:1,
+  t:{c:["Valor esperado"],f:[["Comprar una máquina","134.000"],["Comprar dos máquinas","146.000"]],x:[{n:"Decisión inicial",v:["Dos máquinas"],hl:[0]}],win:0},
+  e:"146.000 contra 134.000: conviene comprar las dos desde el principio. La flexibilidad de esperar tiene valor, pero acá no alcanza a compensar el menor costo por máquina de la compra conjunta."}]},
+
+{id:"p9",ej:"9",parcial:1,tema:"Simulación",t:"Precio de la tonelada de soja",
+ enunciado:`<h4>Planteo</h4>
+ <p>Una empresa agrícola necesita estimar cómo va a evolucionar el precio de la tonelada de soja durante <b>cinco meses</b>. Hoy está en <b>U$S 345</b>.</p>
+ <p>Igual que en el ejercicio de la acción, cada variación se aplica sobre el precio del mes anterior. La diferencia es que acá los cambios no son de a un peso: van de −20 a +45.</p>`,
+ datos:`<p><b>Ejercicio 9.</b> Distribución del cambio mensual del precio.</p>`,
+ tabla:{c:["−20","−15","0","+10","+25","+30","+45"],f:[["Probabilidad","0,10","0,10","0,25","0,20","0,20","0,10","0,05"]]},
+ pedido:`<p>Se pide armar la tabla de intervalos de números aleatorios y estimar el precio al final de cada uno de los cinco meses con la serie:</p>
+ <p style="font-family:var(--mono);font-size:12.5px">0,1091 · 0,9407 · 0,6745 · 0,1941 · 0,8083</p>`,
+ pasos:[
+ {q:"¿Qué intervalo de números aleatorios le corresponde al cambio de $ 0?",o:["0,1001 – 0,2000","0,2001 – 0,4500","0,4501 – 0,6500","0,6501 – 0,8500"],c:1,
+  t:{c:["−20","−15","0","+10","+25","+30","+45"],f:[["Probabilidad","0,10","0,10","0,25","0,20","0,20","0,10","0,05"]],x:[{n:"Acumulada",v:["0,10","0,20","0,45","0,65","0,85","0,95","1,00"]},{n:"Desde",v:["0,0000","0,1001","0,2001","0,4501","0,6501","0,8501","0,9501"],hl:[2]},{n:"Hasta",v:["0,1000","0,2000","0,4500","0,6500","0,8500","0,9500","1,0000"],hl:[2]}],win:2},
+  e:"La acumulada llega a 0,20 con el −15 y a 0,45 con el cero, así que ese tramo va de 0,2001 a 0,4500. Es el más ancho porque el 0,25 es la probabilidad más alta de la tabla: lo más probable es que el precio no se mueva."},
+ {q:"El primer aleatorio es 0,1091. ¿A qué precio queda la tonelada al final del mes 1?",o:["U$S 325","U$S 330","U$S 345","U$S 355"],c:1,
+  t:{c:["Aleatorio","Variación","Precio"],f:[["Inicio","—","—","345"],["Mes 1","0,1091","−15","330"]],x:[],win:2},
+  e:"0,1091 cae en 0,1001 – 0,2000, que corresponde a una baja de $ 15: 345 − 15 = 330."},
+ {q:"El tercer aleatorio es 0,6745. ¿Qué variación genera?",o:["$ 0","+$ 10","+$ 25","+$ 30"],c:2,
+  t:{c:["Aleatorio","Variación","Precio"],f:[["Inicio","—","—","345"],["Mes 1","0,1091","−15","330"],["Mes 2","0,9407","+30","360"],["Mes 3","0,6745","+25","385"]],win:1},
+  e:"0,6745 cae en 0,6501 – 0,8500, o sea +$ 25. Cuidado con el mes 2: 0,9407 cae en 0,8501 – 0,9500, que es +$ 30 y no el +$ 45, que arranca recién en 0,9501."},
+ {q:"¿Cuál es el precio simulado al final del quinto mes?",o:["U$S 370","U$S 385","U$S 395","U$S 420"],c:2,
+  t:{c:["Aleatorio","Variación","Precio"],f:[["Inicio","—","—","345"],["Mes 1","0,1091","−15","330"],["Mes 2","0,9407","+30","360"],["Mes 3","0,6745","+25","385"],["Mes 4","0,1941","−15","370"],["Mes 5","0,8083","+25","395"]],x:[{n:"Precio final",v:["","","395"],hl:[2]}],win:2},
+  e:"La serie completa es 345 → 330 → 360 → 385 → 370 → 395. En cinco meses el precio sube U$S 50, pero conviene aclarar en la respuesta que es una sola corrida: para estimar de verdad habría que repetir la simulación muchas veces y promediar."}]},
+
+{id:"p12",ej:"12",parcial:1,tema:"Pronósticos",t:"Frutillas S.A.",
+ enunciado:`<h4>Planteo</h4>
+ <p>El gerente nuevo tiene datos incompletos: una <b>matriz de porcentajes</b> de las ventas de cada cuatrimestre respecto del promedio anual, con varias celdas vacías, y las medias de cada año.</p>
+ <p>La clave está en dos propiedades de esa matriz: <b>cada año suma 300</b> (tres cuatrimestres que promedian 100) y <b>cada índice estacional es el promedio de los tres años</b>. Con eso se completan todos los huecos.</p>`,
+ datos:`<p><b>Ejercicio 12.</b> Matriz de porcentajes sobre el promedio anual. Medias: 464,61 · 483,52 · 504,08 kg.</p>`,
+ tabla:{c:["20X4","20X5","20X6","Índice est."],f:[["Cuatrim. 1","91,10","","94,23","93,55"],["Cuatrim. 2","103,44","103,71","",""],["Cuatrim. 3","","","98,02",""],["Total","300","300","300",""]]},
+ pedido:`<p>Se pide completar las ventas en kilogramos de los tres años, determinar los índices estacionales del 2º y 3º cuatrimestre, calcular la ecuación de tendencia por mínimos cuadrados y pronosticar el primer cuatrimestre de 20X7 con estacionalidad.</p>`,
+ pasos:[
+ {q:"¿Cuál es el porcentaje del tercer cuatrimestre de 20X4?",o:["98,02","100,97","105,46","103,44"],c:2,
+  t:{c:["20X4","20X5","20X6","Índice est."],f:[["Cuatrim. 1","91,10","","94,23","93,55"],["Cuatrim. 2","103,44","103,71","",""],["Cuatrim. 3","105,46","","98,02",""],["Total","300","300","300",""]],win:0},
+  e:"Cada columna tiene que sumar 300: 300 − 91,10 − 103,44 = 105,46. Esa es la primera de las dos herramientas para completar la matriz."},
+ {q:"¿Cuál es el porcentaje del primer cuatrimestre de 20X5?",o:["93,55","94,23","95,32","96,54"],c:2,
+  t:{c:["20X4","20X5","20X6","Índice est."],f:[["Cuatrim. 1","91,10","95,32","94,23","93,55"],["Cuatrim. 2","103,44","103,71","",""],["Cuatrim. 3","105,46","","98,02",""]],win:1},
+  e:"Acá se usa la otra herramienta: el índice estacional es el promedio de los tres años. Si 93,55 es el promedio, los tres suman 280,65, así que 280,65 − 91,10 − 94,23 = 95,32. Completada esa celda, la columna 20X5 se cierra por suma y quedan los índices 104,96 y 101,49."},
+ {q:"¿Cuántos kilogramos se vendieron en el primer cuatrimestre de 20X4?",o:["423,25 kg","464,61 kg","480,58 kg","490,00 kg"],c:0,
+  t:{c:["20X4","20X5","20X6"],f:[["Media anual","464,61","483,52","504,08"],["Cuatrim. 1 (%)","91,10","95,32","94,23"]],x:[{n:"Cuatrim. 1 en kg",v:["423,25","460,90","475,00"],hl:[0]}],win:0},
+  e:"464,61 × 91,10 / 100 = 423,25 kg. El porcentaje se aplica sobre la media del año correspondiente, no sobre una media general."},
+ {q:"Con los nueve períodos ordenados, ¿cuánto vale la pendiente b₁?",o:["7,807","8,272","445,04","484,07"],c:0,
+  t:{c:["Valor"],f:[["Σ t · Y","22.251,55"],["n · t̄ · Ȳ  (9 × 5 × 484,07)","21.783,15"],["Σ t²","285"],["n · t̄²  (9 × 25)","225"]],x:[{n:"b₁ = 468,40 ÷ 60",v:["7,807"],hl:[0]}],win:0},
+  e:"Numerador 22.251,55 − 21.783,15 = 468,40; denominador 285 − 225 = 60. Entonces b₁ = 7,807: las ventas crecen unos 7,8 kg por cuatrimestre. Y a₁ = 484,07 − 7,807 × 5 = 445,04."},
+ {q:"¿Cuál es el pronóstico del primer cuatrimestre de 20X7, ya con el efecto estacional?",o:["445,04 kg","489,36 kg","523,10 kg","504,08 kg"],c:1,
+  t:{c:["Valor"],f:[["Ecuación","Y = 445,04 + 7,807 t"],["Período t del 1er cuatrim. 20X7","10"],["Tendencia sin estacionalidad","523,10"],["Índice estacional del cuatrim. 1","93,55"]],x:[{n:"Pronóstico con estacionalidad",v:["489,36"],hl:[0]}],win:0},
+  e:"Primero la tendencia: 445,04 + 7,807 × 10 = 523,10 kg. Después se le aplica el índice: 523,10 × 93,55 / 100 = 489,36 kg. Como el primer cuatrimestre es estacionalmente flojo, el índice por debajo de 100 baja el pronóstico."}]}
+,
+{id:"p10",ej:"10",parcial:1,tema:"Pronósticos",t:"Restaurante Vintage",
+ enunciado:`<h4>Planteo</h4><p>Lula acaba de completar el <b>tercer año</b> del restaurante y tiene las ventas de los doce trimestres. Quiere un pronóstico para el cuarto año.</p>
+ <p>La serie tiene dos movimientos superpuestos: una <b>tendencia</b> creciente y un <b>patrón estacional</b> que se repite todos los años. Hay que separarlos: primero los índices estacionales, después la tendencia, y recién ahí se combinan.</p>`,
+ datos:`<p><b>Ejercicio 10.</b> Ventas trimestrales, en miles de pesos.</p>`,
+ tabla:{c:["Año 1","Año 2","Año 3"],f:[["Trim. I","812","871","884"],["Trim. II","844","965","1.010"],["Trim. III","885","901","1.012"],["Trim. IV","802","872","944"],["Total","3.343","3.609","3.850"],["Media","835,75","902,25","962,50"]]},
+ pedido:`<p>Se pide graficar la serie, analizar la estacionalidad, hallar la ecuación de tendencia, pronosticar el cuarto año con y sin estacionalidad, y calcular el error si las ventas del primer trimestre resultan $ 925.000.</p>`,
+ pasos:[
+ {q:"¿Cuál es el porcentaje del primer trimestre del año 1 respecto del promedio de ese año?",o:["91,84","95,18","97,16","100,99"],c:2,
+  t:{c:["Año 1","Año 2","Año 3","Índice est."],f:[["Trim. I","97,16","96,54","91,84","95,18"],["Trim. II","100,99","106,95","104,94","104,29"],["Trim. III","105,89","99,86","105,14","103,63"],["Trim. IV","95,96","96,65","98,08","96,90"]],win:0},
+  e:"812 ÷ 835,75 × 100 = 97,16. El índice estacional de cada trimestre es el promedio de los tres años: para el primero, (97,16 + 96,54 + 91,84) ÷ 3 = 95,18."},
+ {q:"¿Qué trimestre es el estacionalmente más fuerte?",o:["El primero","El segundo","El tercero","El cuarto"],c:1,
+  t:{c:["Índice estacional"],f:[["Trim. I","95,18"],["Trim. II","104,29"],["Trim. III","103,63"],["Trim. IV","96,90"]],x:[{n:"Máximo",v:["104,29 (Trim. II)"],hl:[0]}],win:0},
+  e:"El segundo trimestre vende un 4,29% por encima del promedio anual y el tercero un 3,63%. Los flojos son el primero y el cuarto, ambos por debajo de 100. Los cuatro índices suman 400, como tiene que ser."},
+ {q:"Con los doce períodos, ¿cuál es la ecuación de tendencia?",o:["Y = 805,0 + 14,64 t","Y = 900,17 + 14,64 t","Y = 14,64 + 805,0 t","Y = 835,75 + 10,80 t"],c:0,
+  t:{c:["Valor"],f:[["Σ t · Y","72.307"],["n · t̄ · Ȳ  (12 × 6,5 × 900,17)","70.213"],["Σ t²","650"],["n · t̄²  (12 × 42,25)","507"]],x:[{n:"b₁ = 2.094 ÷ 143",v:["14,64"]},{n:"a₁ = 900,17 − 14,64 × 6,5",v:["805,0"],hl:[0]}],win:0},
+  e:"Las ventas crecen unos $ 14.640 por trimestre. Ojo: acá t va de 1 a 12, un período por trimestre, no por año."},
+ {q:"¿Cuál es el pronóstico del primer trimestre del año 4, ya con estacionalidad?",o:["$ 995.000","$ 947.000","$ 805.000","$ 925.000"],c:1,
+  t:{c:["Valor"],f:[["Período t","13"],["Tendencia: 805,0 + 14,64 × 13","995,4"],["Índice estacional del Trim. I","95,18"]],x:[{n:"Pronóstico con estacionalidad",v:["947,2"],hl:[0]}],win:0},
+  e:"995,4 × 95,18 / 100 = 947,2, o sea unos $ 947.000. Si las ventas reales fueran $ 925.000, el error sería de unos $ 22.000: menos del 2,4%, que para un pronóstico trimestral es más que aceptable."}]},
+
+{id:"p11",ej:"11",parcial:1,tema:"Pronósticos",t:"Acciones de SanDisk",
+ enunciado:`<h4>Planteo</h4><p>Doce precios de cierre diarios. Hay que probar <b>tres métodos de suavización</b> y decidir cuál conviene.</p>
+ <p>La decisión no se toma a ojo: se compara el <b>error cuadrático medio</b> de cada método. Gana el que menos se equivoca en promedio.</p>`,
+ datos:`<p><b>Ejercicio 11.</b> Precios de cierre en dólares por acción.</p>`,
+ tabla:{c:["Precio","Precio"],f:[["16-ago / 26-ago","14,45","16,45"],["19-ago / 27-ago","15,75","15,60"],["20-ago / 28-ago","16,45","15,09"],["21-ago / 29-ago","17,40","16,42"],["22-ago / 30-ago","17,32","16,21"],["23-ago / 03-sep","15,96","15,22"]]},
+ pedido:`<p>Se pide suavizar con promedio móvil de cinco días, con promedio móvil ponderado de cuatro días y con suavización exponencial de α = 0,70; pronosticar el cierre del 4 de septiembre por cada método y justificar cuál es el más conveniente.</p>`,
+ pasos:[
+ {q:"El promedio móvil de cinco días para pronosticar el 23 de agosto usa los cinco cierres anteriores. ¿Cuánto da?",o:["15,96","16,27","16,49","17,32"],c:1,
+  t:{c:["Cálculo"],f:[["Cierres del 16 al 22 de agosto","14,45 + 15,75 + 16,45 + 17,40 + 17,32"],["Suma","81,37"]],x:[{n:"Promedio móvil (÷ 5)",v:["16,274"],hl:[0]}],win:0},
+  e:"81,37 ÷ 5 = 16,274. El método usa siempre los n datos más recientes y les da a todos el mismo peso: por eso reacciona lento a los cambios bruscos."},
+ {q:"En la suavización exponencial con α = 0,70, el pronóstico del 19 de agosto es 15,36. ¿De dónde sale?",o:["Del promedio de los dos primeros días","De 0,70 × 15,75 + 0,30 × 14,45","De 0,30 × 15,75 + 0,70 × 14,45","De 15,75 − 0,70"],c:1,
+  t:{c:["Cálculo"],f:[["Valor real del período anterior","15,75"],["Ponderado por α = 0,70","11,025"],["Pronóstico anterior","14,45"],["Ponderado por (1 − α) = 0,30","4,335"]],x:[{n:"Nuevo pronóstico",v:["15,36"],hl:[0]}],win:0},
+  e:"El pronóstico nuevo es un promedio ponderado entre el valor real del período y el pronóstico previo. Con α alto, como acá, pesa mucho más lo último que pasó."},
+ {q:"Comparando los errores cuadráticos medios, ¿qué método conviene?",o:["Promedio móvil simple, con ECM 0,60","Promedio móvil ponderado, con ECM 0,65","Suavización exponencial, con ECM 0,87","Los tres son equivalentes"],c:0,
+  t:{c:["Error cuadrático medio"],f:[["Promedio móvil de 5 días","0,60"],["Promedio móvil ponderado de 4 días","0,65"],["Suavización exponencial α = 0,70","0,87"]],x:[{n:"Menor ECM",v:["Promedio móvil simple"],hl:[0]}],win:0},
+  e:"Gana el promedio móvil simple porque tiene el menor error cuadrático medio. La suavización exponencial con α = 0,70 queda última: al darle tanto peso al último dato, persigue el ruido de la serie en lugar de suavizarlo."},
+ {q:"Según el método elegido, ¿cuál es el pronóstico del cierre del 4 de septiembre?",o:["U$S 15,22","U$S 15,51","U$S 15,71","U$S 15,74"],c:2,
+  t:{c:["Pronóstico 4-sep"],f:[["Promedio móvil de 5 días","15,708"],["Promedio móvil ponderado","15,744"],["Suavización exponencial","15,506"]],x:[{n:"Método elegido",v:["15,708"],hl:[0]}],win:0},
+  e:"Se promedian los últimos cinco cierres: (15,60 + 15,09 + 16,42 + 16,21 + 15,22) ÷ 5 = 15,708. Los tres métodos dan valores parecidos, pero el que hay que informar es el del método con menor ECM."}]},
+
+{id:"p13",ej:"13",parcial:1,tema:"Costo–volumen–ganancia",t:"Los costos del competidor",
+ enunciado:`<h4>Planteo</h4><p>Un empresario pierde plata mientras su competidor prospera, <b>vendiendo al mismo precio de $ 6</b>. Quiere deducir cómo se componen los costos del otro.</p>
+ <p>No tiene acceso a la contabilidad ajena: solo sabe las cantidades y la rentabilidad de dos períodos. Con eso alcanza, porque son <b>dos ecuaciones con dos incógnitas</b>.</p>`,
+ datos:`<p><b>Ejercicio 13.</b> Datos observados del competidor.</p>`,
+ tabla:{c:["1er período","2do período"],f:[["Precio","6","6"],["Cantidades","800","550"],["Rentabilidad","25% s/ventas","0%"]]},
+ pedido:`<p>Se pide determinar el costo variable unitario y los costos fijos totales del competidor.</p>`,
+ pasos:[
+ {q:"¿Cuáles son los costos totales del primer período?",o:["$ 4.800","$ 3.600","$ 1.200","$ 3.300"],c:1,
+  t:{c:["1er período"],f:[["Ventas (800 × 6)","4.800"],["Utilidad (25% de las ventas)","1.200"]],x:[{n:"Costos totales",v:["3.600"],hl:[0]}],win:0},
+  e:"4.800 − 1.200 = 3.600. En el segundo período la rentabilidad es cero, así que los costos igualan a las ventas: 550 × 6 = 3.300."},
+ {q:"Planteadas las dos ecuaciones, ¿cuál es el costo variable unitario?",o:["$ 1,20","$ 3,30","$ 4,50","$ 6,00"],c:0,
+  t:{c:["Ecuación"],f:[["1er período","800 cv + CF = 3.600"],["2do período","550 cv + CF = 3.300"],["Restando","250 cv = 300"]],x:[{n:"Costo variable unitario",v:["1,20"],hl:[0]}],win:0},
+  e:"Al restar una ecuación de la otra desaparecen los costos fijos, porque son los mismos en ambos períodos. Queda 250 cv = 300, o sea cv = 1,20."},
+ {q:"¿Cuánto suman los costos fijos totales?",o:["$ 960","$ 2.640","$ 3.300","$ 3.600"],c:1,
+  t:{c:["Importe"],f:[["Costos totales del 1er período","3.600"],["Costos variables (800 × 1,20)","960"]],x:[{n:"Costos fijos totales",v:["2.640"],hl:[0]}],win:0},
+  e:"3.600 − 960 = 2.640. Se puede comprobar con el segundo período: 3.300 − 550 × 1,20 = 3.300 − 660 = 2.640. Da igual, como corresponde."}]},
+
+{id:"p14",ej:"14",parcial:1,tema:"Costo–volumen–ganancia",t:"Jugos concentrados de naranja",
+ enunciado:`<h4>Planteo</h4><p>La empresa compra naranja por tonelada y vende el jugo en <b>damajuanas de 5 litros a $ 10</b>. Una tonelada rinde 1.400 litros.</p>
+ <p>El punto delicado es armar el costo variable por damajuana: los costos vienen expresados por tonelada y hay que llevarlos a la unidad de venta.</p>`,
+ datos:`<p><b>Ejercicio 14.</b> Costos fijos: $ 12.000.</p>`,
+ tabla:{c:["Importe"],f:[["Costo de adquisición por tn","500"],["Transporte por tn","70"],["Procesamiento por tn","80"],["Rendimiento por tn","1.400 litros"],["Litros por damajuana","5"],["Precio de venta","10"]]},
+ pedido:`<p>Se pide la cantidad de equilibrio, y las cantidades necesarias para obtener un beneficio del 15% sobre el costo de adquisición, del 20% sobre los costos fijos, y el resultado de procesar 8 toneladas.</p>`,
+ pasos:[
+ {q:"¿Cuál es el costo variable por damajuana?",o:["$ 2,32","$ 3,25","$ 4,64","$ 650"],c:0,
+  t:{c:["Cálculo","Importe"],f:[["Costo total por tonelada","500 + 70 + 80","650"],["Damajuanas por tonelada","1.400 ÷ 5","280"]],x:[{n:"Costo variable unitario",v:["650 ÷ 280","2,32"],hl:[1]}],win:1},
+  e:"Cada tonelada da 280 damajuanas y cuesta $ 650, así que cada una carga $ 2,32. La contribución marginal queda en 10 − 2,32 = 7,68."},
+ {q:"¿Cuál es la cantidad de equilibrio?",o:["1.200 damajuanas","1.562,79 damajuanas","1.619,28 damajuanas","1.875,35 damajuanas"],c:1,
+  t:{c:["Valor"],f:[["Costos fijos","12.000"],["Contribución marginal unitaria","7,68"]],x:[{n:"Cantidad de equilibrio",v:["1.562,79"],hl:[0]}],win:0},
+  e:"12.000 ÷ 7,68 = 1.562,79 damajuanas. En la práctica hay que redondear hacia arriba, porque con 1.562 todavía falta cubrir una parte de los fijos."},
+ {q:"Para obtener un beneficio del 20% sobre los costos fijos, ¿cuántas damajuanas hay que vender?",o:["1.562,79","1.619,28","1.875,35","2.240,00"],c:2,
+  t:{c:["Valor"],f:[["Costos fijos","12.000"],["Beneficio pretendido (20% de 12.000)","2.400"],["Numerador","14.400"],["Contribución marginal","7,68"]],x:[{n:"Cantidad necesaria",v:["1.875,35"],hl:[0]}],win:0},
+  e:"14.400 ÷ 7,68 = 1.875,35. Como el beneficio se define sobre los costos fijos, que son un dato, simplemente se suma al numerador. Distinto es cuando se define sobre el costo de adquisición, que depende de la cantidad y hay que despejarlo."},
+ {q:"Si se procesan 8 toneladas, ¿cuál es el resultado?",o:["Utilidad de $ 2.400","Utilidad de $ 5.200","Utilidad de $ 12.000","Pérdida de $ 5.200"],c:1,
+  t:{c:["Valor"],f:[["Litros (8 tn × 1.400)","11.200"],["Damajuanas (÷ 5)","2.240"],["Ventas (× 10)","22.400"],["Costo variable (× 2,32)","5.200"],["Costos fijos","12.000"]],x:[{n:"Utilidad",v:["5.200"],hl:[0]}],win:0},
+  e:"22.400 − 5.200 − 12.000 = 5.200. Otra vía más corta: 2.240 × 7,68 − 12.000 = 17.203 − 12.000. Las 2.240 damajuanas superan cómodamente el equilibrio de 1.563."}]},
+
+{id:"p15",ej:"15",parcial:1,tema:"Costo–volumen–ganancia",t:"ARIES S.A.U.",
+ enunciado:`<h4>Planteo</h4><p>Juntas mecánicas a <b>$ 125</b> cada una. Este ejercicio junta casi todas las complicaciones posibles: <b>merma de insumos</b>, costos indirectos atados a la mano de obra, gastos mensuales que hay que anualizar y <b>depreciaciones</b> que no salen de la caja.</p>
+ <p>Esas depreciaciones son la clave de la segunda parte: se restan de los costos fijos para obtener el equilibrio financiero, que siempre queda por debajo del económico.</p>`,
+ datos:`<p><b>Ejercicio 15.</b> Estructura de costos.</p>`,
+ tabla:{c:["Dato"],f:[["Precio de venta","$ 125"],["Ingresos brutos","1% s/ventas"],["Insumos","$ 50 por centilitro"],["Merma de insumos","2%"],["Mano de obra directa","$ 20 por hora (1,5 h)"],["C.I.F. variable","20% de la M.O.D."],["C.I.F. fijo","$ 400.000 anuales"],["Gastos fijos","$ 60.000 mensuales, 20% depreciaciones"]]},
+ pedido:`<p>Se pide el punto de equilibrio económico y el financiero, y la cantidad de insumos a adquirir considerando la merma.</p>`,
+ pasos:[
+ {q:"¿Cuál es la contribución marginal unitaria?",o:["$ 36,73","$ 75,00","$ 88,27","$ 125,00"],c:0,
+  t:{c:["Importe"],f:[["Ingresos brutos (1% de 125)","1,25"],["Insumos","50,00"],["Merma de insumos (50 ÷ 0,98 − 50)","1,02"],["Mano de obra directa","30,00"],["C.I.F. variable (20% de 30)","6,00"],["Costo variable total","88,27"],["Precio de venta","125,00"]],x:[{n:"Contribución marginal",v:["36,73"],hl:[0]}],win:0},
+  e:"125 − 88,27 = 36,73. Dos trampas: la merma se calcula dividiendo por 0,98, no restando el 2%; y el C.I.F. variable se aplica sobre la mano de obra, no sobre el precio."},
+ {q:"¿Cuáles son los costos fijos anuales?",o:["$ 400.000","$ 720.000","$ 976.000","$ 1.120.000"],c:3,
+  t:{c:["Importe"],f:[["C.I.F. fijo anual","400.000"],["Gastos fijos ($ 60.000 × 12)","720.000"]],x:[{n:"Costos fijos totales",v:["1.120.000"],hl:[0]}],win:0},
+  e:"400.000 + 720.000 = 1.120.000. Los gastos vienen expresados por mes y todo el análisis es anual, así que hay que llevarlos a la misma unidad de tiempo."},
+ {q:"¿Cuál es el punto de equilibrio económico?",o:["26.573 unidades","30.494 unidades","36.507 unidades","44.800 unidades"],c:1,
+  t:{c:["Valor"],f:[["Costos fijos","1.120.000"],["Contribución marginal","36,73"]],x:[{n:"Equilibrio económico",v:["30.493,12"],hl:[0]}],win:0},
+  e:"1.120.000 ÷ 36,73 = 30.493,12, o sea 30.494 unidades anuales para no perder plata."},
+ {q:"¿Cuál es el punto de equilibrio financiero?",o:["26.573 unidades","30.494 unidades","32.000 unidades","28.000 unidades"],c:0,
+  t:{c:["Valor"],f:[["Costos fijos totales","1.120.000"],["Depreciaciones (20% de 720.000)","144.000"],["Costos fijos erogables","976.000"],["Contribución marginal","36,73"]],x:[{n:"Equilibrio financiero",v:["26.572,58"],hl:[0]}],win:0},
+  e:"976.000 ÷ 36,73 = 26.572,58. Las depreciaciones se devengan pero no se pagan, así que salen del numerador. Por eso el equilibrio financiero siempre exige vender menos que el económico."},
+ {q:"Para producir las unidades del equilibrio económico, ¿cuántos insumos hay que adquirir?",o:["29.883","30.493","31.115","31.500"],c:2,
+  t:{c:["Valor"],f:[["Unidades a vender","30.493,12"],["Relación insumo/producto","1 a 1"],["Rendimiento del insumo","98%"]],x:[{n:"Insumos a adquirir",v:["31.115,43"],hl:[0]}],win:0},
+  e:"30.493,12 ÷ 0,98 = 31.115,43, unos 2.593 por mes. Hay que comprar más de lo que se usa, porque el 2% se pierde en el camino."}]},
+
+{id:"p16",ej:"16",parcial:1,tema:"Costo–volumen–ganancia",t:"Las medialunas del Abuelo",
+ enunciado:`<h4>Planteo</h4><p>Un kilo de materia prima rinde <b>50 medialunas</b>, que se venden a <b>$ 3</b> por unidad. En control de calidad se rechaza el <b>5%</b> porque se pasan de cocción.</p>
+ <p>Lo distinto acá es que no se busca el equilibrio: la empresa <b>ya está ganando un 25% sobre los costos totales</b> y hay que deducir cuántas medialunas está vendiendo. La utilidad depende de la cantidad, así que aparece en los dos lados de la ecuación.</p>`,
+ datos:`<p><b>Ejercicio 16.</b> Datos de la empresa.</p>`,
+ tabla:{c:["Dato"],f:[["Precio de venta unitario","$ 3,00"],["Materia prima","$ 21,00 por kg"],["Rendimiento","50 medialunas por kg"],["Costos fijos mensuales","$ 59.990"],["Rechazo en control de calidad","5%"],["Beneficio actual","25% sobre costos totales"]]},
+ pedido:`<p>Se pide determinar la cantidad de medialunas comercializadas y la cantidad de materia prima requerida.</p>`,
+ pasos:[
+ {q:"¿Cuál es el costo unitario de materia prima por medialuna vendida?",o:["$ 0,42","$ 0,4421","$ 0,44","$ 0,21"],c:1,
+  t:{c:["Cálculo","Importe"],f:[["Costo por medialuna","21 ÷ 50","0,42"],["Ajuste por rechazo del 5%","0,42 ÷ 0,95","0,4421"]],win:1},
+  e:"De cada 100 medialunas horneadas se venden 95, así que el costo de las rechazadas se reparte entre las que sí se venden: 0,42 ÷ 0,95 = 0,4421."},
+ {q:"Al plantear la ecuación con la utilidad del 25% sobre costos totales, ¿cuánto queda del lado izquierdo multiplicando a Q?",o:["$ 2,5579","$ 2,4474","$ 3,0000","$ 0,5526"],c:1,
+  t:{c:["Término"],f:[["Precio de venta","3,0000"],["Costo variable unitario","−0,4421"],["25% del costo variable (0,25 × 0,4421)","−0,1105"]],x:[{n:"Coeficiente de Q",v:["2,4474"],hl:[0]}],win:0},
+  e:"La ecuación es 3Q − 0,4421Q − 59.990 = 0,25(0,4421Q + 59.990). Al pasar el término variable de la utilidad a la izquierda queda 3 − 0,4421 − 0,1105 = 2,4474."},
+ {q:"¿Cuántas medialunas se comercializan?",o:["24.510","30.640","32.000","74.988"],c:1,
+  t:{c:["Valor"],f:[["Costos fijos","59.990"],["25% de los costos fijos","14.997,50"],["Numerador","74.987,50"],["Coeficiente de Q","2,4474"]],x:[{n:"Medialunas vendidas",v:["30.640"],hl:[0]}],win:0},
+  e:"74.987,50 ÷ 2,4474 = 30.640 medialunas. Comprobación: ventas 91.920, costo de ventas 13.546, costos fijos 59.990, resultado 18.384, que es exactamente el 25% de los 73.536 de costos totales."},
+ {q:"¿Cuánta materia prima hay que comprar?",o:["612,80 kg","645,05 kg","30.640 kg","580,16 kg"],c:1,
+  t:{c:["Valor"],f:[["Medialunas vendidas","30.640"],["Kg necesarios (÷ 50)","612,80"],["Rendimiento tras el rechazo","95%"]],x:[{n:"Materia prima a comprar",v:["645,05 kg"],hl:[0]}],win:0},
+  e:"612,80 ÷ 0,95 = 645,05 kg. Los 612,80 kg alcanzarían si no se rechazara nada; como se pierde el 5%, hay que comprar unos 32 kg de más."}]},
+
+{id:"p18",ej:"18",parcial:2,tema:"Costos e inversión",t:"Reemplazo de equipo de producción",
+ enunciado:`<h4>Planteo</h4><p>Hay que decidir si conviene reemplazar un equipo comprado hace tres años por uno nuevo que <b>reduce los costos de operación en $ 200.000 anuales</b>.</p>
+ <p>La técnica es el <b>flujo de fondos incremental</b>: en vez de armar dos flujos completos y compararlos, se trabaja directamente con las diferencias. La depreciación no es una salida de caja, pero entra en el cálculo porque afecta el impuesto, y por eso se resta antes y se vuelve a sumar después.</p>`,
+ datos:`<p><b>Ejercicio 18.</b> Datos de los dos equipos. Impuesto 35%, tasa de descuento 10%.</p>`,
+ tabla:{c:["Equipo actual","Equipo nuevo"],f:[["Valor de adquisición","800.000","1.200.000"],["Antigüedad","3 años","—"],["Valor de venta hoy","500.000","—"],["Vida útil restante","2 años","5 años"],["Valor de venta al final","150.000","540.000"],["Costos de operación","700.000 anuales","reducción de 200.000"]]},
+ pedido:`<p>Se pide elaborar el flujo de fondos y decidir la conveniencia del reemplazo con una tasa del 10%.</p>`,
+ pasos:[
+ {q:"¿Cuál es la inversión neta del momento cero?",o:["−$ 1.200.000","−$ 763.000","−$ 700.000","−$ 437.000"],c:1,
+  t:{c:["Importe"],f:[["Venta del equipo actual","500.000"],["Impuesto sobre la ganancia de esa venta","−63.000"],["Ingreso neto por la venta","437.000"],["Compra del equipo nuevo","−1.200.000"]],x:[{n:"Flujo del momento 0",v:["−763.000"],hl:[0]}],win:0},
+  e:"El equipo viejo tiene valor de libros de 320.000 (800.000 menos tres años de depreciación de 160.000) y se vende en 500.000, así que hay una ganancia de 180.000 que paga 35%: $ 63.000. La inversión real no son 1.200.000 sino 763.000."},
+ {q:"En los años 1 y 2, ¿cuál es el flujo de caja incremental?",o:["$ 78.000","$ 120.000","$ 158.000","$ 200.000"],c:2,
+  t:{c:["Año 1","Año 2"],f:[["Ahorro de costos","200.000","200.000"],["Depreciación incremental","−80.000","−80.000"],["Base imponible","120.000","120.000"],["Impuesto 35%","−42.000","−42.000"],["Resultado neto","78.000","78.000"],["Se reintegra la depreciación","80.000","80.000"]],x:[{n:"Flujo de caja",v:["158.000","158.000"],hl:[0,1]}],win:null},
+  e:"La depreciación incremental es 240.000 del equipo nuevo menos 160.000 que se dejan de tomar del viejo, o sea 80.000. Se resta para calcular el impuesto y se vuelve a sumar porque no es una salida de caja: 78.000 + 80.000 = 158.000."},
+ {q:"Con los flujos de −763.000 · 158.000 · 158.000 · 214.000 · 214.000 · 467.500, ¿conviene el reemplazo al 10%?",o:["Sí, el valor actual neto es positivo en $ 108.442","No, el valor actual neto es negativo","Da lo mismo, el VAN es cero","Falta conocer la inflación"],c:0,
+  t:{c:["0","1","2","3","4","5"],f:[["Flujo incremental","−763.000","158.000","158.000","214.000","214.000","467.500"]],x:[{n:"Valor actual neto al 10%",v:["108.441,84","","","","",""],hl:[0]}],win:0},
+  e:"El VAN da positivo, así que conviene reemplazar. A partir del año 3 el flujo sube a 214.000 porque el equipo viejo ya estaría totalmente depreciado, y el año 5 salta a 467.500 por la venta del equipo nuevo en 540.000."}]},
+
+{id:"p19",ej:"19",parcial:2,tema:"Costos e inversión",t:"Heladeras: hacer o comprar",
+ enunciado:`<h4>Planteo</h4><p>La empresa decide si sigue <b>fabricando</b> las heladeras o pasa a <b>importarlas</b>. Fabricar tiene costos variables bajos pero una estructura fija pesada; comprar es al revés.</p>
+ <p>Por eso no hay una respuesta única: existe una <b>cantidad de indiferencia</b> donde ambas alternativas cuestan lo mismo, y de un lado y del otro conviene una distinta.</p>`,
+ datos:`<p><b>Ejercicio 19.</b> Estructura de costos de cada alternativa.</p>`,
+ tabla:{c:["Hacer","Comprar"],f:[["Costo variable unitario","150","186"],["Costos fijos totales","39.000","3.500"]]},
+ pedido:`<p>Se pide determinar la cantidad de indiferencia, decidir la conveniencia para un presupuesto de 1.000 unidades y calcular la utilidad neta por costeo directo, con precio de venta de $ 500, gastos variables de comercialización del 10% de las ventas y gastos de administración de $ 20.000.</p>`,
+ pasos:[
+ {q:"¿Cuál es la cantidad de indiferencia?",o:["236 unidades","986 unidades","1.000 unidades","1.083 unidades"],c:1,
+  t:{c:["Valor"],f:[["Diferencia de costos fijos (39.000 − 3.500)","35.500"],["Diferencia de costos variables (186 − 150)","36"]],x:[{n:"Cantidad de indiferencia",v:["986,11"],hl:[0]}],win:0},
+  e:"35.500 ÷ 36 = 986,11 unidades. Fabricar carga $ 35.500 más de estructura fija, pero ahorra $ 36 por unidad: hacen falta 986 unidades para recuperar esa diferencia."},
+ {q:"Con un presupuesto de 1.000 unidades, ¿qué conviene?",o:["Comprar, porque el costo total es menor","Hacer, porque el costo total es menor","Da lo mismo","Comprar la mitad y fabricar la otra mitad"],c:1,
+  t:{c:["Hacer","Comprar"],f:[["Costos variables (1.000 unidades)","150.000","186.000"],["Costos fijos","39.000","3.500"]],x:[{n:"Costo total",v:["189.000","189.500"],hl:[0]}],win:0},
+  e:"189.000 contra 189.500: conviene hacer, por apenas $ 500. Tiene sentido, porque 1.000 supera por poco la cantidad de indiferencia de 986. Si el presupuesto bajara de esa cifra, convendría comprar."},
+ {q:"Vendiendo esas 1.000 unidades a $ 500, ¿cuál es la contribución marginal total?",o:["$ 350.000","$ 300.000","$ 500.000","$ 311.000"],c:1,
+  t:{c:["Importe"],f:[["Ventas (1.000 × 500)","500.000"],["Costos variables de producción","−150.000"],["Gastos variables de comercialización (10%)","−50.000"]],x:[{n:"Contribución marginal",v:["300.000"],hl:[0]}],win:0},
+  e:"En costeo directo primero se llega a la contribución marginal restando todos los costos variables, incluidos los de comercialización. Recién después se restan los fijos: 39.000 de producción y 20.000 de administración, con lo que la utilidad neta queda en $ 241.000."}]},
+
+{id:"p21",ej:"21",parcial:2,tema:"Programación lineal",t:"Minas A y B",
+ enunciado:`<h4>Planteo</h4><p>Dos minas dan cantidades distintas de dos metales por tonelada extraída, a costos distintos. Hay que cubrir una <b>producción mínima</b> de cada metal gastando lo menos posible.</p>
+ <p>Es un caso de <b>minimización</b>: las restricciones son de tipo mayor o igual y la región factible se abre hacia arriba, en lugar de cerrarse como en los problemas de maximización.</p>`,
+ datos:`<p><b>Ejercicio 21.</b> Rendimiento por tonelada de mineral.</p>`,
+ tabla:{c:["Mina A","Mina B"],f:[["Metal I","100 kg","200 kg"],["Metal II","200 kg","50 kg"],["Costo por tonelada","$ 50","$ 60"]]},
+ pedido:`<p>Se pide plantear las inecuaciones, determinar geométricamente los ángulos de la región factible y hallar la combinación óptima, sabiendo que hay que producir al menos 3.000 kg de metal I y 2.500 kg de metal II.</p>`,
+ pasos:[
+ {q:"¿Cómo se plantea la función objetivo?",o:["Maximizar Z = 100x₁ + 200x₂","Minimizar Z = 50x₁ + 60x₂","Minimizar Z = 3.000x₁ + 2.500x₂","Maximizar Z = 50x₁ + 60x₂"],c:1,
+  t:{c:["Planteo"],f:[["Variables","x₁ = toneladas de la mina A · x₂ = mina B"],["Función objetivo","Minimizar Z = 50x₁ + 60x₂"],["Restricción metal I","100x₁ + 200x₂ ≥ 3.000"],["Restricción metal II","200x₁ + 50x₂ ≥ 2.500"],["No negatividad","x₁ ≥ 0 · x₂ ≥ 0"]],win:0},
+  e:"Se minimiza el costo total de extracción. Las restricciones son de tipo mayor o igual porque son producciones mínimas a cubrir, no capacidades máximas."},
+ {q:"En el ángulo donde se cortan las dos restricciones, ¿qué combinación se obtiene?",o:["x₁ = 0 · x₂ = 50","x₁ = 10 · x₂ = 10","x₁ = 30 · x₂ = 0","x₁ = 12,5 · x₂ = 50"],c:1,
+  t:{c:["x₁ (mina A)","x₂ (mina B)"],f:[["Corte de la restricción I","30","15"],["Corte de la restricción II","12,5","50"]],x:[{n:"Intersección de ambas",v:["10","10"],hl:[0,1]}],win:null},
+  e:"Se resuelve el sistema con las dos restricciones como igualdades. Multiplicando la primera por 0,25 y restándola de la segunda queda −175x₁ = −1.750, de donde x₁ = 10, y reemplazando, x₂ = 10."},
+ {q:"Evaluando los tres ángulos, ¿cuál es la combinación óptima?",o:["10 y 10, con costo $ 1.100","0 y 50, con costo $ 3.000","30 y 0, con costo $ 1.500","No hay solución factible"],c:0,
+  t:{c:["x₁","x₂","Z = 50x₁ + 60x₂"],f:[["Ángulo 1","0","50","3.000"],["Ángulo 2","10","10","1.100"],["Ángulo 3","30","0","1.500"]],x:[{n:"Mínimo",v:["","","1.100"],hl:[2]}],win:2},
+  e:"El óptimo siempre está en un vértice de la región factible: se evalúan los tres y se elige el de menor Z. Diez toneladas de cada mina cuestan $ 1.100 y cubren exactamente los dos mínimos exigidos."}]},
+
+{id:"p22",ej:"22",parcial:2,tema:"Programación lineal",t:"Inversión en acciones EG y SH",
+ enunciado:`<h4>Planteo</h4><p>Con <b>$ 690.000</b> hay que armar un portafolio de dos acciones a seis meses. Se conocen los precios de compra y los precios futuros esperados, o sea la utilidad de cada una.</p>
+ <p>La dificultad está en las restricciones de composición: están expresadas <b>como porcentaje del total</b>, y para poder graficarlas hay que reescribirlas dejando una variable en función de la otra.</p>`,
+ datos:`<p><b>Ejercicio 22.</b> Datos de las dos acciones.</p>`,
+ tabla:{c:["EG","SH"],f:[["Precio de compra","920","500"],["Precio futuro","1.040","695"],["Utilidad por acción","120","195"]]},
+ pedido:`<p>Se pide plantear el modelo y hallar la combinación óptima, sabiendo que EG debe ser al menos el 20% del total de acciones y SH no menos del 40%.</p>`,
+ pasos:[
+ {q:"La restricción de que EG sea al menos el 20% del total, ¿cómo se reescribe?",o:["EG ≥ 0,20 SH","EG ≥ 0,25 SH","EG ≥ 0,40 SH","EG ≥ 0,667 SH"],c:1,
+  t:{c:["Planteo"],f:[["Función objetivo","Maximizar Z = 120 EG + 195 SH"],["Restricción financiera","920 EG + 500 SH ≤ 690.000"],["EG al menos 20% del total","EG ≥ 0,25 SH"],["SH no menos del 40% del total","SH ≥ 0,667 EG"]],win:0},
+  e:"De EG ≥ 0,20(EG + SH) se despeja 0,80 EG ≥ 0,20 SH, o sea EG ≥ 0,25 SH. La otra se trabaja igual: SH ≥ 0,40(EG + SH) lleva a SH ≥ 0,667 EG."},
+ {q:"En el vértice donde se cortan la restricción financiera y la de SH, ¿qué combinación resulta?",o:["EG = 236 · SH = 945","EG = 550 · SH = 367","EG = 750 · SH = 0","EG = 0 · SH = 1.380"],c:1,
+  t:{c:["EG","SH","Z"],f:[["Restricción financiera ∩ SH ≥ 0,667 EG","550,53","367,02","137.632,73"]],win:2},
+  e:"Se reemplaza SH = 0,667 EG dentro de la restricción financiera: 920 EG + 500(0,667 EG) ≤ 690.000, de donde EG = 550,53 y SH = 367,02. La utilidad de ese vértice es $ 137.632,73."},
+ {q:"¿Cuál es la mejor combinación posible?",o:["EG = 550 · SH = 367, con $ 137.633","EG = 236 · SH = 945, con $ 212.671","EG = 750 · SH = 0, con $ 90.000","EG = 0 · SH = 1.380, con $ 269.100"],c:1,
+  t:{c:["EG","SH","Z = 120 EG + 195 SH"],f:[["Vértice 1","550,53","367,02","137.632,73"],["Vértice 2","236,30","945,21","212.671,23"]],x:[{n:"Máximo",v:["","","212.671,23"],hl:[2]}],win:2},
+  e:"Reemplazando EG = 0,25 SH en la restricción financiera se llega a SH = 945,21 y EG = 236,30, con una utilidad de $ 212.671,23. Conviene cargarse hacia SH, que deja $ 195 por acción y además cuesta casi la mitad."}]},
+
+{id:"p23",ej:"23",parcial:2,tema:"Programación lineal",t:"Taller de automóviles",
+ enunciado:`<h4>Planteo</h4><p>Hay que decidir cuántos <b>electricistas y mecánicos</b> contratar. Las restricciones no son de materiales sino de organización del trabajo: relaciones entre las dos cantidades y topes de cada especialidad.</p>`,
+ datos:`<p><b>Ejercicio 23.</b> Beneficio por jornada: $ 250 por electricista y $ 200 por mecánico.</p>`,
+ tabla:{c:["Restricción"],f:[["No menos mecánicos que electricistas","M ≥ E"],["No más del doble de mecánicos","M ≤ 2E"],["Máximo de electricistas","E ≤ 30"],["Máximo de mecánicos","M ≤ 20"]]},
+ pedido:`<p>Se pide plantear la función objetivo y las restricciones, graficar la región factible y hallar la combinación que maximiza el beneficio.</p>`,
+ pasos:[
+ {q:"¿Cuál es la función objetivo?",o:["Minimizar Z = 250E + 200M","Maximizar Z = 250E + 200M","Maximizar Z = 200E + 250M","Maximizar Z = E + M"],c:1,
+  t:{c:["Planteo"],f:[["Variables","E = electricistas · M = mecánicos"],["Función objetivo","Maximizar Z = 250E + 200M"],["Restricciones","M ≥ E · M ≤ 2E · E ≤ 30 · M ≤ 20"],["No negatividad","E ≥ 0 · M ≥ 0"]],win:0},
+  e:"Se maximiza el beneficio diario. Cuidado al leer M ≤ 2E: si hay 5 electricistas, puede haber como mucho 10 mecánicos."},
+ {q:"Evaluando los vértices de la región factible, ¿cuál es la combinación óptima?",o:["E = 0 · M = 0","E = 10 · M = 20","E = 20 · M = 20","E = 30 · M = 20"],c:2,
+  t:{c:["Electricistas","Mecánicos","Z = 250E + 200M"],f:[["Punto 1","0","0","0"],["Punto 2","10","20","6.500"],["Punto 3","20","20","9.000"]],x:[{n:"Máximo",v:["","","9.000"],hl:[2]}],win:2},
+  e:"Se contratan 20 de cada uno, con un beneficio máximo de $ 9.000 por jornada. No se puede subir más de electricistas aunque el tope sea 30, porque la restricción M ≥ E obligaría a más de 20 mecánicos, y ahí está el límite."}]},
+
+{id:"p24",ej:"24",parcial:2,tema:"Programación lineal",t:"Programación de metas",
+ enunciado:`<h4>Planteo</h4><p>Un cliente tiene <b>$ 80.000</b> y dos metas <b>en conflicto</b>: no pasarse de un índice de riesgo de 700, y ganar al menos $ 9.000 al año.</p>
+ <p>Acá está la diferencia con la programación lineal común: cuando las metas no se pueden cumplir todas, se las <b>ordena por prioridad</b>. Se satisface primero la de nivel 1 y después se busca acercarse lo más posible a la de nivel 2.</p>`,
+ datos:`<p><b>Ejercicio 24.</b> Datos de las dos acciones.</p>`,
+ tabla:{c:["Precio","Ganancia anual","Índice de riesgo"],f:[["U.S.","$ 25","$ 3","0,50"],["H.P.","$ 50","$ 5","0,25"]]},
+ pedido:`<p>Se pide formular el modelo, graficar la región factible y encontrar la solución óptima. Meta primaria: índice de riesgo total de 700 o menos. Meta secundaria: ganancia anual de al menos $ 9.000.</p>`,
+ pasos:[
+ {q:"¿Cómo se escribe la restricción de fondos disponibles?",o:["3U + 5H ≤ 80.000","25U + 50H ≤ 80.000","0,50U + 0,25H ≤ 80.000","U + H ≤ 80.000"],c:1,
+  t:{c:["Ecuación","Si H = 0","Si U = 0"],f:[["Fondos","25U + 50H ≤ 80.000","U = 3.200","H = 1.600"],["Meta 1 · riesgo","0,50U + 0,25H ≤ 700","U = 1.400","H = 2.800"],["Meta 2 · ganancia","3U + 5H ≥ 9.000","U = 3.000","H = 1.800"]],win:0},
+  e:"Cada acción de U.S. cuesta $ 25 y cada una de H.P., $ 50. Las tres rectas se grafican dando valor cero a una variable por vez, y así se ubican los vértices."},
+ {q:"¿Cuál es la solución óptima del problema?",o:["El punto 1, que cumple las dos metas","El punto 2, que cumple la primaria y queda a $ 600 de la secundaria","El punto 3, que maximiza la ganancia","No hay solución posible"],c:1,
+  t:{c:["Meta primaria","Diferencia con la meta secundaria"],f:[["Punto 1","Se cumple","$ 1.000"],["Punto 2","Se cumple","$ 600"],["Punto 3","Se cumple","$ 4.800"]],x:[{n:"Menor desviación",v:["","$ 600"],hl:[1]}],win:1},
+  e:"Los tres vértices respetan el límite de riesgo, así que la meta de prioridad 1 no discrimina. Se pasa entonces a la de prioridad 2, donde ninguno llega a los $ 9.000: se elige el que menos se aleja, con $ 600 de diferencia. En programación de metas no se maximiza: se minimizan las desviaciones, por orden de prioridad."}]},
+
+{id:"p25",ej:"25",parcial:2,tema:"Gestión de stock",t:"Lote óptimo de compra",
+ enunciado:`<h4>Planteo</h4><p>El caso más simple del modelo de lote económico. Comprar mucho de una vez ahorra costos de emisión de pedidos pero infla el costo de mantener stock; comprar poco y seguido hace lo contrario.</p>
+ <p>El óptimo está donde <b>ambos costos se igualan</b>, y de ahí sale la fórmula.</p>`,
+ datos:`<p><b>Ejercicio 25.</b> Datos del producto A.</p>`,
+ tabla:{c:["Valor"],f:[["Demanda anual (S)","19.200 unidades"],["Costo de emisión del pedido (o)","$ 30"],["Costo de mantenimiento unitario (c · i)","$ 20"],["Días de operación al año","320"]]},
+ pedido:`<p>Se pide el lote óptimo de compra, el costo total mínimo del inventario, el número óptimo de pedidos por año y el tiempo entre pedidos.</p>`,
+ pasos:[
+ {q:"¿Cuál es el lote óptimo de compra?",o:["120 unidades","240 unidades","480 unidades","960 unidades"],c:1,
+  t:{c:["Valor"],f:[["2 · S · o  (2 × 19.200 × 30)","1.152.000"],["c · i","20"],["Cociente","57.600"]],x:[{n:"Q óptimo (raíz cuadrada)",v:["240"],hl:[0]}],win:0},
+  e:"Q = √(2·S·o / c·i) = √57.600 = 240 unidades. La fórmula sale de igualar el costo de mantener, que es Q/2 × c·i, con el de ordenar, que es S/Q × o."},
+ {q:"¿Cuál es el costo total mínimo del inventario?",o:["$ 2.400","$ 4.800","$ 7.200","$ 9.600"],c:1,
+  t:{c:["Cálculo","Importe"],f:[["Costo de mantenimiento","240 ÷ 2 × 20","2.400"],["Costo de ordenar","19.200 ÷ 240 × 30","2.400"]],x:[{n:"Costo total",v:["","4.800"],hl:[1]}],win:1},
+  e:"2.400 + 2.400 = 4.800. Que los dos componentes den exactamente lo mismo no es casualidad: es la señal de que Q está bien calculado."},
+ {q:"¿Cada cuántos días hay que cursar un pedido?",o:["Cada 3 días","Cada 4 días","Cada 8 días","Cada 30 días"],c:1,
+  t:{c:["Valor"],f:[["Número de pedidos (19.200 ÷ 240)","80"],["Días de operación al año","320"]],x:[{n:"Tiempo entre pedidos",v:["4 días"],hl:[0]}],win:0},
+  e:"320 ÷ 80 = 4. Se cursan 80 pedidos al año, uno cada cuatro días de operación."}]},
+
+{id:"p26",ej:"26",parcial:2,tema:"Gestión de stock",t:"Metropolitana Computer y Arma Tuti",
+ enunciado:`<h4>Planteo</h4><p>Acá el proveedor <b>no entrega todo el lote de golpe</b>: produce a razón de 100 unidades por día mientras el cliente consume 30. El stock se va acumulando de a poco en lugar de saltar al máximo.</p>
+ <p>Por eso la fórmula lleva un factor de corrección <b>(1 − d/p)</b>: como nunca se llega a tener el lote completo en depósito, el costo de mantenimiento es menor y conviene pedir lotes más grandes.</p>`,
+ datos:`<p><b>Ejercicio 26.</b> Datos del microprocesador XT 27, que cuesta $ 3.600.</p>`,
+ tabla:{c:["Valor"],f:[["Producción anual del proveedor","25.000 en 250 días"],["Demanda anual del cliente","9.300 en 310 días"],["Tasa de financiación","35% anual"],["Seguros, robos y almacén","10% anual"],["Costo de preparación del pedido","$ 500"],["Transporte, recepción y control","$ 1.102,71"]]},
+ pedido:`<p>Se pide la cantidad a pedir para minimizar los costos de stock y el costo total anual de ordenar.</p>`,
+ pasos:[
+ {q:"¿Cuáles son las tasas diarias de producción y de demanda?",o:["p = 250 · d = 310","p = 100 · d = 30","p = 25.000 · d = 9.300","p = 30 · d = 100"],c:1,
+  t:{c:["Cálculo","Resultado"],f:[["Producción diaria (p)","25.000 ÷ 250","100"],["Demanda diaria (d)","9.300 ÷ 310","30"]],x:[{n:"Factor (1 − d/p)",v:["1 − 0,30","0,70"],hl:[1]}],win:1},
+  e:"Ojo con los días: el proveedor trabaja 250 al año y el cliente 310, así que cada tasa se calcula con su propio calendario. El factor de corrección queda en 0,70."},
+ {q:"¿Cuál es la cantidad a pedir?",o:["102 unidades","135 unidades","162 unidades","240 unidades"],c:2,
+  t:{c:["Valor"],f:[["2 · S · o  (2 × 9.300 × 1.602,71)","29.810.406"],["c · i  (3.600 × 0,45)","1.620"],["Factor (1 − d/p)","0,70"],["Denominador","1.134"]],x:[{n:"Q óptimo",v:["162,13"],hl:[0]}],win:0},
+  e:"Q = √(29.810.406 ÷ 1.134) = 162,13 unidades. La tasa de mantenimiento suma financiación y almacén: 35% + 10% = 45%. Y el costo de ordenar suma preparación y transporte: 500 + 1.102,71 = 1.602,71."},
+ {q:"¿Cuál es el costo total anual de ordenar?",o:["$ 45.965","$ 91.931","$ 162.135","$ 1.602,71"],c:1,
+  t:{c:["Valor"],f:[["Pedidos por año (9.300 ÷ 162,13)","57,36"],["Costo por pedido","1.602,71"]],x:[{n:"Costo anual de ordenar",v:["91.930,68"],hl:[0]}],win:0},
+  e:"57,36 × 1.602,71 = $ 91.930,68. En el óptimo, el costo de mantenimiento da esa misma cifra: es la misma comprobación que en el ejercicio anterior."}]},
+
+{id:"p27",ej:"27",parcial:2,tema:"Gestión de stock",t:"HARD y los mouses QuickMouse",
+ enunciado:`<h4>Planteo</h4><p>El proveedor ofrece <b>bonificaciones por volumen</b>: cuanto más grande el pedido, menor el precio unitario. Eso rompe el modelo básico, porque el costo de compra deja de ser una constante.</p>
+ <p>Aparecen dos complicaciones: el costo de mantener cambia con cada precio, y sobre todo, el Q óptimo de un tramo puede caer <b>fuera de ese tramo</b>, con lo que no es alcanzable.</p>`,
+ datos:`<p><b>Ejercicio 27.</b> Demanda anual 1.700 mouses, costo de pedido $ 120, tasa de mantenimiento 25%, precio base $ 38.</p>`,
+ tabla:{c:["Bonificación","Costo unitario"],f:[["1 – 299","0%","38,00"],["300 – 499","2%","37,24"],["500 – 799","4%","36,48"],["Más de 800","5%","36,10"]]},
+ pedido:`<p>Se pide realizar el análisis de costos y determinar justificadamente si la cantidad de compra actual es la adecuada.</p>`,
+ pasos:[
+ {q:"Sin bonificación, ¿cuál es el lote óptimo?",o:["120 unidades","207 unidades","300 unidades","408 unidades"],c:1,
+  t:{c:["Valor"],f:[["2 · S · o  (2 × 1.700 × 120)","408.000"],["c · i  (38 × 0,25)","9,50"]],x:[{n:"Q óptimo",v:["207,24"],hl:[0]}],win:0},
+  e:"√(408.000 ÷ 9,50) = 207,24 unidades, que cae dentro del primer tramo. Ese Q sí es alcanzable."},
+ {q:"En el tramo de 300 a 499 el Q calculado da 209,34. ¿Qué cantidad hay que usar?",o:["209, porque es el óptimo matemático","300, el mínimo del tramo","499, el máximo del tramo","Ese tramo se descarta"],c:1,
+  t:{c:["Q calculado","Q a utilizar"],f:[["1 – 299","207,24","207"],["300 – 499","209,34","300"],["500 – 799","211,51","500"],["Más de 800","212,62","800"]],win:1},
+  e:"Pedir 209 no daría derecho a la bonificación del 2%, así que ese Q no existe en la práctica. Se ajusta hacia arriba hasta el mínimo que califica para el descuento: 300."},
+ {q:"¿Por qué los Q calculados de los cuatro tramos son tan parecidos entre sí?",o:["Porque la demanda es la misma en los cuatro","Porque lo único que cambia es el costo de mantener, que depende del precio, y los precios difieren poco","Porque el costo de pedido varía","Es una casualidad del ejercicio"],c:1,
+  t:{c:["Costo unitario","c · i","Q calculado"],f:[["1 – 299","38,00","9,50","207,24"],["300 – 499","37,24","9,31","209,34"],["500 – 799","36,48","9,12","211,51"],["Más de 800","36,10","9,03","212,62"]],win:2},
+  e:"El precio entra en la fórmula solo a través del costo de mantener, y entre 38 y 36,10 hay apenas un 5% de diferencia. Por eso la decisión no se resuelve mirando el Q: hay que comparar los costos totales de cada tramo, sumando el costo anual de compra, que es donde el descuento pesa de verdad."}]},
+
+{id:"p28",ej:"28",parcial:2,tema:"Gestión de stock",t:"Lady Shoes",
+ enunciado:`<h4>Planteo</h4><p>Mismo problema que el anterior, pero acá hay que <b>llegar hasta el final</b>: comparar los costos totales de cada tramo y decidir si conviene cambiar la política de compra actual.</p>
+ <p>La clave es que el costo total incluye tres componentes, y el <b>costo anual de compra</b> es de lejos el más grande: por eso una bonificación chica puede justificar pedidos mucho mayores que el Q teórico.</p>`,
+ datos:`<p><b>Ejercicio 28.</b> Demanda anual 2.000 pares, costo de pedido $ 980, tasa de mantenimiento 29%, precio de lista $ 1.600. Actualmente se piden 500 pares.</p>`,
+ tabla:{c:["Bonificación","Precio"],f:[["0 – 150","0%","1.600,00"],["151 – 200","10%","1.440,00"],["201 – 300","17%","1.328,00"],["Más de 301","20%","1.280,00"]]},
+ pedido:`<p>Se pide realizar el análisis de costos y decidir justificadamente si la cantidad de compra actual es la adecuada.</p>`,
+ pasos:[
+ {q:"En el tramo de mayor bonificación, ¿cuál es el Q calculado y qué cantidad hay que usar?",o:["Q = 102,76 y se usa 102","Q = 102,76 pero se usa 301","Q = 301 y se usa 301","Q = 500 y se usa 500"],c:1,
+  t:{c:["Q calculado","Q a utilizar"],f:[["0 – 150","91,91","91,91"],["151 – 200","96,89","151"],["201 – 300","100,89","201"],["Más de 301","102,76","301"]],win:1},
+  e:"Con el precio de 1.280 el Q teórico da 102,76 pares, muy por debajo del mínimo del tramo. Para acceder al 20% de bonificación hay que pedir al menos 301, así que ese es el valor que se evalúa."},
+ {q:"Comparando los costos totales, ¿qué debe hacer la empresa?",o:["Seguir pidiendo 500 pares","Pasar a pedir 301 pares","Pasar a pedir 201 pares","Pasar a pedir 91 pares"],c:1,
+  t:{c:["Q","Mantener","Ordenar","Compra","Costo total"],f:[["0 – 150","91,91","21.323","21.325","3.200.000","3.242.648"],["151 – 200","151","31.529","12.980","2.880.000","2.924.509"],["201 – 300","201","38.705","9.751","2.656.000","2.704.456"],["Más de 301","301","55.866","6.512","2.560.000","2.622.377"],["Actual","500","92.800","3.920","2.560.000","2.656.720"]],x:[{n:"Menor costo total",v:["301","","","","2.622.377"],hl:[4]}],win:4},
+  e:"Pedir 301 en lugar de 500 ahorra $ 34.343 al año. Con ambas cantidades se accede al mismo precio de 1.280, pero pedir 500 obliga a mantener casi el doble de stock inmovilizado, y eso cuesta más de lo que se ahorra en pedidos."},
+ {q:"¿Por qué el costo de mantenimiento crece tanto de un tramo a otro?",o:["Porque sube el precio unitario","Porque crece la cantidad pedida, y el stock promedio es Q/2","Porque aumenta la demanda anual","Porque suben los costos de pedido"],c:1,
+  t:{c:["Q","Stock promedio (Q/2)","Costo de mantener"],f:[["0 – 150","91,91","45,96","21.323"],["Más de 301","301","150,50","55.866"],["Actual","500","250,00","92.800"]],win:2},
+  e:"El costo de mantener es Q/2 × c × i: crece en línea recta con la cantidad pedida. El de ordenar hace lo contrario, cae a medida que Q sube. Ese tironeo es todo el modelo de lote económico."}]},
+
+{id:"p29",ej:"29",parcial:2,tema:"Informes contables",t:"Análisis de balance",
+ enunciado:`<h4>Planteo</h4><p>Tres ejercicios de estados contables de una empresa que <b>compra y vende solo a crédito</b> y está exenta de IVA y de impuesto a las ganancias, lo que simplifica bastante los cálculos.</p>
+ <p>El análisis va de lo financiero de corto plazo a lo económico: primero si puede pagar, después cuánto rinde, y por último si el endeudamiento le suma o le resta a los dueños.</p>`,
+ datos:`<p><b>Ejercicio 29.</b> Datos patrimoniales, en miles.</p>`,
+ tabla:{c:["XX03","XX04","XX05"],f:[["Activo corriente","3.720","4.600","5.100"],["Bienes de cambio","2.100","1.800","1.600"],["Créditos por venta","1.500","2.700","1.800"],["Pasivo corriente","2.318","3.500","3.300"],["Ventas","—","29.000","31.000"],["Costo de ventas","—","16.000","26.000"]]},
+ pedido:`<p>Se pide el análisis horizontal y vertical, y calcular e interpretar los índices de liquidez, rotaciones y antigüedades, liquidez necesaria, rentabilidad del activo y del patrimonio neto, leverage y endeudamiento.</p>`,
+ pasos:[
+ {q:"¿Cómo evoluciona la liquidez corriente en los tres ejercicios?",o:["Sube todos los años","Baja en XX04 y se recupera en XX05","Baja los dos años","Se mantiene constante"],c:1,
+  t:{c:["XX03","XX04","XX05"],f:[["Activo corriente","3.720","4.600","5.100"],["Pasivo corriente","2.318","3.500","3.300"]],x:[{n:"Liquidez corriente",v:["1,60","1,31","1,55"],hl:[1]}],win:1},
+  e:"Cae de 1,60 a 1,31 y vuelve a 1,55. El bajón de XX04 se explica porque el pasivo corriente creció más rápido que el activo. La liquidez seca, que descuenta los bienes de cambio, va en cambio mejorando todos los años: 0,70 · 0,80 · 1,06."},
+ {q:"¿Cuántos días permanecen en stock los bienes de cambio en XX04?",o:["8,21 días","23,87 días","26,43 días","44,48 días"],c:3,
+  t:{c:["XX04","XX05"],f:[["Costo de ventas","16.000","26.000"],["Existencia promedio","1.950","1.700"],["Índice de rotación","8,21","15,29"]],x:[{n:"Antigüedad en días",v:["44,48","23,87"],hl:[0]}],win:0},
+  e:"365 ÷ 8,21 = 44,48 días. En XX05 la rotación casi se duplica y la antigüedad cae a 23,87: la mercadería empieza a moverse mucho más rápido. Se usa el costo de ventas, no las ventas, para que el cociente sea homogéneo con el stock valuado a costo."},
+ {q:"El plazo de cobranza es de unos 26 días y el de pago a proveedores de 68 en XX04. ¿Qué significa eso?",o:["La empresa está en problemas financieros","La empresa cobra bastante antes de lo que paga, lo que le da aire financiero","La empresa paga antes de cobrar","No se pueden comparar los dos plazos"],c:1,
+  t:{c:["XX04","XX05"],f:[["Antigüedad de créditos por venta","26,43","26,49"],["Antigüedad de deudas comerciales","68,00","48,10"]],x:[{n:"Diferencia a favor",v:["41,57","21,61"],hl:[0,1]}],win:null},
+  e:"Cobrar a 26 días y pagar a 68 significa financiarse con los proveedores. En XX05 esa ventaja se achica a la mitad, porque el plazo de pago baja a 48 días mientras el de cobranza no se mueve."},
+ {q:"La rentabilidad del activo cae de 58,34% a 25,08%. Según Dupont, ¿por dónde pasa la caída?",o:["Por la rotación del activo, que se derrumba","Por el margen sobre ventas, que cae de 13,45% a 6,45%","Por el aumento del pasivo","Por la baja de las ventas"],c:1,
+  t:{c:["XX04","XX05"],f:[["Resultado operativo","3.900","2.000"],["Ventas","29.000","31.000"],["Margen sobre ventas","13,45%","6,45%"],["Rotación del activo","4,34","3,89"]],x:[{n:"Rentabilidad del activo",v:["58,34%","25,08%"],hl:[1]}],win:1},
+  e:"El margen se parte al medio mientras la rotación baja apenas de 4,34 a 3,89. Las ventas incluso crecieron: el problema está en el costo de ventas, que saltó de 16.000 a 26.000."},
+ {q:"El leverage da 1,65 en XX04 y 1,24 en XX05. ¿Cómo se interpreta?",o:["El endeudamiento destruye rentabilidad para los socios","El endeudamiento apalanca positivamente, aunque cada vez menos","La empresa no tiene deuda","El leverage no se puede interpretar sin más datos"],c:1,
+  t:{c:["XX04","XX05"],f:[["Rentabilidad del patrimonio neto","96,36%","31,21%"],["Rentabilidad del activo","58,34%","25,08%"],["Costo promedio del pasivo","15,84%","18,37%"]],x:[{n:"Leverage",v:["1,65","1,24"],hl:[0,1]}],win:null},
+  e:"Mayor que uno significa palanca positiva: el capital ajeno cuesta menos de lo que rinde su uso. En XX04 el pasivo costaba 15,84% contra un activo que rendía 58,34%. En XX05 el costo sube y el rendimiento cae, así que la ventaja se achica de un 65% a un 24%."}]}
+
 ];
 
 /* ================= ESTADO ================= */
@@ -1037,7 +1540,7 @@ function pintarSiguiente(){
     document.getElementById("sig-btn").onclick=()=>abrir(p.id);
   }else{
     document.getElementById("sig-tit").textContent="Terminaste la guía entera";
-    document.getElementById("sig-sub").textContent="Cincuenta ejercicios, cero pendientes.";
+    document.getElementById("sig-sub").textContent="Los 57 ejercicios, cero pendientes.";
     document.getElementById("sig-btn").style.display="none";
   }
 }
@@ -1103,7 +1606,7 @@ function pintarLista(){
     const pr=PRACTICA.find(x=>x.ej===e.id);
     if(pr){const bb=document.createElement("div");bb.style.marginTop="10px";
       const b2=document.createElement("button");b2.className="btn sec";b2.style.fontSize="13px";b2.style.padding="8px 14px";
-      b2.textContent="Ver la solución paso a paso";b2.onclick=()=>abrirPractica(pr.id,"sol");bb.appendChild(b2);body.appendChild(bb)}
+      b2.textContent="Resolverlo paso a paso";b2.onclick=()=>abrirPractica(pr.id,"int");bb.appendChild(b2);body.appendChild(bb)}
     const lab=document.createElement("div");lab.className="lab";lab.textContent="¿Por dónde lo dejé?";body.appendChild(lab);
     const ta=document.createElement("textarea");ta.value=nota(e.id);
     ta.placeholder="Ej: armé la matriz de aflicción pero me falta el valor esperado.";
@@ -1126,7 +1629,7 @@ const LOGROS=[
 {n:"Primer parcial",c:"Teoría de las unidades 1 a 4 completa",f:()=>UNIDADES.filter(u=>u.parcial===1).every(u=>{const[o,n]=uniQs(u);return o===n})},
 {n:"Leí todo",c:"Las ocho soluciones explicadas",f:()=>PRACTICA.every(e=>leido(e.id))},
 {n:"Paso a paso",c:"Todos los pasos de práctica resueltos",f:()=>praOK()>=TOTAL_S},
-{n:"Guía cerrada",c:"Los cincuenta ejercicios",f:()=>cont("hecho")===EJ.length}];
+{n:"Guía cerrada",c:"Los 57 ejercicios",f:()=>cont("hecho")===EJ.length}];
 function pintarLogros(){
   const c=document.getElementById("logros");c.innerHTML="";
   LOGROS.forEach(l=>{const d=document.createElement("div");d.className="logro"+(l.f()?" ok":"");
@@ -1168,7 +1671,9 @@ function iniciarTeoria(u){
 function pintarPractica(){
   const c=document.getElementById("pra-lista");c.innerHTML="";
   [1,2].forEach(par=>{
-    const l=PRACTICA.filter(e=>e.parcial===par);if(!l.length)return;
+    const orden=EJ.map(x=>x.id);
+    const l=PRACTICA.filter(e=>e.parcial===par).sort((a,b)=>orden.indexOf(a.ej)-orden.indexOf(b.ej));
+    if(!l.length)return;
     const h=document.createElement("div");h.className="parcial-tit";
     h.textContent=par===1?"Primer parcial":"Segundo parcial";c.appendChild(h);
     const g=document.createElement("div");g.className="uni-grid";
@@ -1176,16 +1681,16 @@ function pintarPractica(){
       const ok=e.pasos.filter((p,i)=>sOK(e.id+"-"+i)).length;
       const d=document.createElement("div");d.className="uni";d.style.cursor="default";
       d.innerHTML='<div class="n">Ejercicio '+e.ej+' · '+e.tema+'</div>'+
-        '<div class="t">'+e.t+(leido(e.id)?'<span class="leido">leída</span>':'')+'</div>'+
-        '<div class="m">'+e.pasos.length+' pasos · '+ok+' resueltos por tu cuenta</div>'+
+        '<div class="t">'+e.t+(ok===e.pasos.length?'<span class="leido">completo</span>':'')+'</div>'+
+        '<div class="m">'+ok+' de '+e.pasos.length+' pasos resueltos</div>'+
         '<div class="mini"><i style="width:'+(ok/e.pasos.length*100)+'%"></i></div>'+
         '<div class="uni-acciones"></div>';
       const cont=d.querySelector(".uni-acciones");
       const b1=document.createElement("button");b1.className="mini-btn prim";
-      b1.textContent=leido(e.id)?"Releer la solución":"Ver la solución";
-      b1.onclick=()=>abrirPractica(e.id,"sol");
-      const b2=document.createElement("button");b2.className="mini-btn";b2.textContent="Ponerme a prueba";
-      b2.onclick=()=>abrirPractica(e.id,"quiz");
+      b1.textContent="Resolver paso a paso";
+      b1.onclick=()=>abrirPractica(e.id,"int");
+      const b2=document.createElement("button");b2.className="mini-btn";b2.textContent="Ver resuelto";
+      b2.onclick=()=>abrirPractica(e.id,"ver");
       cont.appendChild(b1);cont.appendChild(b2);
       g.appendChild(d);
     });
@@ -1195,8 +1700,8 @@ function pintarPractica(){
 function abrirPractica(id,modo){
   const e=PRACTICA.find(x=>x.id===id);if(!e)return;
   irTab("pra");
-  quiz={tipo:"pra",modo:modo||"sol",ejId:e.id,titulo:"Ejercicio "+e.ej+" — "+e.t,sub:e.tema,datos:e.datos,
-    qs:e.pasos.map((p,i)=>({...p,id:e.id+"-"+i,pn:"Paso "+(i+1)})),i:0,ok:0,mal:0,resp:null,rev:(modo==="quiz"?1:0)};
+  quiz={tipo:"pra",modo:modo||"int",ejId:e.id,titulo:"Ejercicio "+e.ej+" — "+e.t,sub:e.tema,datos:e.datos,
+    qs:e.pasos.map((p,i)=>({...p,id:e.id+"-"+i,pn:"Paso "+(i+1)})),i:0,ok:0,mal:0,resp:null,res:[],rev:0};
   document.getElementById("pra-menu").style.display="none";
   const z=document.getElementById("pra-quiz");z.style.display="block";
   render(z);window.scrollTo({top:0,behavior:"smooth"});
@@ -1259,72 +1764,133 @@ function tablaHTML(t){
   return h+'</table>';
 }
 
+function tablaPrevia(q,base){
+  if(q.tp===false)return null;
+  if(q.tp)return q.tp;
+  const t=q.t; if(!t)return base||null;
+  const x=t.x||[];
+  const nx=(q.misma?x:x.slice(0,-1)).map(e=>({n:e.n,v:e.v}));
+  return {c:t.c,f:t.f,pc:t.pc,pn:t.pn,x:nx,win:null};
+}
 function marcarLeido(){
   if(!quiz||!quiz.ejId)return;
   if(estado.leido[quiz.ejId])return;
   estado.leido[quiz.ejId]=true;guardar();
 }
 function renderSol(z){
-  const e=PRACTICA.find(x=>x.id===quiz.ejId)||{};
-  const total=quiz.qs.length, rev=Math.min(quiz.rev,total), fin=(rev>=total);
-  const letras=["A","B","C","D"];
+  const ex=PRACTICA.find(x=>x.id===quiz.ejId)||{};
+  const ver=(quiz.modo==="ver");
+  const total=quiz.qs.length, letras=["A","B","C","D"];
+  const rev=Math.min(quiz.rev,total), fin=(rev>=total);
+  const act=rev-1;
+  const respAct=quiz.res[act];
   let html='<div class="quiz"><div class="quiz-top"><div><div class="l">'+esc(quiz.sub)+
-    ' · '+(quiz.rev===0?"Planteo":"Solución explicada")+'</div><div class="t">'+esc(quiz.titulo)+
+    ' · '+(quiz.rev===0?"Planteo":ver?"Resuelto":"Paso a paso")+'</div><div class="t">'+esc(quiz.titulo)+
     '</div></div><button class="volver" id="q-salir">Volver</button></div>';
 
   if(quiz.rev===0){
-    html+='<div class="planteo">'+(e.enunciado||"")+
-      (e.tabla?tablaHTML(e.tabla):"")+
-      (e.pedido?'<div class="pedido"><div class="t">Se pide</div>'+e.pedido+'</div>':'')+
-      '</div>'+
+    html+='<div class="planteo">'+(ex.enunciado||"")+(ex.tabla?tablaHTML(ex.tabla):"")+
+      (ex.pedido?'<div class="pedido"><div class="t">Se pide</div>'+ex.pedido+'</div>':'')+'</div>'+
       '<div class="quiz-nav"><div class="prog-pasos"></div>'+
-      '<button class="btn" id="q-ini">Empezar el ejercicio</button></div></div>';
+      '<button class="btn" id="q-ini">'+(ver?"Ver la resolución":"Empezar el ejercicio")+'</button></div></div>';
     z.innerHTML=html;
     document.getElementById("q-salir").onclick=salirQuiz;
     document.getElementById("q-ini").onclick=()=>{quiz.rev=1;renderSol(z);window.scrollTo({top:0,behavior:"smooth"})};
     return;
   }
 
-  if(e.datos)html+='<div class="datos">'+e.datos+'</div>';
+  if(ex.datos)html+='<div class="datos">'+ex.datos+'</div>';
   html+='<div class="sol">';
   for(let i=0;i<rev;i++){
     const q=quiz.qs[i];
-    html+='<div class="paso'+(i<rev-1?' viejo':'')+'" id="paso-'+i+'">'+
+    const cerrado = ver || quiz.res[i]!=null;
+    html+='<div class="paso'+(i<act?' viejo':'')+'" id="paso-'+i+'">'+
       '<div class="paso-n">Paso '+(i+1)+' de '+total+'</div>'+
-      '<div class="paso-q">'+esc(q.q)+'</div>'+
-      (q.t?tablaHTML(q.t):"")+
-      '<div class="paso-r"><span>Respuesta</span>'+letras[q.c]+') '+esc(q.o[q.c])+'</div>'+
-      '<div class="paso-e">'+esc(q.e)+'</div></div>';
+      '<div class="paso-q">'+esc(q.q)+'</div>';
+    const tb = cerrado ? q.t : tablaPrevia(q,ex.tabla);
+    if(tb)html+=tablaHTML(tb);
+    if(ver){
+      html+='<div class="paso-r"><span>Respuesta</span>'+letras[q.c]+') '+esc(q.o[q.c])+'</div>'+
+        '<div class="paso-e">'+esc(q.e)+'</div>';
+    }else if(quiz.res[i]==null){
+      html+='<div class="opts" style="margin-top:13px">';
+      q.o.forEach((op,k)=>{html+='<button class="opt" data-k="'+k+'"><span class="k">'+letras[k]+
+        '</span><span>'+esc(op)+'</span></button>'});
+      html+='</div>';
+    }else{
+      const bien=quiz.res[i]===q.c;
+      html+='<div class="opts" style="margin-top:13px">';
+      q.o.forEach((op,k)=>{
+        let cl="opt"; if(k===q.c)cl+=" ok"; else if(k===quiz.res[i])cl+=" no";
+        html+='<button class="'+cl+'" disabled><span class="k">'+letras[k]+'</span><span>'+esc(op)+'</span></button>';
+      });
+      html+='</div><div class="fb '+(bien?"ok":"no")+'"><b>'+(bien?"Correcto. ":"No era esa, la correcta es la "+letras[q.c]+". ")+
+        '</b>'+esc(q.e)+'</div>';
+    }
+    html+='</div>';
   }
   html+='</div>';
-  if(fin)html+='<div class="cierre"><b>Hasta acá el ejercicio.</b> Si lo seguiste sin trabarte, '+
-    'probá resolverlo vos: son las mismas preguntas, sin la respuesta ni el cuadro resuelto a la vista.</div>';
+
+  const listo = ver ? fin : (fin && quiz.res[total-1]!=null);
+  if(listo){
+    const ok=quiz.res.filter((r,i)=>r===quiz.qs[i].c).length;
+    html+='<div class="cierre"><b>Ejercicio terminado.</b> '+
+      (ver?"Si querés, volvé y resolvelo vos paso a paso.":"Acertaste "+ok+" de "+total+" pasos.")+'</div>';
+  }
   html+='<div class="quiz-nav"><div class="prog-pasos">';
-  for(let j=0;j<total;j++)html+='<span class="pp'+(j<rev-1?' ok':j===rev-1?' now':'')+'"></span>';
+  for(let j=0;j<total;j++){
+    let cl="pp";
+    if(ver)cl+=(j<rev?" ok":"");
+    else if(quiz.res[j]!=null)cl+=(quiz.res[j]===quiz.qs[j].c?" ok":" no");
+    else if(j===act)cl+=" now";
+    html+='<span class="'+cl+'"></span>';
+  }
   html+='</div><div style="display:flex;gap:7px;flex-wrap:wrap">';
-  if(!fin)html+='<button class="btn sec" id="q-todo">Mostrar todo</button><button class="btn" id="q-mas">Siguiente paso</button>';
-  else html+='<button class="btn sec" id="q-salir2">Volver a la lista</button><button class="btn" id="q-quiz">Ponerme a prueba</button>';
+  if(listo){
+    html+='<button class="btn sec" id="q-otra">'+(ver?"Resolverlo yo":"Reintentar")+'</button>'+
+      '<button class="btn" id="q-salir2">Volver a la lista</button>';
+  }else if(ver){
+    html+='<button class="btn sec" id="q-todo">Mostrar todo</button><button class="btn" id="q-mas">Siguiente paso</button>';
+  }else if(respAct!=null){
+    html+='<button class="btn" id="q-mas">Siguiente paso</button>';
+  }else{
+    html+='<span class="tabla-nota">Elegí una opción para continuar</span>';
+  }
   html+='</div></div></div>';
   z.innerHTML=html;
+
   document.getElementById("q-salir").onclick=salirQuiz;
+  const bSal=document.getElementById("q-salir2");if(bSal)bSal.onclick=salirQuiz;
+  const bOtra=document.getElementById("q-otra");
+  if(bOtra)bOtra.onclick=()=>{quiz.modo=ver?"int":quiz.modo;quiz.rev=1;quiz.res=[];renderSol(z);window.scrollTo({top:0,behavior:"smooth"})};
   const bTodo=document.getElementById("q-todo");
   if(bTodo)bTodo.onclick=()=>{quiz.rev=total;marcarLeido();renderSol(z)};
   const bMas=document.getElementById("q-mas");
   if(bMas)bMas.onclick=()=>{
     quiz.rev=Math.min(quiz.rev+1,total);
-    if(quiz.rev>=total)marcarLeido();
+    if(quiz.rev>=total&&ver)marcarLeido();
     renderSol(z);
     const el=document.getElementById("paso-"+(quiz.rev-1));
     if(el)el.scrollIntoView({behavior:"smooth",block:"center"});
   };
-  const bSal=document.getElementById("q-salir2");if(bSal)bSal.onclick=salirQuiz;
-  const bQ=document.getElementById("q-quiz");
-  if(bQ)bQ.onclick=()=>{quiz.modo="quiz";quiz.i=0;quiz.ok=0;quiz.mal=0;quiz.resp=null;render(z);window.scrollTo({top:0,behavior:"smooth"})};
+  if(!ver&&respAct==null){
+    const cont=document.getElementById("paso-"+act);
+    if(cont)cont.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+      const k=+b.dataset.k, q=quiz.qs[act];
+      quiz.res[act]=k;
+      if(k===q.c)estado.pra[q.id]=true;
+      if(act===total-1)marcarLeido();
+      guardar();pintarCabecera();
+      renderSol(z);
+      const el=document.getElementById("paso-"+act);
+      if(el)el.scrollIntoView({behavior:"smooth",block:"center"});
+    });
+  }
 }
 
 function render(z){
   if(!quiz)return;
-  if(quiz.modo==="sol")return renderSol(z);
+  if(quiz.tipo==="pra")return renderSol(z);
   const total=quiz.qs.length;
   if(quiz.i===-1){
     const pct=Math.round(quiz.ok/total*100);
